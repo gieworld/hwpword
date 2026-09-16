@@ -203,3 +203,45 @@ All entries are existing commands.
 - **Layout drift.** Layout depends on fonts and sub-pixel metrics, and page counts can drift after edits (rhwp #7114). Mitigations: install 함초롬 fonts and use the report's missing-font column.
 - **Upstream moves fast** (daily commits, a young project). Mitigation: pin to tags and upgrade deliberately.
 - **Translated strings conflict on merge.** Accepted in §3.
+
+## 11. Adjustments made while planning (2026-09-16)
+
+These were found by reading rhwp-studio at `v0.8.6`, and they override the sections above. The plan is `docs/superpowers/plans/2026-09-16-hwpword-desktop-mvp.md`.
+
+### Repo and fork hygiene (§3)
+
+- **Fetching upstream:** a blobless partial fetch (`--filter=blob:none`) plus a sparse checkout of `rhwp-studio npm samples scripts src tools/rhwp-subsecond docs desktop`. Upstream is about 2.5 GB, and its `mydocs/` alone holds 10K+ files.
+- **Line endings:** `core.autocrlf false` in this repo, because upstream's source-guard tests expect LF.
+- **Agent configs:** upstream's `.claude/`, `.mcp.json`, `CLAUDE.md` and `AGENTS.md` are removed and replaced by our own `CLAUDE.md`. Otherwise they would load into every agent session.
+- **Engine wiring:** there are no edits to the Vite alias or tsconfig. `desktop/scripts/sync-core.mjs` copies `@rhwp/core` into the gitignored `pkg/` folder the studio already expects.
+- **Studio build:** runs from `desktop/scripts/build-studio.mjs` with `RHWP_WITHOUT_HWPCTRL=1`, because the studio's own npm scripts use POSIX environment-variable syntax that fails on Windows.
+- **Node version:** the toolchain needs Node 22 LTS ≥ 22.18 (Vite 8, and `node --test` on `.ts` files).
+
+### Word shell (§4)
+
+- **Word look:** the Word look is `src/styles/hwpword.css`, which always loads last. It is not a registered, selectable `word` skin, because that would have touched four upstream files for the same result.
+- **Ribbon markup:** the ribbon is built from `ribbon-data.ts` and mounted in one `<div id="ribbon">`. Its buttons use `data-ribbon-cmd`, so upstream's `[data-cmd]` scanners don't bind them twice.
+- **Extra groups:** the Layout tab also has Rows & Columns, Cells and Arrange groups, which matter most for table-heavy forms. The Review tab also has Form Mode.
+- **Command labels:** these are translated too (Task 11), because the right-click menu on tables shows them.
+- **Dialogs:** the ribbon opens the table-create and style-edit dialogs directly, so they are translated as well. Other dialogs the ribbon opens stay Korean until later.
+- **English enforcement:** a guard test (`tests/hwpword-english-ui.test.ts`) enforces English in the translated files. Font names, Hancom's attribution sentence, and lines marked `hwpword-keep-korean` are allowed.
+
+### Desktop wrapper (§5)
+
+- **launchQueue shim:** it lives in the studio (`src/desktop/desktop-launch-queue.ts`). The preload exposes only byte-level IPC. That avoids passing `File` objects across `contextBridge`, and it makes the shim unit-testable against the studio's real `saveDocumentToFileSystem`.
+- **Saving launched files:** writes are atomic (temp file, then rename).
+- **Service workers:** not enabled for `app://`; no code is needed for this.
+- **External web fonts:** the studio's jsdelivr-hosted 함초롬 and other fonts stay enabled for better fidelity when online.
+- **Web-only and LLM features:** hidden because neither the ribbon nor the File page exposes them, and the classic menus are hidden. No extra code.
+- **Packaging:** the studio build ships as `extraResources/studio`, and `@rhwp/core` is a devDependency, so it stays out of the installer.
+
+### Testing (§7)
+
+- **Report location:** the corpus report is written to `corpus/report-<folder>.md`.
+- **Dropped check:** `exportHwpVerify` is not called, because the runner's own before/after comparison covers the same thing.
+- **Missing fonts:** detected by measuring text in a canvas. `queryLocalFonts` needs a user gesture, which a hidden window never has.
+- **Failed saves:** Task 4 manually checks that a failed save (read-only file) keeps the document dirty.
+
+### Known limitation
+
+The File page's Recent list cannot reopen files that were opened by double-click. Their handles can't be stored in IndexedDB, so the studio records them without a handle. Files opened through the Open dialog reopen normally.
