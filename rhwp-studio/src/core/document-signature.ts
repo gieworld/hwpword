@@ -65,17 +65,28 @@ function matchRootElement(prefix: string): RegExpMatchArray | null {
   return rootPattern.exec(prefix);
 }
 
+// The four patterns below are written as `new RegExp(String.raw\`...\`)` rather than /regex/
+// literals because their embedded quote characters desync tests/support/source-guard.ts's
+// codeOnly() (it does not parse regex literals). Each is byte-identical (source and flags) to
+// the /regex/ literal it replaces.
+const HANCOM_NAMESPACE_PATTERN = new RegExp(
+  String.raw`\bxmlns(?::[A-Za-z_][\w.-]*)?\s*=\s*['"]https?:\/\/www\.hancom\.co\.kr\/hwpml(?:\/[^'"]*)?['"]`,
+  'i',
+);
+const HAS_VERSION_PATTERN = new RegExp(String.raw`(?:^|\s)Version\s*=\s*['"]\d+(?:\.\d+)*['"]`);
+const HAS_SUB_VERSION_PATTERN = new RegExp(String.raw`(?:^|\s)SubVersion\s*=\s*['"]\d+(?:\.\d+)*['"]`);
+const HAS_STYLE_PATTERN = new RegExp(String.raw`(?:^|\s)Style\s*=\s*['"][^'"]+['"]`);
+
 function isHmlRoot(root: RegExpMatchArray | null, prefix: string): boolean {
   if (!root || root[1] !== 'HWPML' || /\/\s*$/.test(root[2])) return false;
   const afterRoot = prefix.slice((root.index ?? 0) + root[0].length);
   if (/^\s*<\/HWPML\s*>\s*$/.test(afterRoot)) return false;
-  const hasHancomNamespace = /\bxmlns(?::[A-Za-z_][\w.-]*)?\s*=\s*['"]https?:\/\/www\.hancom\.co\.kr\/hwpml(?:\/[^'"]*)?['"]/i
-    .test(root[2]);
+  const hasHancomNamespace = HANCOM_NAMESPACE_PATTERN.test(root[2]);
   if (hasHancomNamespace) return /<[A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?(?:\s|\/?>)/.test(afterRoot);
 
-  const hasVersion = /(?:^|\s)Version\s*=\s*['"]\d+(?:\.\d+)*['"]/.test(root[2]);
-  const hasSubVersion = /(?:^|\s)SubVersion\s*=\s*['"]\d+(?:\.\d+)*['"]/.test(root[2]);
-  const hasStyle = /(?:^|\s)Style\s*=\s*['"][^'"]+['"]/.test(root[2]);
+  const hasVersion = HAS_VERSION_PATTERN.test(root[2]);
+  const hasSubVersion = HAS_SUB_VERSION_PATTERN.test(root[2]);
+  const hasStyle = HAS_STYLE_PATTERN.test(root[2]);
   return hasVersion && hasSubVersion && hasStyle;
 }
 
@@ -108,12 +119,12 @@ export function assertRemoteDocumentBytes(bytes: Uint8Array, contentType?: strin
   if (kind === 'hwp' || kind === 'zip' || kind === 'hml') return;
 
   if (kind === 'html') {
-    throw new Error('실제 HWP/HWPX/HML 파일이 아닙니다. 파일 미리보기/오류 페이지가 반환되었습니다.');
+    throw new Error('This is not an actual HWP/HWPX/HML file. A file preview or error page was returned.');
   }
 
   if (kind === 'xml') {
-    throw new Error('HML 문서가 아닌 일반 XML 파일입니다.');
+    throw new Error('This is a plain XML file, not an HML document.');
   }
 
-  throw new Error('실제 HWP/HWPX/HML 파일이 아닙니다. 파일 시그니처를 확인할 수 없습니다.');
+  throw new Error('This is not an actual HWP/HWPX/HML file. The file signature could not be verified.');
 }

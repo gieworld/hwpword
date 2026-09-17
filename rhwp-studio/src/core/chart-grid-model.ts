@@ -190,12 +190,12 @@ export function deleteColumn(model: GridModel, at: number): GridModel {
   return { ...model, series };
 }
 
-/** 이미 쓰이는 이름과 겹치지 않는 `계열 N`. */
+/** `Series N`, skipping any name already in use. */
 function defaultSeriesName(model: GridModel, at: number): string {
   const taken = new Set(model.series.map((s) => s.name).filter((n): n is string => n !== null));
   let n = at + 1;
-  while (taken.has(`계열 ${n}`)) n += 1;
-  return `계열 ${n}`;
+  while (taken.has(`Series ${n}`)) n += 1;
+  return `Series ${n}`;
 }
 
 function clamp(v: number, lo: number, hi: number): number {

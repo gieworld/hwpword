@@ -41,12 +41,14 @@ export function pageBodyViolation(def: PageDef): string | null {
   const mm = (hwpunit: number) => (hwpunit / HWPUNIT_PER_MM).toFixed(1);
 
   if (body.width < min) {
-    return `좌우 여백이 너무 커서 본문이 남지 않습니다 (본문 너비 ${mm(body.width)}mm, `
-      + `최소 ${MIN_BODY_MM}mm). 왼쪽·오른쪽·제본 여백을 줄여주세요.`;
+    return `The left/right margins are too large, leaving no body space `
+      + `(body width ${mm(body.width)}mm, minimum ${MIN_BODY_MM}mm). `
+      + `Reduce the left, right, or gutter margin.`;
   }
   if (body.height < min) {
-    return `위아래 여백이 너무 커서 본문이 남지 않습니다 (본문 높이 ${mm(body.height)}mm, `
-      + `최소 ${MIN_BODY_MM}mm). 위쪽·아래쪽·머리말·꼬리말 여백을 줄여주세요.`;
+    return `The top/bottom margins are too large, leaving no body space `
+      + `(body height ${mm(body.height)}mm, minimum ${MIN_BODY_MM}mm). `
+      + `Reduce the top, bottom, header, or footer margin.`;
   }
   return null;
 }

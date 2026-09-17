@@ -126,7 +126,7 @@ test('HWPML 태그가 중첩된 일반 XML은 HML로 오인하지 않는다', ()
 test('XML 선언으로 시작하는 HTML 오류 페이지는 html로 분류한다', () => {
   const html = ascii('<?xml version="1.0"?><html><body>login required</body></html>');
   assert.equal(detectDocumentByteKind(html, 'text/html'), 'html');
-  assert.throws(() => assertRemoteDocumentBytes(html, 'text/html'), /미리보기\/오류 페이지/);
+  assert.throws(() => assertRemoteDocumentBytes(html, 'text/html'), /file preview or error page/);
 });
 
 test('실제 HTML 오류/미리보기 페이지는 계속 거부한다', () => {
@@ -134,7 +134,7 @@ test('실제 HTML 오류/미리보기 페이지는 계속 거부한다', () => {
   assert.equal(detectDocumentByteKind(html, 'text/html'), 'html');
   assert.throws(
     () => assertRemoteDocumentBytes(html, 'text/html'),
-    /미리보기\/오류 페이지/,
+    /file preview or error page/,
   );
 });
 
@@ -143,7 +143,7 @@ test('매직 없는 알 수 없는 바이트는 거부한다', () => {
   assert.equal(detectDocumentByteKind(junk, null), 'unknown');
   assert.throws(
     () => assertRemoteDocumentBytes(junk, null),
-    /시그니처를 확인할 수 없습니다/,
+    /file signature could not be verified/,
   );
 });
 

@@ -258,7 +258,7 @@ function pushUniqueFontFamily(families: string[], fontName: string): void {
 function systemFallbackFamilies(fontName: string): string[] {
   if (GENERIC_FONTS.has(fontName)) return [fontName];
   // KoPub바탕체는 이름에 "바탕체"가 있지만 Windows BatangChe와 달리 비례폭 출판 명조다.
-  if (/KoPub\s*바탕(?:체)?|KoPub\s*Batang/i.test(fontName)) {
+  if (/KoPub\s*바탕(?:체)?|KoPub\s*Batang/i.test(fontName)) { // hwpword-keep-korean: font family name data
     return ['Batang', 'AppleMyungjo', 'Noto Serif KR', 'serif'];
   }
   // Monospace 판별
@@ -266,7 +266,7 @@ function systemFallbackFamilies(fontName: string): string[] {
     return ['GulimChe', 'D2Coding', 'Noto Sans Mono', 'monospace'];
   }
   // Serif 판별
-  if (/[바탕명조궁서]|hymjre|times|palatino|georgia|batang|gungsuh/i.test(fontName)) {
+  if (/[바탕명조궁서]|hymjre|times|palatino|georgia|batang|gungsuh/i.test(fontName)) { // hwpword-keep-korean: font family name data
     return ['Batang', 'AppleMyungjo', 'Noto Serif KR', 'serif'];
   }
   // Sans-serif (기본)

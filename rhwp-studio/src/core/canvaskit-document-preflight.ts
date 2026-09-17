@@ -22,10 +22,10 @@ export function parseCanvasKitDocumentPreflight(
   try {
     parsed = JSON.parse(json);
   } catch (error) {
-    throw new Error(`${source} parse 실패: ${error}`);
+    throw new Error(`${source} parse failed: ${error}`);
   }
   if (!parsed || typeof parsed !== 'object') {
-    throw new Error(`${source} shape 오류: object가 아닙니다`);
+    throw new Error(`${source} shape error: not an object`);
   }
 
   const report = parsed as Partial<CanvasKitDocumentPreflight>;
@@ -62,7 +62,7 @@ export function parseCanvasKitDocumentPreflight(
       Number(limits.maxRequiredFontFamilies),
     )
   ) {
-    throw new Error(`${source} shape 오류: 필수 필드가 없습니다`);
+    throw new Error(`${source} shape error: missing required fields`);
   }
   return report as CanvasKitDocumentPreflight;
 }

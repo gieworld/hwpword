@@ -36,7 +36,7 @@ export const HTML_EXPORT_DETAILS: Record<
   { extension: string; mimeType: string; label: string }
 > = {
   html: { extension: 'html', mimeType: 'text/html;charset=utf-8', label: 'HTML' },
-  doc: { extension: 'doc', mimeType: 'application/msword', label: 'Word 문서(.doc)' },
+  doc: { extension: 'doc', mimeType: 'application/msword', label: 'Word Document (.doc)' },
 };
 
 /**
@@ -67,7 +67,7 @@ export function collectDocumentHtml(engine: DocumentHtmlEngine): string {
       if (inner) parts.push(inner);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      throw new Error(`구역 ${section + 1} HTML 변환 실패: ${message}`);
+      throw new Error(`Section ${section + 1} HTML conversion failed: ${message}`);
     }
   }
   return parts.join('\n');
@@ -108,7 +108,7 @@ ${innerHtml}
 
 /** "문서.hwp" → "문서". 이름이 비면 기본값을 쓴다. */
 export function htmlExportBaseName(fileName: string | undefined): string {
-  const name = (fileName ?? '').trim() || '문서';
+  const name = (fileName ?? '').trim() || 'Document';
   return name.replace(/\.(hwpx?|hml|html?|doc)$/i, '');
 }
 

@@ -9,20 +9,20 @@ import {
 } from '../src/recovery/recovery-format.ts';
 
 test('recoveryFileName은 원본을 덮어쓰지 않는 복구본 이름을 만든다', () => {
-  assert.equal(recoveryFileName('sample.hwp'), 'sample 복구본.hwp');
-  assert.equal(recoveryFileName('sample.hwpx'), 'sample 복구본.hwp');
-  assert.equal(recoveryFileName('sample.hwpx'), 'sample 복구본.hwp');
-  assert.equal(recoveryFileName('sample.hml'), 'sample 복구본.hwp');
-  assert.equal(recoveryFileName('새 문서.hwp'), '새 문서 복구본.hwp');
-  assert.equal(recoveryFileName('memo'), 'memo 복구본.hwp');
-  assert.equal(recoveryFileName(''), '문서 복구본.hwp');
+  assert.equal(recoveryFileName('sample.hwp'), 'sample Recovered.hwp');
+  assert.equal(recoveryFileName('sample.hwpx'), 'sample Recovered.hwp');
+  assert.equal(recoveryFileName('sample.hwpx'), 'sample Recovered.hwp');
+  assert.equal(recoveryFileName('sample.hml'), 'sample Recovered.hwp');
+  assert.equal(recoveryFileName('새 문서.hwp'), '새 문서 Recovered.hwp');
+  assert.equal(recoveryFileName('memo'), 'memo Recovered.hwp');
+  assert.equal(recoveryFileName(''), 'Document Recovered.hwp');
 });
 
 test('formatDraftSize는 복구 후보 크기를 읽기 좋은 단위로 표시한다', () => {
   assert.equal(formatDraftSize(512), '512 B');
   assert.equal(formatDraftSize(1536), '1.5 KB');
   assert.equal(formatDraftSize(2 * 1024 * 1024), '2.0 MB');
-  assert.equal(formatDraftSize(Number.NaN), '크기 알 수 없음');
+  assert.equal(formatDraftSize(Number.NaN), 'Unknown size');
 });
 
 test('describeDraft는 저장 시각, 크기, 출처 포맷을 포함한다', () => {
@@ -38,7 +38,7 @@ test('describeDraft는 저장 시각, 크기, 출처 포맷을 포함한다', ()
 
   assert.match(text, /HWP/);
   assert.match(text, /2\.0 KB/);
-  assert.notEqual(formatDraftSavedAt(savedAt), '저장 시각 알 수 없음');
+  assert.notEqual(formatDraftSavedAt(savedAt), 'Unknown save time');
 });
 
 test('describeDraft는 HML 출처 draft가 HWP 복구본으로 열림을 표시한다', () => {
@@ -52,7 +52,7 @@ test('describeDraft는 HML 출처 draft가 HWP 복구본으로 열림을 표시�
   });
 
   assert.match(text, /HML/);
-  assert.match(text, /HWP 복구본/);
+  assert.match(text, /recovered as HWP/);
 });
 
 test('describeDraft는 HWPX 출처 draft가 HWP 복구본으로 열림을 표시한다', () => {
@@ -66,5 +66,5 @@ test('describeDraft는 HWPX 출처 draft가 HWP 복구본으로 열림을 표시
   });
 
   assert.match(text, /HWPX/);
-  assert.match(text, /HWP 복구본/);
+  assert.match(text, /recovered as HWP/);
 });

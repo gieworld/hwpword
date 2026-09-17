@@ -169,7 +169,7 @@ test('saveDocumentToFileSystem은 current handle이 없으면 save picker를 사
         assert.equal(options?.suggestedName, 'new-doc.hwp');
         assert.equal(options?.excludeAcceptAllOption, true);
         assert.deepEqual(options?.types, [{
-          description: 'HWP 문서',
+          description: 'HWP Document',
           accept: { 'application/x-hwp': ['.hwp'] },
         }]);
         return pickerHandle;
@@ -266,7 +266,7 @@ test('HML을 HWPX로 선택하면 새 .hwpx handle에만 저장한다', async ()
     windowLike: {
       showSaveFilePicker: async (options) => {
         assert.deepEqual(options?.types, [{
-          description: 'HWPX 문서',
+          description: 'HWPX Document',
           accept: { 'application/hwp+zip': ['.hwpx'] },
         }]);
         return convertedHandle;
@@ -342,7 +342,7 @@ test('HML로 저장을 선택하면 HML 저장 picker 형식(.hml)을 사용한�
     windowLike: {
       showSaveFilePicker: async (options) => {
         assert.deepEqual(options?.types, [{
-          description: 'HML 문서',
+          description: 'HML Document',
           accept: { 'application/xml': ['.hml'] },
         }]);
         return pickerHandle;

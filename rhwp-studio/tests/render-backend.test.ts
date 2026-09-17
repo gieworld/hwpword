@@ -239,7 +239,7 @@ test('CanvasKit form replay accepts the canonical LayerTree form type names', ()
 test('PageLayerTree bridge verifies the returned profile instead of relabeling it', () => {
   const source = readFileSync(new URL('../src/core/wasm-bridge.ts', import.meta.url), 'utf8');
   assert.match(source, /if \(tree\.profile !== profile\)/);
-  assert.match(source, /PageLayerTree profile 불일치/);
+  assert.match(source, /PageLayerTree profile mismatch/);
   assert.doesNotMatch(source, /tree\.profile = profile/);
 });
 

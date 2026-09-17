@@ -27,8 +27,8 @@ export class CellBlockLetterImeGuard {
   arm(
     event: Pick<KeyboardEvent, 'key' | 'isComposing' | 'keyCode'>,
   ): boolean {
-    const imeOwned = event.key === 'ㄴ'
-      || event.key === 'ㅡ'
+    const imeOwned = event.key === 'ㄴ' // hwpword-keep-korean: Korean IME key alias
+      || event.key === 'ㅡ' // hwpword-keep-korean: Korean IME key alias
       || event.key === 'Process'
       || event.isComposing
       || event.keyCode === 229;
@@ -75,7 +75,7 @@ export function resolveCellBlockCtrlShiftS(
 ): ContextualShortcutResolution {
   const ctrlOrMeta = event.ctrlKey || event.metaKey;
   const isS = event.key.toLowerCase() === 's'
-    || event.key === 'ㄴ'
+    || event.key === 'ㄴ' // hwpword-keep-korean: Korean IME key alias
     || event.code.toLowerCase() === 'keys';
 
   if (!ctrlOrMeta || !event.shiftKey || event.altKey || !isS) return null;
@@ -100,10 +100,10 @@ export function resolveCellBlockLetterShortcut(
 
   const key = event.key.toLowerCase();
   const code = event.code.toLowerCase();
-  if (key === 's' || event.key === 'ㄴ' || code === 'keys') {
+  if (key === 's' || event.key === 'ㄴ' || code === 'keys') { // hwpword-keep-korean: Korean IME key alias
     return { kind: 'dispatch', commandId: 'table:cell-split' };
   }
-  if (key === 'm' || event.key === 'ㅡ' || code === 'keym') {
+  if (key === 'm' || event.key === 'ㅡ' || code === 'keym') { // hwpword-keep-korean: Korean IME key alias
     return { kind: 'dispatch', commandId: 'table:cell-merge' };
   }
   return null;

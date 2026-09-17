@@ -435,8 +435,8 @@ await runTest('#3126 인쇄 경로 — same-origin 미리보기와 수동 인쇄
   assert(previewState.origin === hostOrigin, '인쇄 미리보기 same-origin');
   assert(!previewState.href.startsWith('about:blank'), '인쇄 미리보기 about:blank 비사용');
   assert(previewState.href.endsWith('/print.html'), '인쇄 미리보기 전용 print.html');
-  assert(previewState.title.includes('인쇄 미리보기'), '인쇄 미리보기 창 제목');
-  assert(previewState.toolbarText.includes('인쇄'), '미리보기 인쇄 도구');
+  assert(previewState.title.includes('Print Preview'), '인쇄 미리보기 창 제목');
+  assert(previewState.toolbarText.includes('Print'), '미리보기 인쇄 도구');
   assert(previewState.hasPrintButton && previewState.hasCloseButton, '인쇄/닫기 버튼');
   assert(previewState.pageCount === load.pageCount, '미리보기 페이지 수 = 문서 페이지 수');
 

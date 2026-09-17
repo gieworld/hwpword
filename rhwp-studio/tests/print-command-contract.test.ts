@@ -87,7 +87,7 @@ test('PDF 경로는 안내·진행 모달을 닫은 뒤 native 인쇄창을 호�
 });
 
 test('인쇄 전용 문서는 same-origin 미리보기 loading surface를 제공한다', () => {
-  assert.match(printHtml, /인쇄 미리보기를 준비하고 있습니다/);
+  assert.match(printHtml, /Preparing print preview/);
   assert.match(commandSource, /appendPrintPreviewBar/);
   assert.match(codeOnly(commandSource), /id = 'print-btn'/);
   assert.match(codeOnly(commandSource), /id = 'close-btn'/);

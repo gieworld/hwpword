@@ -24,20 +24,20 @@ export const defaultShortcuts: [ShortcutDef, string][] = [
   [{ key: 'a', code: 'KeyA', ctrl: true }, 'edit:select-all'],
 
   [{ key: 'e', ctrl: true }, 'edit:delete'],
-  [{ key: 'ㄷ', ctrl: true }, 'edit:delete'],
+  [{ key: 'ㄷ', ctrl: true }, 'edit:delete'], // hwpword-keep-korean: Korean IME key alias
   // macOS Option+C가 문자 입력으로 해석되어도 물리 C 키를 한컴 호환 모양 복사로 처리한다.
   [{ key: 'c', code: 'KeyC', alt: true }, 'edit:format-copy'],
-  [{ key: 'ㅊ', alt: true }, 'edit:format-copy'],
+  [{ key: 'ㅊ', alt: true }, 'edit:format-copy'], // hwpword-keep-korean: Korean IME key alias
 
   // 파일
   [{ key: 'n', alt: true }, 'file:new-doc'],
-  [{ key: 'ㅜ', alt: true }, 'file:new-doc'],
+  [{ key: 'ㅜ', alt: true }, 'file:new-doc'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'o', ctrl: true }, 'file:open'],
-  [{ key: 'ㅐ', ctrl: true }, 'file:open'],
+  [{ key: 'ㅐ', ctrl: true }, 'file:open'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 's', ctrl: true }, 'file:save'],
   // [Task #833] Ctrl+Shift+S → 다른 이름으로 저장 (한글 IME 'ㄴ'/Process 도 함께).
   [{ key: 's', code: 'KeyS', ctrl: true, shift: true }, 'file:save-as'],
-  [{ key: 'ㄴ', ctrl: true, shift: true }, 'file:save-as'],
+  [{ key: 'ㄴ', ctrl: true, shift: true }, 'file:save-as'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'p', ctrl: true }, 'file:print'],
 
   // 서식
@@ -45,14 +45,14 @@ export const defaultShortcuts: [ShortcutDef, string][] = [
   [{ key: 'i', ctrl: true }, 'format:italic'],
   [{ key: 'u', ctrl: true }, 'format:underline'],
   [{ key: 'l', alt: true }, 'format:char-shape'],
-  [{ key: 'ㄹ', alt: true }, 'format:char-shape'],
+  [{ key: 'ㄹ', alt: true }, 'format:char-shape'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 't', alt: true }, 'format:para-shape'],
-  [{ key: 'ㅅ', alt: true }, 'format:para-shape'],
+  [{ key: 'ㅅ', alt: true }, 'format:para-shape'], // hwpword-keep-korean: Korean IME key alias
   // [#3682] 개체 속성 — 커맨드(shortcutLabel 'P')는 정의돼 있었으나 단축키 매핑이
   // 없어 어떤 경로로도 실행되지 않았다(차트/그림/도형 공통). 개체 선택 상태에서만
   // canExecute 가 참이므로 본문 타이핑의 'p' 와 충돌하지 않는다.
   [{ key: 'p', code: 'KeyP' }, 'format:object-properties'],
-  [{ key: 'ㅔ', code: 'KeyP' }, 'format:object-properties'],
+  [{ key: 'ㅔ', code: 'KeyP' }, 'format:object-properties'], // hwpword-keep-korean: Korean IME key alias
 
   // 서식 – 스타일
   [{ key: 'f6' }, 'format:style-dialog'],
@@ -78,7 +78,7 @@ export const defaultShortcuts: [ShortcutDef, string][] = [
   [{ key: 'h', ctrl: true, shift: true }, 'edit:document-history'],
   // macOS 영문 입력에서 Option+G의 key는 ©가 되지만 물리 키는 KeyG로 유지된다.
   [{ key: 'g', code: 'KeyG', alt: true }, 'edit:goto'],
-  [{ key: 'ㅎ', alt: true }, 'edit:goto'],
+  [{ key: 'ㅎ', alt: true }, 'edit:goto'], // hwpword-keep-korean: Korean IME key alias
 
   // 입력
   [{ key: 'f10', alt: true }, 'insert:symbols'],
@@ -90,28 +90,28 @@ export const defaultShortcuts: [ShortcutDef, string][] = [
 
   // 줄간격
   [{ key: 'a', alt: true, shift: true }, 'format:line-spacing-decrease'],
-  [{ key: 'ㅁ', alt: true, shift: true }, 'format:line-spacing-decrease'],
+  [{ key: 'ㅁ', alt: true, shift: true }, 'format:line-spacing-decrease'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'z', alt: true, shift: true }, 'format:line-spacing-increase'],
-  [{ key: 'ㅋ', alt: true, shift: true }, 'format:line-spacing-increase'],
+  [{ key: 'ㅋ', alt: true, shift: true }, 'format:line-spacing-increase'], // hwpword-keep-korean: Korean IME key alias
 
   // 글꼴 크기
   [{ key: 'e', alt: true, shift: true }, 'format:font-size-increase'],
-  [{ key: 'ㄷ', alt: true, shift: true }, 'format:font-size-increase'],
+  [{ key: 'ㄷ', alt: true, shift: true }, 'format:font-size-increase'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'r', alt: true, shift: true }, 'format:font-size-decrease'],
-  [{ key: 'ㄱ', alt: true, shift: true }, 'format:font-size-decrease'],
+  [{ key: 'ㄱ', alt: true, shift: true }, 'format:font-size-decrease'], // hwpword-keep-korean: Korean IME key alias
   // 글꼴 크기 — Ctrl+]/[ (한컴 호환, 브라우저 충돌 없음)
   [{ key: ']', ctrl: true }, 'format:font-size-increase'],
   [{ key: '[', ctrl: true }, 'format:font-size-decrease'],
 
   // 장평/자간 (한컴 호환)
   [{ key: 'j', code: 'KeyJ', alt: true, shift: true }, 'format:char-ratio-decrease'],
-  [{ key: 'ㅓ', alt: true, shift: true }, 'format:char-ratio-decrease'],
+  [{ key: 'ㅓ', alt: true, shift: true }, 'format:char-ratio-decrease'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'k', code: 'KeyK', alt: true, shift: true }, 'format:char-ratio-increase'],
-  [{ key: 'ㅏ', alt: true, shift: true }, 'format:char-ratio-increase'],
+  [{ key: 'ㅏ', alt: true, shift: true }, 'format:char-ratio-increase'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'n', code: 'KeyN', alt: true, shift: true }, 'format:char-spacing-decrease'],
-  [{ key: 'ㅜ', alt: true, shift: true }, 'format:char-spacing-decrease'],
+  [{ key: 'ㅜ', alt: true, shift: true }, 'format:char-spacing-decrease'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'w', code: 'KeyW', alt: true, shift: true }, 'format:char-spacing-increase'],
-  [{ key: 'ㅈ', alt: true, shift: true }, 'format:char-spacing-increase'],
+  [{ key: 'ㅈ', alt: true, shift: true }, 'format:char-spacing-increase'], // hwpword-keep-korean: Korean IME key alias
 
   // 문단 정렬
   // Ctrl+Shift+L: 왼쪽 정렬 (브라우저 주소창 포커스이나 편집 영역에서 양보)
@@ -122,11 +122,11 @@ export const defaultShortcuts: [ShortcutDef, string][] = [
   // Ctrl+Shift+C: 브라우저 요소검사 충돌 → Alt+Shift+C로 재매핑
   // Ctrl+Shift+T: 브라우저 탭복원 충돌 → Alt+Shift+T로 재매핑
   [{ key: 'h', alt: true, shift: true }, 'format:align-right'],   // 오른쪽 정렬 (재매핑, H=rigHt)
-  [{ key: 'ㅗ', alt: true, shift: true }, 'format:align-right'],
+  [{ key: 'ㅗ', alt: true, shift: true }, 'format:align-right'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'c', alt: true, shift: true }, 'format:align-center'],  // 가운데 정렬 (재매핑)
-  [{ key: 'ㅊ', alt: true, shift: true }, 'format:align-center'],
+  [{ key: 'ㅊ', alt: true, shift: true }, 'format:align-center'], // hwpword-keep-korean: Korean IME key alias
   [{ key: 'd', alt: true, shift: true }, 'format:align-distribute'], // 배분 정렬 (재매핑)
-  [{ key: 'ㅇ', alt: true, shift: true }, 'format:align-distribute'],
+  [{ key: 'ㅇ', alt: true, shift: true }, 'format:align-distribute'], // hwpword-keep-korean: Korean IME key alias
 
   // 표
   [{ key: 'enter', alt: true }, 'table:insert-row-col'],

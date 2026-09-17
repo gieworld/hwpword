@@ -29,13 +29,13 @@ test('정상 여백은 통과한다', () => {
 
 test('좌우 여백 합이 용지를 넘으면 막는다', () => {
   const v = pageBodyViolation(a4({ marginLeft: mm(150), marginRight: mm(100) }));
-  assert.match(String(v), /좌우 여백/);
+  assert.match(String(v), /left\/right margins/);
 });
 
 test('제본 여백도 본문을 갉아먹는다 — 좌우만 보면 통과해 버린다', () => {
   const def = a4({ marginLeft: mm(90), marginRight: mm(90), marginGutter: mm(25) });
   assert.ok(210 - 90 - 90 > MIN_BODY_MM, '제본 여백 없이는 통과하는 값이어야 시험이 성립한다');
-  assert.match(String(pageBodyViolation(def)), /좌우 여백/);
+  assert.match(String(pageBodyViolation(def)), /left\/right margins/);
 });
 
 test('위아래는 머리말·꼬리말까지 합쳐서 본다', () => {
@@ -43,7 +43,7 @@ test('위아래는 머리말·꼬리말까지 합쳐서 본다', () => {
   // 본문이 7mm 만 남는 게 드러난다.
   const def = a4({ marginTop: mm(130), marginBottom: mm(130) });
   assert.ok(297 - 130 - 130 > MIN_BODY_MM, '머리말/꼬리말 없이는 통과하는 값이어야 시험이 성립한다');
-  assert.match(String(pageBodyViolation(def)), /위아래 여백/);
+  assert.match(String(pageBodyViolation(def)), /top\/bottom margins/);
 });
 
 test('가로 방향이면 용지 크기를 뒤바꿔 판정한다', () => {
@@ -58,5 +58,5 @@ test('한도는 본문 최소 크기 그대로다 — 딱 맞으면 통과, 1mm 
   const exact = a4({ marginLeft: mm(100), marginRight: mm(210 - 100 - MIN_BODY_MM) });
   assert.equal(pageBodyViolation(exact), null);
   const short = a4({ marginLeft: mm(100), marginRight: mm(210 - 100 - MIN_BODY_MM + 1) });
-  assert.match(String(pageBodyViolation(short)), /좌우 여백/);
+  assert.match(String(pageBodyViolation(short)), /left\/right margins/);
 });

@@ -49,7 +49,7 @@ export function parseLocalBodyTextReplaceResult(
     typeof parsed.flowChanged !== 'boolean' ||
     (parsed.flowChanged && parsed.documentPaginationPending)
   ) {
-    throw new Error('잘못된 local body text replace 결과');
+    throw new Error('Invalid local body text replace result');
   }
   const focusedPagePatch = parsed.flowChanged
     ? undefined

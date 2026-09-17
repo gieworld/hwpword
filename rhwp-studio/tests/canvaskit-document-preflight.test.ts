@@ -49,19 +49,19 @@ test('CanvasKit document preflight parser accepts the complete bounded schema', 
 test('CanvasKit document preflight parser rejects malformed and partial reports', () => {
   assert.throws(
     () => parseCanvasKitDocumentPreflight('{'),
-    /preflight parse 실패/,
+    /preflight parse failed/,
   );
   assert.throws(
     () => parseCanvasKitDocumentPreflight(JSON.stringify({ ...validReport(), summary: {} })),
-    /필수 필드가 없습니다/,
+    /missing required fields/,
   );
   assert.throws(
     () => parseCanvasKitDocumentPreflight(JSON.stringify({ ...validReport(), scannedWorkUnits: -1 })),
-    /필수 필드가 없습니다/,
+    /missing required fields/,
   );
   assert.throws(
     () => parseCanvasKitDocumentPreflight(JSON.stringify({ ...validReport(), requiredFontFamilies: [42] })),
-    /필수 필드가 없습니다/,
+    /missing required fields/,
   );
 });
 

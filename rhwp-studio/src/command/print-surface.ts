@@ -30,7 +30,7 @@ export interface PrintPreviewSurfaceOptions {
 
 export class PrintPreviewBlockedError extends Error {
   constructor() {
-    super('인쇄 미리보기 팝업이 차단되었습니다.');
+    super('The print preview popup was blocked.');
     this.name = 'PrintPreviewBlockedError';
   }
 }
@@ -48,14 +48,14 @@ export async function createPrintSurface(
   const hostDocument = options.hostDocument ?? document;
   const hostWindow = hostDocument.defaultView;
   if (!hostWindow || !hostDocument.body) {
-    throw new Error('인쇄 surface를 만들 수 없습니다.');
+    throw new Error('Could not create the print surface.');
   }
 
   hostDocument.getElementById(PRINT_FRAME_ID)?.remove();
 
   const frame = hostDocument.createElement('iframe');
   frame.id = PRINT_FRAME_ID;
-  frame.title = '인쇄 문서';
+  frame.title = 'Print Document';
   frame.setAttribute('aria-hidden', 'true');
   frame.style.position = 'fixed';
   frame.style.inset = '0';
@@ -84,9 +84,9 @@ export async function createPrintSurface(
       else resolve();
     };
     const onLoad = () => finish();
-    const onError = () => finish(new Error('인쇄 surface를 불러오지 못했습니다.'));
+    const onError = () => finish(new Error('Failed to load the print surface.'));
     const timeoutId = hostWindow.setTimeout(
-      () => finish(new Error('인쇄 surface 준비 시간이 초과되었습니다.')),
+      () => finish(new Error('Timed out preparing the print surface.')),
       timeoutMs,
     );
 
@@ -103,11 +103,11 @@ export async function createPrintSurface(
   const printDocument = frame.contentDocument;
   if (!printWindow || !printDocument) {
     frame.remove();
-    throw new Error('same-origin 인쇄 surface에 접근할 수 없습니다.');
+    throw new Error('Could not access the same-origin print surface.');
   }
   if (printWindow.location.origin !== hostWindow.location.origin) {
     frame.remove();
-    throw new Error('인쇄 surface의 origin이 Studio와 다릅니다.');
+    throw new Error('The print surface origin does not match Studio.');
   }
 
   let disposed = false;
@@ -158,7 +158,7 @@ export function createPrintPreviewSurface(
       try {
         const previewDocument = previewWindow.document;
         if (previewWindow.location.origin !== hostWindow.location.origin) {
-          throw new Error('인쇄 미리보기 창의 origin이 Studio와 다릅니다.');
+          throw new Error('The print preview window origin does not match Studio.');
         }
         resolve({
           window: previewWindow,
@@ -174,7 +174,7 @@ export function createPrintPreviewSurface(
     };
     const onLoad = () => finish();
     const timeoutId = hostWindow.setTimeout(
-      () => finish(new Error('인쇄 미리보기 준비 시간이 초과되었습니다.')),
+      () => finish(new Error('Timed out preparing the print preview.')),
       timeoutMs,
     );
 

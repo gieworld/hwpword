@@ -61,7 +61,7 @@ test('collectDocumentHtml은 한 구역 변환 실패를 전체 내보내기 실
       if (section === 0) throw new Error('section 0 failed');
       return '<p>sec1</p>';
     },
-  })), /구역 1 HTML 변환 실패: section 0 failed/);
+  })), /Section 1 HTML conversion failed: section 0 failed/);
 });
 
 test('collectDocumentHtml은 엔진의 char 단위 문단 길이를 끝 오프셋으로 쓴다', () => {
@@ -81,8 +81,8 @@ test('collectDocumentHtml은 엔진의 char 단위 문단 길이를 끝 오프�
 test('htmlExportBaseName은 문서 확장자를 제거하고 빈 이름에 기본값을 쓴다', () => {
   assert.equal(htmlExportBaseName('보고서.hwp'), '보고서');
   assert.equal(htmlExportBaseName('보고서.HWPX'), '보고서');
-  assert.equal(htmlExportBaseName('   '), '문서');
-  assert.equal(htmlExportBaseName(undefined), '문서');
+  assert.equal(htmlExportBaseName('   '), 'Document');
+  assert.equal(htmlExportBaseName(undefined), 'Document');
 });
 
 test('buildHtmlExportFile(html)은 완전한 HTML 문서와 이스케이프된 제목을 만든다', () => {

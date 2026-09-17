@@ -171,7 +171,7 @@ function isSystemFontAvailable(name: string): boolean {
   if (body) {
     try {
       const probe = document.createElement('span');
-      probe.textContent = 'mmmmmmmmmwwwwwwwWMWMWM한글글꼴측정0123456789';
+      probe.textContent = 'mmmmmmmmmwwwwwwwWMWMWM한글글꼴측정0123456789'; // hwpword-keep-korean: invisible off-screen font-width probe text, not shown to the user
       probe.style.position = 'absolute';
       probe.style.visibility = 'hidden';
       probe.style.whiteSpace = 'nowrap';
@@ -186,7 +186,12 @@ function isSystemFontAvailable(name: string): boolean {
           probe.style.fontFamily = family;
           return probe.offsetWidth;
         });
-        const escapedName = name.replace(/(["\\])/g, '\\$1');
+        // Written as `new RegExp(String.raw\`...\`)` rather than a /regex/ literal because the
+        // embedded quote character desyncs tests/support/source-guard.ts's codeOnly() (it does
+        // not parse regex literals). Source/flags are byte-identical to
+        // the original /(["\\])/g literal.
+        const escapeQuoteOrBackslash = new RegExp(String.raw`(["\\])`, 'g');
+        const escapedName = name.replace(escapeQuoteOrBackslash, '\\$1');
         return genericFamilies.some((family, index) => {
           probe.style.fontFamily = `"${escapedName}", ${family}`;
           return probe.offsetWidth !== fallbackWidths[index];
@@ -286,7 +291,7 @@ export async function loadWebFonts(
   ));
   if (requestedEntries.length > 0) {
     console.debug(
-      `[FontLoader][debug] CDN 후보: ${requestedEntries.map(entry => entry.name).join(', ')}`,
+      `[FontLoader][debug] CDN candidates: ${requestedEntries.map(entry => entry.name).join(', ')}`,
     );
   }
   registerFontFaces(requestedEntries, options);

@@ -124,8 +124,8 @@ const PROBE_FALLBACKS = ['monospace', 'serif', 'sans-serif'];
 const PROBE_TEXTS = [
   'mmmmmmmmmiiiiiiiiiWWW',
   '0123456789 ABCDEFG abcdefg',
-  '가나다라마바사아자차카타파하',
-  '한글과 English 12345',
+  '가나다라마바사아자차카타파하', // hwpword-keep-korean: invisible off-screen font-width probe text, not shown to the user
+  '한글과 English 12345', // hwpword-keep-korean: invisible off-screen font-width probe text, not shown to the user
 ];
 const LOCAL_FONT_NAME_READ_CONCURRENCY = 4;
 const HANGUL_RE = /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7A3]/;

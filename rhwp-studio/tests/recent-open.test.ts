@@ -47,7 +47,7 @@ test('권한 거부 시 항목을 유지하고 안내한다', async () => {
   assert.equal(result, 'permission-denied');
   assert.equal(calls.removed.length, 0, '권한 거부는 일시적일 수 있어 항목을 제거하면 안 된다');
   assert.equal(calls.opened.length, 0);
-  assert.match(calls.toasts[0] ?? '', /권한/);
+  assert.match(calls.toasts[0] ?? '', /denied/);
 });
 
 test('권한 확인 자체가 실패해도 항목을 유지한다', async () => {
@@ -71,7 +71,7 @@ test('파일 이동/삭제(read 실패) 시 항목을 제거하고 안내한다'
   assert.equal(result, 'removed');
   assert.deepEqual(calls.removed, ['r1']);
   assert.equal(calls.opened.length, 0);
-  assert.match(calls.toasts[0] ?? '', /찾을 수 없어/);
+  assert.match(calls.toasts[0] ?? '', /could not be found/);
 });
 
 test('성공 시 라이브 파일 bytes와 핸들로 open 이벤트를 낸다', async () => {
@@ -92,5 +92,5 @@ test('메타-only 항목(핸들 없음)은 파일 재선택을 유도한다', as
   assert.equal(reopenCalled, 1, '파일 재선택 대화상자를 연다');
   assert.equal(calls.opened.length, 0, '핸들이 없으므로 자동 open 이벤트는 없다');
   assert.equal(calls.removed.length, 0, '메타-only 항목은 제거하지 않는다');
-  assert.match(calls.toasts[0] ?? '', /다시 선택/);
+  assert.match(calls.toasts[0] ?? '', /choose the file again/);
 });

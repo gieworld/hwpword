@@ -38,7 +38,7 @@ export async function openRecentEntry(
   // 메타-only 항목: 라이브 핸들이 없어 자동 재열기 불가 → 파일 다시 선택 유도.
   if (!entry.handle) {
     deps.toast(
-      `"${entry.fileName}"은(는) 핸들 없이 열려 자동 재열기가 불가합니다. 파일을 다시 선택하세요.`,
+      `"${entry.fileName}" was opened without a file handle, so it cannot be reopened automatically. Please choose the file again.`,
       4000,
     );
     deps.requestReopen?.();
@@ -53,7 +53,7 @@ export async function openRecentEntry(
     granted = false;
   }
   if (!granted) {
-    deps.toast(`"${entry.fileName}" 접근 권한이 거부되어 열 수 없습니다.`, 3000);
+    deps.toast(`Access to "${entry.fileName}" was denied, so it could not be opened.`, 3000);
     return 'permission-denied';
   }
 
@@ -70,7 +70,7 @@ export async function openRecentEntry(
       console.warn('[file:open-recent] 파일 접근 실패:', err);
     }
     await deps.remove(entry.id);
-    deps.toast(`"${entry.fileName}" 파일을 찾을 수 없어 목록에서 제거했습니다.`, 3500);
+    deps.toast(`"${entry.fileName}" could not be found and was removed from the list.`, 3500);
     return 'removed';
   }
 }

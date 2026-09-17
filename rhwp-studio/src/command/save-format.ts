@@ -16,7 +16,7 @@ export const SAVE_FORMAT_DETAILS: Record<SaveFormat, SaveFormatDetails> = {
     extension: '.hml',
     mimeType: 'application/xml',
     pickerType: {
-      description: 'HML 문서',
+      description: 'HML Document',
       accept: { 'application/xml': ['.hml'] },
     },
   },
@@ -24,7 +24,7 @@ export const SAVE_FORMAT_DETAILS: Record<SaveFormat, SaveFormatDetails> = {
     extension: '.hwp',
     mimeType: 'application/x-hwp',
     pickerType: {
-      description: 'HWP 문서',
+      description: 'HWP Document',
       accept: { 'application/x-hwp': ['.hwp'] },
     },
   },
@@ -32,7 +32,7 @@ export const SAVE_FORMAT_DETAILS: Record<SaveFormat, SaveFormatDetails> = {
     extension: '.hwpx',
     mimeType: 'application/hwp+zip',
     pickerType: {
-      description: 'HWPX 문서',
+      description: 'HWPX Document',
       accept: { 'application/hwp+zip': ['.hwpx'] },
     },
   },

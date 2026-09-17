@@ -34,7 +34,7 @@ export interface PaperDef {
 export const PAPER_DEFAULTS: Record<string, PaperDef> = {
   // ── 대형 ──
   A3: {
-    name: 'A3(국배배판)', nameEn: 'A3',
+    name: 'A3(국배배판)', nameEn: 'A3', // hwpword-keep-korean: unused upstream preset data
     width: 84188, height: 119052,
     marginTop: 5668, marginBottom: 4252,
     marginLeft: 8504, marginRight: 8504,
@@ -42,7 +42,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
     marginGutter: 0,
   },
   A4: {
-    name: 'A4(국배판)', nameEn: 'A4',
+    name: 'A4(국배판)', nameEn: 'A4', // hwpword-keep-korean: unused upstream preset data
     width: 59527, height: 84188,
     marginTop: 5668, marginBottom: 4252,
     marginLeft: 8504, marginRight: 8504,
@@ -50,7 +50,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
     marginGutter: 0,
   },
   B4: {
-    name: 'B4(타블로이드판)', nameEn: 'B4',
+    name: 'B4(타블로이드판)', nameEn: 'B4', // hwpword-keep-korean: unused upstream preset data
     width: 72852, height: 103180,
     marginTop: 5668, marginBottom: 4252,
     marginLeft: 8504, marginRight: 8504,
@@ -60,7 +60,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
 
   // ── 중형 ──
   B5: {
-    name: 'B5(46배판)', nameEn: 'B5',
+    name: 'B5(46배판)', nameEn: 'B5', // hwpword-keep-korean: unused upstream preset data
     width: 51592, height: 72852,
     marginTop: 4252, marginBottom: 4252,
     marginLeft: 7085, marginRight: 7085,
@@ -68,7 +68,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
     marginGutter: 0,
   },
   CROWN: {
-    name: '크라운판', nameEn: 'Crown',
+    name: '크라운판', nameEn: 'Crown', // hwpword-keep-korean: unused upstream preset data
     width: 49890, height: 70299,
     marginTop: 4252, marginBottom: 4252,
     marginLeft: 7085, marginRight: 7085,
@@ -78,7 +78,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
 
   // ── 소형 ──
   A5: {
-    name: 'A5(국판)', nameEn: 'A5',
+    name: 'A5(국판)', nameEn: 'A5', // hwpword-keep-korean: unused upstream preset data
     width: 41952, height: 59527,
     marginTop: 4252, marginBottom: 4252,
     marginLeft: 5668, marginRight: 5668,
@@ -86,7 +86,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
     marginGutter: 0,
   },
   A5_NEW: {
-    name: '신국판', nameEn: 'A5 New',
+    name: '신국판', nameEn: 'A5 New', // hwpword-keep-korean: unused upstream preset data
     width: 41952, height: 63779,
     marginTop: 4252, marginBottom: 4252,
     marginLeft: 5668, marginRight: 5668,
@@ -94,7 +94,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
     marginGutter: 0,
   },
   A6: {
-    name: 'A6(문고판)', nameEn: 'A6',
+    name: 'A6(문고판)', nameEn: 'A6', // hwpword-keep-korean: unused upstream preset data
     width: 29763, height: 41952,
     marginTop: 2126, marginBottom: 2126,
     marginLeft: 4252, marginRight: 4252,
@@ -104,7 +104,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
 
   // ── 미국/국제 ──
   LETTER: {
-    name: '레터', nameEn: 'Letter',
+    name: '레터', nameEn: 'Letter', // hwpword-keep-korean: unused upstream preset data
     width: 61200, height: 79200,
     marginTop: 5668, marginBottom: 4252,
     marginLeft: 8504, marginRight: 8504,
@@ -112,7 +112,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
     marginGutter: 0,
   },
   LEGAL: {
-    name: '리갈', nameEn: 'Legal',
+    name: '리갈', nameEn: 'Legal', // hwpword-keep-korean: unused upstream preset data
     width: 61200, height: 100800,
     marginTop: 5668, marginBottom: 4252,
     marginLeft: 8504, marginRight: 8504,
@@ -172,7 +172,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
 
   // ── 와이드 ──
   PRINT_132: {
-    name: '프린트 132', nameEn: 'Print 132',
+    name: '프린트 132', nameEn: 'Print 132', // hwpword-keep-korean: unused upstream preset data
     width: 95040, height: 79200,
     marginTop: 5668, marginBottom: 4252,
     marginLeft: 8504, marginRight: 8504,
@@ -182,7 +182,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
 
   // ── 점자/특수 ──
   BRAILLE_1: {
-    name: '점자출력용지', nameEn: 'Braille Paper',
+    name: '점자출력용지', nameEn: 'Braille Paper', // hwpword-keep-korean: unused upstream preset data
     width: 65196, height: 79199,
     marginTop: 5668, marginBottom: 4252,
     marginLeft: 8504, marginRight: 8504,
@@ -190,7 +190,7 @@ export const PAPER_DEFAULTS: Record<string, PaperDef> = {
     marginGutter: 0,
   },
   BRAILLE_2: {
-    name: '16절지(국판)', nameEn: 'Braille 16-cut',
+    name: '16절지(국판)', nameEn: 'Braille 16-cut', // hwpword-keep-korean: unused upstream preset data
     width: 45070, height: 66327,
     marginTop: 4252, marginBottom: 4252,
     marginLeft: 5668, marginRight: 5668,

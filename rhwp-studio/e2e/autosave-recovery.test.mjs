@@ -109,7 +109,7 @@ async function exportNewDocument(page) {
   return await page.evaluate(() => {
     window.__wasm.createNewDocument();
     return {
-      fileName: window.__wasm.fileName || '새 문서.hwp',
+      fileName: window.__wasm.fileName || 'New Document.hwp',
       sourceFormat: window.__wasm.getSourceFormat(),
       data: Array.from(window.__wasm.exportHwp()),
     };
@@ -161,7 +161,7 @@ runTest('Task #1448 자동 백업 복구', async ({ page }) => {
     isDirty: window.__documentState.isDirty(),
   }));
   assert(newDocState.pageCount >= 1, `새 문서 복구본 페이지 수 확인 (${newDocState.pageCount})`);
-  assert(newDocState.fileName.includes('복구본') && newDocState.fileName.endsWith('.hwp'),
+  assert(newDocState.fileName.includes('Recovered') && newDocState.fileName.endsWith('.hwp'),
     `새 문서 복구본 파일명 확인 (${newDocState.fileName})`);
   assert(newDocState.isDirty === true, '새 문서 복구본은 저장 전 dirty 상태 유지');
   assert(!await draftExists(page, 'e2e-new-draft'), '복구 성공 후 원본 새 문서 draft 삭제');
@@ -187,7 +187,7 @@ runTest('Task #1448 자동 백업 복구', async ({ page }) => {
     isDirty: window.__documentState.isDirty(),
   }));
   assert(hwpState.pageCount >= 1, `HWP 복구본 페이지 수 확인 (${hwpState.pageCount})`);
-  assert(hwpState.fileName.includes('복구본') && hwpState.fileName.endsWith('.hwp'),
+  assert(hwpState.fileName.includes('Recovered') && hwpState.fileName.endsWith('.hwp'),
     `HWP 복구본 파일명 확인 (${hwpState.fileName})`);
   assert(hwpState.isDirty === true, '복구본은 저장 전 dirty 상태 유지');
   assert(!await draftExists(page, 'e2e-hwp-draft'), '복구 성공 후 원본 HWP draft 삭제');
@@ -215,7 +215,7 @@ runTest('Task #1448 자동 백업 복구', async ({ page }) => {
     isDirty: window.__documentState.isDirty(),
   }));
   assert(hwpxState.pageCount >= 1, `HWPX 출처 복구본 페이지 수 확인 (${hwpxState.pageCount})`);
-  assert(hwpxState.fileName.includes('복구본') && hwpxState.fileName.endsWith('.hwp') && !hwpxState.fileName.endsWith('.hwpx'),
+  assert(hwpxState.fileName.includes('Recovered') && hwpxState.fileName.endsWith('.hwp') && !hwpxState.fileName.endsWith('.hwpx'),
     `HWPX 출처 복구본은 .hwp 파일명 (${hwpxState.fileName})`);
   assert(hwpxState.sourceFormat === 'hwp', `복구 데이터는 HWP로 로드됨 (${hwpxState.sourceFormat})`);
   assert(hwpxState.isDirty === true, 'HWPX 출처 복구본도 저장 전 dirty 상태 유지');
