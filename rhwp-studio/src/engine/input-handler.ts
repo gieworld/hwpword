@@ -51,6 +51,7 @@ import { showInitialCaretAndPublishFocus } from './initial-caret-focus';
 import { CaretLayoutReveal } from './caret-layout-reveal';
 import { emitHeaderFooterModeChanged } from './header-footer-mode';
 import { CellBlockLetterImeGuard } from '@/command/contextual-shortcut';
+import { isHwpWordDesktop, type DesktopWindowLike } from '@/desktop/desktop-launch-queue';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const DRAG_SCROLL_EDGE_PX = 48;
@@ -5271,6 +5272,13 @@ export class InputHandler {
   performPaste(): boolean {
     if (this.editMode === 'form') return false;
     this.focusTextarea();
+    // Chromium blocks document.execCommand('paste') inside Electron. The sandboxed preload's
+    // paste() asks the main process for an OS-level paste, which fires the same 'paste' DOM
+    // event on the focused textarea (handled by onPaste below) as Ctrl+V does.
+    if (isHwpWordDesktop()) {
+      void (window as unknown as DesktopWindowLike).hwpwordDesktop?.paste().catch(() => {});
+      return true;
+    }
     return document.execCommand('paste');
   }
 

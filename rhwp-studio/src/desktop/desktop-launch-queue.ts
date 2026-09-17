@@ -11,6 +11,8 @@ export interface DesktopFileBridge {
   writeFile(token: string, bytes: Uint8Array): Promise<void>;
   /** True when no other HWP Word window is open. */
   isOnlyWindow(): Promise<boolean>;
+  /** OS-level paste into whichever element in this window currently has focus. */
+  paste(): Promise<void>;
 }
 
 export interface DesktopWindowLike {

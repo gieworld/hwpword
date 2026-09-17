@@ -14,6 +14,7 @@ import { functionBodyFrom, codeOnly } from './support/source-guard.ts';
 
 function fakeBridge(files: Record<string, { name: string; bytes: Uint8Array<ArrayBuffer> }>, onlyWindow = true) {
   const writes: Array<{ token: string; bytes: number[] }> = [];
+  const pastes: undefined[] = [];
   const bridge: DesktopFileBridge = {
     async getLaunchFiles() {
       return Object.entries(files).map(([token, file]) => ({ token, name: file.name }));
@@ -27,8 +28,11 @@ function fakeBridge(files: Record<string, { name: string; bytes: Uint8Array<Arra
     async isOnlyWindow() {
       return onlyWindow;
     },
+    async paste() {
+      pastes.push(undefined);
+    },
   };
-  return { bridge, writes };
+  return { bridge, writes, pastes };
 }
 
 function launchedHandles(bridge: DesktopFileBridge): Promise<FileSystemFileHandleLike[]> {
@@ -106,6 +110,7 @@ test('a failed write rejects with a readable message and keeps the cause', async
     async readFile() { return new Uint8Array(); },
     async writeFile() { throw cause; },
     async isOnlyWindow() { return true; },
+    async paste() {},
   };
   const [handle] = await launchedHandles(bridge);
   const writable = await handle.createWritable();
@@ -154,4 +159,18 @@ test('studio startup follows the desktop startup plan', () => {
     mainTs,
     /const plan = await desktopStartupPlan\(window as unknown as DesktopWindowLike\);\s*await loadFromUrlParam\(\);\s*if \(plan\.offerRecovery\) \{\s*if \(chromeMode !== 'embed'\) await offerAutosaveRecoveryIfIdle\(\);\s*\}\s*if \(!plan\.hasLaunchFiles\) await openBlankDocumentIfIdle\(\);/,
   );
+});
+
+test('the bridge paste() records a call', async () => {
+  const { bridge, pastes } = fakeBridge({});
+  await bridge.paste();
+  assert.equal(pastes.length, 1);
+});
+
+test('performPaste routes through the desktop bridge instead of execCommand, which Electron blocks', () => {
+  const inputHandlerTs = codeOnly(readFileSync(new URL('../src/engine/input-handler.ts', import.meta.url), 'utf8'));
+  const body = functionBodyFrom(inputHandlerTs, 'performPaste(): boolean');
+  assert.match(body, /if \(isHwpWordDesktop\(\)\) \{/);
+  assert.match(body, /\.hwpwordDesktop\?\.paste\(\)/);
+  assert.match(body, /return document\.execCommand\('paste'\);/);
 });

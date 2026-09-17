@@ -130,6 +130,12 @@ function registerIpc() {
     ownerOf(event);
     return BrowserWindow.getAllWindows().length === 1;
   });
+  // The ribbon/context-menu Paste command can't use document.execCommand('paste') — Chromium
+  // blocks it in Electron — so it asks the main process for an OS-level paste instead.
+  ipcMain.handle('hwpword:paste', (event) => {
+    ownerOf(event);
+    event.sender.paste();
+  });
 }
 
 app.on('web-contents-created', (_event, contents) => {
