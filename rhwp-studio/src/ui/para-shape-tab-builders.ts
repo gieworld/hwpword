@@ -157,7 +157,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   posUnit.textContent = 'pt';
   const addBtn = document.createElement('button');
   addBtn.className = 'dialog-btn';
-  addBtn.textContent = 'Add(S)';
+  addBtn.textContent = 'Add';
   addBtn.addEventListener('click', () => addTabStop());
   posRow.appendChild(posLabel);
   posRow.appendChild(tabPositionInput);
@@ -270,7 +270,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   defaultTabLabel.textContent = '40.0 pt';
   const changeBtn = document.createElement('button');
   changeBtn.className = 'dialog-btn';
-  changeBtn.textContent = 'Change(H)...';
+  changeBtn.textContent = 'Change...';
   changeBtn.disabled = true;
   defaultRow.appendChild(defaultLabel);
   defaultRow.appendChild(defaultTabLabel);
