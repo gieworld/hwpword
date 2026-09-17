@@ -1,0 +1,18 @@
+{
+  "name": "hwpword-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "HWP Word: English Word-style desktop editor for HWP/HWPX, built on rhwp",
+  "author": "gieworld",
+  "license": "MIT",
+  "type": "module",
+  "main": "main.mjs",
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "sync-core": "node scripts/sync-core.mjs",
+    "build:studio": "node scripts/sync-core.mjs && node scripts/build-studio.mjs"
+  },
+  "devDependencies": {
+    "@rhwp/core": "0.8.6"
+  }
+}
