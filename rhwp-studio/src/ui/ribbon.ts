@@ -241,8 +241,7 @@ export class Ribbon {
       item.className = 'ribbon-file-recent-item';
       item.title = doc.fileName;
       item.textContent = `${doc.fileName} · ${doc.sourceFormat.toUpperCase()}`;
-      item.addEventListener('mousedown', (event) => {
-        event.preventDefault();
+      item.addEventListener('click', () => {
         this.closeFilePage();
         this.dispatcher.dispatch('file:open-recent', { id: doc.id });
       });

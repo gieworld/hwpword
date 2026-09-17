@@ -42,3 +42,10 @@ test('ribbon buttons act on mousedown so the editor keeps its text selection', (
 test('the desktop app skips the first-run skin prompt, which would fight the Word look', () => {
   assert.match(codeOnly(source('src/main.ts')), /if \(!isHwpWordDesktop\(\)\) maybeShowSkinOnboarding\(\);/);
 });
+
+test('recent documents on the File page open with the keyboard too', () => {
+  const ribbon = codeOnly(source('src/ui/ribbon.ts'));
+  const recent = ribbon.slice(ribbon.indexOf('private async renderRecent'));
+  assert.match(recent, /item\.addEventListener\('click', \(\) => \{\s*this\.closeFilePage\(\);\s*this\.dispatcher\.dispatch\('file:open-recent', \{ id: doc\.id \}\);/);
+  assert.doesNotMatch(recent, /item\.addEventListener\('mousedown'/);
+});
