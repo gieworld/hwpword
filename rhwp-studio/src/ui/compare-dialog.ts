@@ -432,7 +432,7 @@ export class CompareDialog {
 
   private parseKvSummary(summary: string): Record<string, string> {
     const out: Record<string, string> = {};
-    for (const m of summary.matchAll(new RegExp(String.raw`([a-z]+)=("([^"]*)"|[^\s]+)`, 'g'))) {
+    for (const m of summary.matchAll(/([a-z]+)=("([^"]*)"|[^\s]+)/g)) {
       const raw = m[2] ?? '';
       out[m[1]] = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
     }
@@ -441,7 +441,7 @@ export class CompareDialog {
 
   private sanitizeControlPreview(text: string): string {
     return text
-      .replace(new RegExp(String.raw`\s(?:txt|props|sig|cprev|csha|pix)="[^"]*"`, 'g'), '')
+      .replace(/\s(?:txt|props|sig|cprev|csha|pix)=\"[^\"]*\"/g, '')
       .replace(/\s(?:sig|txt|props)=[^\s]+/g, '')
       .replace(/(?:^|\s)(sig|txt|props|csha|pix)=[^\s]+/g, '')
       .replaceAll('(없음)', '(none)') // hwpword-keep-korean — display substitution for the persisted "no value" sentinel (added/removed items render the raw .summary, unlike the modified path's re-parsed fields)

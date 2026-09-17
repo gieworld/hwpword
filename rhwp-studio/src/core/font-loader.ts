@@ -186,12 +186,7 @@ function isSystemFontAvailable(name: string): boolean {
           probe.style.fontFamily = family;
           return probe.offsetWidth;
         });
-        // Written as `new RegExp(String.raw\`...\`)` rather than a /regex/ literal because the
-        // embedded quote character desyncs tests/support/source-guard.ts's codeOnly() (it does
-        // not parse regex literals). Source/flags are byte-identical to
-        // the original /(["\\])/g literal.
-        const escapeQuoteOrBackslash = new RegExp(String.raw`(["\\])`, 'g');
-        const escapedName = name.replace(escapeQuoteOrBackslash, '\\$1');
+        const escapedName = name.replace(/(["\\])/g, '\\$1');
         return genericFamilies.some((family, index) => {
           probe.style.fontFamily = `"${escapedName}", ${family}`;
           return probe.offsetWidth !== fallbackWidths[index];

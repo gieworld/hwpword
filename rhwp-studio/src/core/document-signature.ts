@@ -65,28 +65,17 @@ function matchRootElement(prefix: string): RegExpMatchArray | null {
   return rootPattern.exec(prefix);
 }
 
-// The four patterns below are written as `new RegExp(String.raw\`...\`)` rather than /regex/
-// literals because their embedded quote characters desync tests/support/source-guard.ts's
-// codeOnly() (it does not parse regex literals). Each is byte-identical (source and flags) to
-// the /regex/ literal it replaces.
-const HANCOM_NAMESPACE_PATTERN = new RegExp(
-  String.raw`\bxmlns(?::[A-Za-z_][\w.-]*)?\s*=\s*['"]https?:\/\/www\.hancom\.co\.kr\/hwpml(?:\/[^'"]*)?['"]`,
-  'i',
-);
-const HAS_VERSION_PATTERN = new RegExp(String.raw`(?:^|\s)Version\s*=\s*['"]\d+(?:\.\d+)*['"]`);
-const HAS_SUB_VERSION_PATTERN = new RegExp(String.raw`(?:^|\s)SubVersion\s*=\s*['"]\d+(?:\.\d+)*['"]`);
-const HAS_STYLE_PATTERN = new RegExp(String.raw`(?:^|\s)Style\s*=\s*['"][^'"]+['"]`);
-
 function isHmlRoot(root: RegExpMatchArray | null, prefix: string): boolean {
   if (!root || root[1] !== 'HWPML' || /\/\s*$/.test(root[2])) return false;
   const afterRoot = prefix.slice((root.index ?? 0) + root[0].length);
   if (/^\s*<\/HWPML\s*>\s*$/.test(afterRoot)) return false;
-  const hasHancomNamespace = HANCOM_NAMESPACE_PATTERN.test(root[2]);
+  const hasHancomNamespace = /\bxmlns(?::[A-Za-z_][\w.-]*)?\s*=\s*['"]https?:\/\/www\.hancom\.co\.kr\/hwpml(?:\/[^'"]*)?['"]/i
+    .test(root[2]);
   if (hasHancomNamespace) return /<[A-Za-z_][\w.-]*(?::[A-Za-z_][\w.-]*)?(?:\s|\/?>)/.test(afterRoot);
 
-  const hasVersion = HAS_VERSION_PATTERN.test(root[2]);
-  const hasSubVersion = HAS_SUB_VERSION_PATTERN.test(root[2]);
-  const hasStyle = HAS_STYLE_PATTERN.test(root[2]);
+  const hasVersion = /(?:^|\s)Version\s*=\s*['"]\d+(?:\.\d+)*['"]/.test(root[2]);
+  const hasSubVersion = /(?:^|\s)SubVersion\s*=\s*['"]\d+(?:\.\d+)*['"]/.test(root[2]);
+  const hasStyle = /(?:^|\s)Style\s*=\s*['"][^'"]+['"]/.test(root[2]);
   return hasVersion && hasSubVersion && hasStyle;
 }
 

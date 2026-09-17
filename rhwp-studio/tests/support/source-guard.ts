@@ -50,10 +50,37 @@ export function matchingIndex(src: string, openIdx: number): number {
   throw new Error(`짝이 맞는 ${close} 를 찾지 못함`);
 }
 
+/** 정규식 리터럴이 올 수 있는 자리인지 판정할 때 "앞 토큰"으로 인정하는 키워드. */
+const REGEX_PREV_KEYWORDS = new Set([
+  'return', 'typeof', 'instanceof', 'in', 'of', 'new', 'delete', 'void', 'throw', 'case', 'do', 'else', 'yield', 'await',
+]);
+
 /**
- * `i` 가 문자열/템플릿/주석의 시작이면 그 끝 **다음** 인덱스를, 아니면 `i` 를 반환한다.
- * (정규식 리터럴은 다루지 않는다 — 가드 대상 소스에 괄호를 담은 정규식이 나오면
- *  그때 확장할 것.)
+ * `i` 의 `/` 가 나눗셈이 아니라 정규식 리터럴의 시작인지. 바로 앞의 유의미한 토큰으로 가른다 —
+ * 연산자·여는 괄호·쉼표 뒤라면 리터럴, 식별자·닫는 괄호·리터럴 뒤라면 나눗셈.
+ *
+ * ponytail: 공백만 거슬러 올라간다. `foo(\n  // 주석\n  /re/)` 처럼 `/` 앞이 주석이면
+ * 나눗셈으로 오판한다. 가드 대상 소스에 그 모양이 나오면 그때 주석까지 거슬러 올라갈 것.
+ */
+function startsRegex(src: string, i: number): boolean {
+  let j = i - 1;
+  while (j >= 0 && /\s/.test(src[j])) j -= 1;
+  if (j < 0) return true;
+  const prev = src[j];
+  if ('([{,;:=!&|?+-*%~^<>'.includes(prev)) return true;
+  if (!/[A-Za-z_$]/.test(prev)) return false;
+  let k = j;
+  while (k >= 0 && /[A-Za-z0-9_$]/.test(src[k])) k -= 1;
+  return REGEX_PREV_KEYWORDS.has(src.slice(k + 1, j + 1));
+}
+
+/**
+ * `i` 가 문자열/템플릿/주석/정규식 리터럴의 시작이면 그 끝 **다음** 인덱스를, 아니면 `i` 를 반환한다.
+ *
+ * 정규식 리터럴을 건너뛰지 않으면 그 안의 따옴표가 "끝나지 않는 문자열"을 열어 뒤쪽 주석까지
+ * 통째로 삼키고(=codeOnly 가 주석을 남긴다), 그 안의 중괄호가 깊이를 흐트러뜨린다(=본문이 잘린다).
+ * 둘 다 가드가 초록인 채 엉뚱한 텍스트를 보는 침묵 실패라 여기서 처리한다
+ * (계약: tests/hwpword-source-guard-regex.test.ts).
  */
 function skipNonCode(src: string, i: number): number {
   const ch = src[i];
@@ -64,6 +91,18 @@ function skipNonCode(src: string, i: number): number {
   if (ch === '/' && src[i + 1] === '*') {
     const end = src.indexOf('*/', i + 2);
     return end === -1 ? src.length : end + 2;
+  }
+  if (ch === '/' && startsRegex(src, i)) {
+    let inClass = false;
+    for (let j = i + 1; j < src.length; j += 1) {
+      const c = src[j];
+      if (c === '\\') { j += 1; continue; }
+      if (c === '\n') break; // 줄 안에서 닫히지 않으면 정규식이 아니었다 — 나눗셈으로 되돌린다.
+      if (inClass) { if (c === ']') inClass = false; continue; }
+      if (c === '[') { inClass = true; continue; }
+      if (c === '/') return j + 1; // 뒤따르는 플래그는 평범한 식별자 문자라 그대로 둬도 안전하다.
+    }
+    return i;
   }
   if (ch === "'" || ch === '"' || ch === '`') {
     for (let j = i + 1; j < src.length; j += 1) {
@@ -134,11 +173,14 @@ export function codeOnly(src: string): string {
       i = end;
       continue;
     }
-    if (ch === "'" || ch === '"' || ch === '`') {
+    // 문자열과 정규식 리터럴은 원문 그대로 보존한다(가드는 이 안의 텍스트도 검사 대상으로 본다).
+    if (ch === "'" || ch === '"' || ch === '`' || ch === '/') {
       const end = skipNonCode(src, i);
-      out += src.slice(i, end);
-      i = end;
-      continue;
+      if (end !== i) {
+        out += src.slice(i, end);
+        i = end;
+        continue;
+      }
     }
     out += ch;
     i += 1;

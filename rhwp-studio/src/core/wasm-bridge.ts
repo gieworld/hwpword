@@ -221,12 +221,7 @@ function substituteCssFontFamily(cssFont: string): string {
   const prefix = cssFont.substring(0, pxIdx + 3);
   const familyPart = cssFont.substring(pxIdx + 3);
 
-  // Written as `new RegExp(String.raw\`...\`)` rather than a /regex/ literal because the
-  // embedded quote characters desync tests/support/source-guard.ts's codeOnly() (it does not
-  // parse regex literals). Source/flags are byte-identical to the
-  // original /^"([^"]+)"/ literal.
-  const quotedFamilyPattern = new RegExp(String.raw`^"([^"]+)"`);
-  const match = familyPart.match(quotedFamilyPattern);
+  const match = familyPart.match(/^"([^"]+)"/);
   if (!match) return cssFont;
 
   const fontName = match[1];

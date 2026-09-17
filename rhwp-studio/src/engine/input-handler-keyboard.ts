@@ -122,9 +122,7 @@ function escapeClipboardHtmlText(text: string): string {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    // Rewritten from the /"/g literal: source-guard's codeOnly() desyncs on a regex literal
-    // containing a quote char. Identical .source/.flags, verified with node.
-    .replace(new RegExp(String.raw`"`, 'g'), '&quot;');
+    .replace(/"/g, '&quot;');
 }
 
 function fallbackClipboardHtml(text: string): string {

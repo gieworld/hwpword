@@ -327,7 +327,7 @@ export class CompareResultWindow {
 
   private parseKvSummary(summary: string): Record<string, string> {
     const out: Record<string, string> = {};
-    for (const m of summary.matchAll(new RegExp(String.raw`([a-z]+)=("([^"]*)"|[^\s]+)`, 'g'))) {
+    for (const m of summary.matchAll(/([a-z]+)=("([^"]*)"|[^\s]+)/g)) {
       const raw = m[2] ?? '';
       const unquoted = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
       out[m[1]] = unquoted;

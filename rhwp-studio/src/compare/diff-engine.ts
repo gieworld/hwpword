@@ -668,7 +668,7 @@ function buildRightToLeftParaMapFromAligned(aligned: AlignedPair[]): Map<string,
 /** `buildTableSummary` 등이 만든 `key=value` 나열을 Record로 파싱. 값에 따옴표가 있으면 제거한다. */
 function parseSummaryKV(summary: string): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const m of summary.matchAll(new RegExp(String.raw`([a-z]+)=("([^"]*)"|[^\s]+)`, 'g'))) {
+  for (const m of summary.matchAll(/([a-z]+)=("([^"]*)"|[^\s]+)/g)) {
     const raw = m[2] ?? '';
     out[m[1]] = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
   }

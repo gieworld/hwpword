@@ -151,13 +151,10 @@ interface CanvasKitLocalTypeface {
 }
 
 function primaryFontFamily(value: string | null | undefined): string {
-  // Rewritten from the /^(["'])|(["'])$/g literal: source-guard's codeOnly() desyncs on a
-  // regex literal containing a quote char. Identical .source/.flags, verified with node.
-  const stripQuotes = new RegExp(String.raw`^(["'])|(["'])$`, 'g');
   return (value ?? '')
     .split(',')[0]
     .trim()
-    .replace(stripQuotes, '');
+    .replace(/^(["'])|(["'])$/g, '');
 }
 
 function normalizedFontFamily(value: string | null | undefined): string {

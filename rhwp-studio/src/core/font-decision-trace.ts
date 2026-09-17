@@ -55,17 +55,11 @@ function unique(values: readonly string[]): string[] {
   return [...new Set(values.filter(Boolean))];
 }
 
-// Written as `new RegExp(String.raw\`...\`)` rather than a /regex/ literal because the embedded
-// quote characters desync tests/support/source-guard.ts's codeOnly() (it does not parse regex
-// literals). Source/flags are byte-identical to the original
-// /^(["'])|(["'])$/g literal.
-const TRIM_OUTER_QUOTE_PATTERN = new RegExp(String.raw`^(["'])|(["'])$`, 'g');
-
 function primaryFontFamily(value: string): string {
   return value
     .split(',')[0]
     .trim()
-    .replace(TRIM_OUTER_QUOTE_PATTERN, '');
+    .replace(/^(["'])|(["'])$/g, '');
 }
 
 function canvas2dDecision(
