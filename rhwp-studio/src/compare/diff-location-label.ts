@@ -3,7 +3,7 @@ import type { DiffItem } from './types';
 /** 미리보기에 쓰이는 문자열이 “변경 내용 없음”으로 간주되는지 */
 export function isComparePreviewAbsent(raw: string | undefined): boolean {
   const t = (raw ?? '').trim();
-  return t === '' || t === '(없음)';
+  return t === '' || t === '(없음)'; // hwpword-keep-korean — matches the "no value" sentinel diff-engine embeds in persisted CompareControlSnapshot.summary
 }
 
 /**
@@ -27,13 +27,13 @@ export function formatParagraphLocationForSide(item: DiffItem, side: 'left' | 'r
 
   const sectionPage = side === 'left' ? item.leftSectionPage : item.rightSectionPage;
   if (sectionPage !== undefined && sectionPage > 0) {
-    return `제 ${sec + 1}구역, ${sectionPage}쪽`;
+    return `Section ${sec + 1}, page ${sectionPage}`;
   }
 
   const anchor = side === 'left' ? item.leftAnchor : item.rightAnchor;
-  if (anchor) return `제 ${sec + 1}구역, ${anchor.pageIndex + 1}쪽`;
+  if (anchor) return `Section ${sec + 1}, page ${anchor.pageIndex + 1}`;
 
-  return `제 ${sec + 1}구역`;
+  return `Section ${sec + 1}`;
 }
 
 /** 비교 결과 목록·요약 줄 (좌/우 각각 채워지면 둘 다 표시) */
@@ -41,6 +41,6 @@ export function formatDiffLocationCombined(item: DiffItem): string | null {
   const L = formatParagraphLocationForSide(item, 'left');
   const R = formatParagraphLocationForSide(item, 'right');
   if (!L && !R) return null;
-  if (L && R) return `좌 ${L}, 우 ${R}`;
+  if (L && R) return `Left ${L}, right ${R}`;
   return L ?? R;
 }

@@ -78,7 +78,7 @@ export class CompareDialog {
 
     const title = document.createElement('div');
     title.className = 'compare-dialog-title';
-    title.innerHTML = '<span>문서 비교</span>';
+    title.innerHTML = '<span>Compare Documents</span>';
     const close = document.createElement('button');
     close.className = 'dialog-close';
     close.textContent = '\u00D7';
@@ -92,20 +92,20 @@ export class CompareDialog {
     const hint = document.createElement('p');
     hint.className = 'history-hint';
     hint.textContent =
-      '두 문서를 업로드해 차이를 계산합니다. 결과를 클릭하면 좌/우 상세창에서 변경된 부분이 하이라이트되며 변경 구간 중심으로 표시됩니다.';
+      'Upload two documents to compute the differences. Click a result to highlight the changed part in the left/right detail window, centered on the changed area.';
     body.appendChild(hint);
 
     const leftRow = document.createElement('div');
     leftRow.className = 'compare-row';
     const leftLabel = document.createElement('span');
     leftLabel.className = 'compare-label';
-    leftLabel.textContent = '왼쪽 문서';
+    leftLabel.textContent = 'Left document';
     const leftBtn = document.createElement('button');
     leftBtn.className = 'dialog-btn';
-    leftBtn.textContent = '파일 선택';
+    leftBtn.textContent = 'Choose File';
     this.leftFileNameEl = document.createElement('span');
     this.leftFileNameEl.className = 'compare-file';
-    this.leftFileNameEl.textContent = '(선택 안 됨)';
+    this.leftFileNameEl.textContent = '(none selected)';
     leftBtn.addEventListener('click', () => void this.pickFile('left'));
     leftRow.append(leftLabel, leftBtn, this.leftFileNameEl);
     body.appendChild(leftRow);
@@ -114,13 +114,13 @@ export class CompareDialog {
     rightRow.className = 'compare-row';
     const rightLabel = document.createElement('span');
     rightLabel.className = 'compare-label';
-    rightLabel.textContent = '오른쪽 문서';
+    rightLabel.textContent = 'Right document';
     const rightBtn = document.createElement('button');
     rightBtn.className = 'dialog-btn';
-    rightBtn.textContent = '파일 선택';
+    rightBtn.textContent = 'Choose File';
     this.rightFileNameEl = document.createElement('span');
     this.rightFileNameEl.className = 'compare-file';
-    this.rightFileNameEl.textContent = '(선택 안 됨)';
+    this.rightFileNameEl.textContent = '(none selected)';
     rightBtn.addEventListener('click', () => void this.pickFile('right'));
     rightRow.append(rightLabel, rightBtn, this.rightFileNameEl);
     body.appendChild(rightRow);
@@ -136,7 +136,7 @@ export class CompareDialog {
     this.caseSensitiveCheck.id = 'doc-compare-case-sensitive';
     this.caseSensitiveCheck.checked = DEFAULT_COMPARE_OPTS.caseSensitive;
     const caseSpan = document.createElement('span');
-    caseSpan.textContent = '영문 대소문자 구분';
+    caseSpan.textContent = 'Case-sensitive';
     caseLabel.append(this.caseSensitiveCheck, caseSpan);
     optRow.appendChild(caseLabel);
     optWrap.appendChild(optRow);
@@ -146,11 +146,11 @@ export class CompareDialog {
     actions.className = 'compare-actions';
     this.runBtn = document.createElement('button');
     this.runBtn.className = 'dialog-btn';
-    this.runBtn.textContent = '문서 비교 실행';
+    this.runBtn.textContent = 'Compare Documents';
     this.runBtn.addEventListener('click', () => void this.onRunCompare());
     this.openTwoPaneBtn = document.createElement('button');
     this.openTwoPaneBtn.className = 'dialog-btn';
-    this.openTwoPaneBtn.textContent = '2개 창 띄우기';
+    this.openTwoPaneBtn.textContent = 'Open Two-Pane View';
     this.openTwoPaneBtn.disabled = true;
     this.openTwoPaneBtn.addEventListener('click', () => this.openResultWindow());
     actions.append(this.runBtn, this.openTwoPaneBtn);
@@ -161,11 +161,11 @@ export class CompareDialog {
 
     const resultTitle = document.createElement('div');
     resultTitle.className = 'compare-kinds-title';
-    resultTitle.textContent = '비교 결과';
+    resultTitle.textContent = 'Comparison Results';
 
     this.resultMetaEl = document.createElement('span');
     this.resultMetaEl.className = 'compare-result-meta';
-    this.resultMetaEl.textContent = '비교 실행 전';
+    this.resultMetaEl.textContent = 'Not compared yet';
     this.resultListEl = document.createElement('ul');
     this.resultListEl.className = 'compare-result-list';
 
@@ -206,7 +206,7 @@ export class CompareDialog {
     if (!selected) return;
     const name = selected.name.toLowerCase();
     if (!name.endsWith('.hwp') && !name.endsWith('.hwpx')) {
-      this.resultMetaEl.textContent = 'HWP/HWPX 파일만 선택할 수 있습니다.';
+      this.resultMetaEl.textContent = 'Only HWP/HWPX files can be selected.';
       return;
     }
     const bytes = new Uint8Array(await selected.arrayBuffer());
@@ -223,17 +223,17 @@ export class CompareDialog {
   private async onRunCompare(): Promise<void> {
     if (this.running) return;
     if (!this.leftFile || !this.rightFile) {
-      this.resultMetaEl.textContent = '왼쪽/오른쪽 문서를 모두 선택하세요.';
+      this.resultMetaEl.textContent = 'Select both the left and right documents.';
       return;
     }
 
     const ctx = this.services.getContext();
     if (ctx.hasDocument) {
       const detail = ctx.canUndo
-        ? '저장하지 않은 변경이 있으면 잃을 수 있습니다.'
-        : '현재 편집 중인 문서가 오른쪽과 다르면 에디터 내용이 오른쪽 파일로 바뀝니다.';
+        ? 'Unsaved changes may be lost.'
+        : 'If the document you are currently editing differs from the right document, the editor content will be replaced with the right file.';
       const ok = window.confirm(
-        `비교를 실행한 뒤 오른쪽 문서를 에디터에 불러옵니다.\n${detail}\n계속할까요?`,
+        `Running the comparison will load the right document into the editor.\n${detail}\nContinue?`,
       );
       if (!ok) return;
     }
@@ -241,8 +241,8 @@ export class CompareDialog {
     this.running = true;
     this.runBtn.disabled = true;
     this.openTwoPaneBtn.disabled = true;
-    this.runBtn.textContent = '비교 중...';
-    this.resultMetaEl.textContent = '비교 계산 중...';
+    this.runBtn.textContent = 'Comparing...';
+    this.resultMetaEl.textContent = 'Computing comparison...';
     this.resultListEl.replaceChildren();
 
     try {
@@ -259,9 +259,9 @@ export class CompareDialog {
       this.services.eventBus.emit('compare:mode-changed', true);
 
       const mode =
-        session.textCompareStrategyUsed === 'identity' ? '본문=id(Map)' : '본문=정렬(alignment)';
+        session.textCompareStrategyUsed === 'identity' ? 'text=id (Map)' : 'text=alignment';
       this.resultMetaEl.textContent =
-        `${session.diffItems.length}개 차이 · ${mode} · "${this.leftFile.fileName}" vs "${this.rightFile.fileName}"`;
+        `${session.diffItems.length} ${session.diffItems.length === 1 ? 'difference' : 'differences'} · ${mode} · "${this.leftFile.fileName}" vs "${this.rightFile.fileName}"`;
       this.renderDiffList(session.diffItems);
       this.openTwoPaneBtn.disabled = session.diffItems.length === 0;
       if (session.diffItems.length > 0) {
@@ -269,18 +269,18 @@ export class CompareDialog {
       }
     } catch (e) {
       const msg = toEnglishMessage(e instanceof Error ? e.message : String(e));
-      this.resultMetaEl.textContent = `비교 실패: ${msg}`;
+      this.resultMetaEl.textContent = `Comparison failed: ${msg}`;
     } finally {
       this.running = false;
       this.runBtn.disabled = false;
-      this.runBtn.textContent = '문서 비교 실행';
+      this.runBtn.textContent = 'Compare Documents';
     }
   }
 
   private openResultWindow(): void {
     const sess = this.compareSessionStore.get();
     if (!sess || sess.diffItems.length === 0) {
-      this.resultMetaEl.textContent = '먼저 문서 비교를 실행해 결과를 생성하세요.';
+      this.resultMetaEl.textContent = 'Run a document comparison first to generate results.';
       return;
     }
     const idx = Math.max(0, sess.currentDiffIndex);
@@ -300,11 +300,11 @@ export class CompareDialog {
         if (p.requestId !== requestId) return;
         off();
         if (p.ok) resolve();
-        else reject(new Error(p.error || '오른쪽 문서 로드 실패'));
+        else reject(new Error(p.error || 'Failed to load the right document'));
       });
       setTimeout(() => {
         off();
-        reject(new Error('오른쪽 문서 로드 타임아웃'));
+        reject(new Error('Timed out loading the right document'));
       }, 90_000);
     });
     this.services.eventBus.emit('open-document-bytes', {
@@ -354,7 +354,7 @@ export class CompareDialog {
 
   private formatPreviewText(text: string): string {
     const t = text.trim().replaceAll('\r\n', '\n').replaceAll('\n', ' ↵ ').replace(/\s{2,}/g, ' ');
-    if (!t) return '(없음)';
+    if (!t) return '(none)';
     if (t.length <= 140) return t;
     return `${t.slice(0, 139)}…`;
   }
@@ -365,7 +365,7 @@ export class CompareDialog {
       const l = this.formatPreviewText(item.leftPreview);
       const r = this.formatPreviewText(item.rightPreview);
       if (l === r) return '';
-      return `<div class="compare-result-kv compare-result-kv-text"><div class="compare-result-kv-head">텍스트 변경</div><div class="compare-result-kv-line"><span class="k">기존</span><span class="v">${this.escape(l)}</span></div><div class="compare-result-kv-line"><span class="k">변경</span><span class="v">${this.escape(r)}</span></div></div>`;
+      return `<div class="compare-result-kv compare-result-kv-text"><div class="compare-result-kv-head">Text changed</div><div class="compare-result-kv-line"><span class="k">Before</span><span class="v">${this.escape(l)}</span></div><div class="compare-result-kv-line"><span class="k">After</span><span class="v">${this.escape(r)}</span></div></div>`;
     }
     const left = this.parseKvSummary(item.leftPreview);
     const right = this.parseKvSummary(item.rightPreview);
@@ -373,29 +373,29 @@ export class CompareDialog {
     if (keys.size === 0) return '';
 
     const labels: Record<string, string> = {
-      r: '행',
-      c: '열',
-      tprev: '텍스트',
-      cprev: '셀 텍스트',
-      txt: '텍스트 해시',
-      props: '속성 해시',
-      box: '크기',
-      sig: '시그니처',
-      crop: '자르기',
-      effect: '효과',
-      bc: '밝기/대비',
-      rot: '회전',
-      flip: '대칭',
-      wrap: '본문배치',
-      rel: '기준',
-      pix: '시각 내용',
+      r: 'Row',
+      c: 'Column',
+      tprev: 'Text',
+      cprev: 'Cell text',
+      txt: 'Text hash',
+      props: 'Property hash',
+      box: 'Size',
+      sig: 'Signature',
+      crop: 'Crop',
+      effect: 'Effect',
+      bc: 'Brightness/contrast',
+      rot: 'Rotation',
+      flip: 'Flip',
+      wrap: 'Text wrap',
+      rel: 'Anchor',
+      pix: 'Visual content',
     };
 
     const rows: string[] = [];
     for (const k of keys) {
       if (k === 'txt' || k === 'sig' || k === 'csha') continue;
-      const lv = left[k] ?? '(없음)';
-      const rv = right[k] ?? '(없음)';
+      const lv = left[k] ?? '(없음)'; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
+      const rv = right[k] ?? '(없음)'; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
       if (lv === rv) continue;
       if (k === 'cprev') {
         const cellDiff = this.formatCellPreviewDiff(lv, rv, left.csha, right.csha);
@@ -406,29 +406,29 @@ export class CompareDialog {
       rows.push(`${labels[k] ?? k}: ${this.formatFieldValue(k, lv)} → ${this.formatFieldValue(k, rv)}`);
     }
     if (rows.length === 0) {
-      if (item.title.includes('텍스트 변경')) {
+      if (item.title.toLowerCase().includes('text changed')) {
         const changedCells = this.countChangedCellsFromHash(left.csha, right.csha);
         if (changedCells > 0) {
-          return `<div class="compare-result-kv">변경값:<br/>변경 셀 ${changedCells}개 (셀 미리보기 범위를 벗어나거나 텍스트가 길어 일부 생략됨)</div>`;
+          return `<div class="compare-result-kv">Changed values:<br/>${changedCells} changed cells (some omitted — outside the cell preview range or text too long)</div>`;
         }
       }
-      if (item.title.includes('속성 변경')) {
-        const lp = left.props ?? '(없음)';
-        const rp = right.props ?? '(없음)';
+      if (item.title.toLowerCase().includes('properties changed')) {
+        const lp = left.props ?? '(없음)'; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
+        const rp = right.props ?? '(없음)'; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
         if (lp !== rp) {
-          return `<div class="compare-result-kv">변경값:<br/>속성 해시: ${this.escape(lp)} → ${this.escape(rp)}</div>`;
+          return `<div class="compare-result-kv">Changed values:<br/>Property hash: ${this.escape(lp)} → ${this.escape(rp)}</div>`;
         }
-        return '<div class="compare-result-kv">변경값:<br/>속성 값 변경</div>';
+        return '<div class="compare-result-kv">Changed values:<br/>Property value changed</div>';
       }
       return '';
     }
     const body = rows.slice(0, 4).map((r) => this.escape(r)).join('<br/>');
-    return `<div class="compare-result-kv">변경값:<br/>${body}</div>`;
+    return `<div class="compare-result-kv">Changed values:<br/>${body}</div>`;
   }
 
   private parseKvSummary(summary: string): Record<string, string> {
     const out: Record<string, string> = {};
-    for (const m of summary.matchAll(/([a-z]+)=("([^"]*)"|[^\s]+)/g)) {
+    for (const m of summary.matchAll(new RegExp(String.raw`([a-z]+)=("([^"]*)"|[^\s]+)`, 'g'))) {
       const raw = m[2] ?? '';
       out[m[1]] = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
     }
@@ -437,21 +437,22 @@ export class CompareDialog {
 
   private sanitizeControlPreview(text: string): string {
     return text
-      .replace(/\s(?:txt|props|sig|cprev|csha|pix)=\"[^\"]*\"/g, '')
+      .replace(new RegExp(String.raw`\s(?:txt|props|sig|cprev|csha|pix)="[^"]*"`, 'g'), '')
       .replace(/\s(?:sig|txt|props)=[^\s]+/g, '')
       .replace(/(?:^|\s)(sig|txt|props|csha|pix)=[^\s]+/g, '')
+      .replaceAll('(없음)', '(none)') // hwpword-keep-korean — display substitution for the persisted "no value" sentinel (added/removed items render the raw .summary, unlike the modified path's re-parsed fields)
       .trim();
   }
 
   private formatFieldValue(key: string, value: string): string {
-    if (value === '(없음)') return value;
+    if (value === '(없음)') return '(none)'; // hwpword-keep-korean — comparison matches diff-engine's persisted "no value" sentinel
     if (key === 'box') {
       const m = value.match(/^(-?\d+)x(-?\d+)$/);
       if (m) return `${m[1]}px × ${m[2]}px`;
     }
     if (key === 'crop') {
       const nums = value.split(',');
-      if (nums.length === 4) return `좌${nums[0]}, 상${nums[1]}, 우${nums[2]}, 하${nums[3]}`;
+      if (nums.length === 4) return `left ${nums[0]}, top ${nums[1]}, right ${nums[2]}, bottom ${nums[3]}`;
     }
     if (key === 'cprev') {
       const map = this.parseCellPreviewMap(value);
@@ -462,25 +463,25 @@ export class CompareDialog {
           .join(' | ');
       }
       const normalized = value.replaceAll('&amp;', '&');
-      return normalized || '(없음)';
+      return normalized || '(none)';
     }
-    if (key === 'rot') return `${value}도`;
+    if (key === 'rot') return `${value}°`;
     if (key === 'bc') {
       const [b, c] = value.split('/');
-      if (b != null && c != null) return `밝기 ${b}, 대비 ${c}`;
+      if (b != null && c != null) return `brightness ${b}, contrast ${c}`;
     }
     if (key === 'flip') {
-      if (value === '10') return '가로';
-      if (value === '01') return '세로';
-      if (value === '11') return '가로+세로';
-      if (value === '00') return '없음';
+      if (value === '10') return 'Horizontal';
+      if (value === '01') return 'Vertical';
+      if (value === '11') return 'Horizontal + Vertical';
+      if (value === '00') return 'None';
     }
     return value;
   }
 
   private parseCellPreviewMap(value: string): Map<string, string> {
     const map = new Map<string, string>();
-    if (!value || value === '(없음)') return map;
+    if (!value || value === '(없음)') return map; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
     const normalized = value.replaceAll('&amp;', '&');
     const parts = normalized.includes('&') ? normalized.split('&') : normalized.split(';');
     for (const part of parts) {
@@ -497,14 +498,14 @@ export class CompareDialog {
         text = raw;
       }
       if (!cell) continue;
-      map.set(cell, text || '(빈값)');
+      map.set(cell, text || '(empty)');
     }
     return map;
   }
 
   private parseCellHashMap(value: string): Map<string, string> {
     const map = new Map<string, string>();
-    if (!value || value === '(없음)') return map;
+    if (!value || value === '(없음)') return map; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
     const normalized = value.replaceAll('&amp;', '&');
     const parts = normalized.includes('&') ? normalized.split('&') : normalized.split(';');
     for (const part of parts) {
@@ -527,10 +528,10 @@ export class CompareDialog {
     const keys = hashChangedKeys.length > 0 ? hashChangedKeys : unionKeys;
     const changes: string[] = [];
     for (const key of keys) {
-      const lv = lmap.get(key) ?? '(없음)';
-      const rv = rmap.get(key) ?? '(없음)';
+      const lv = lmap.get(key) ?? '(none)';
+      const rv = rmap.get(key) ?? '(none)';
       if (lv === rv) continue;
-      const prettyKey = key.replace(/^r(\d+)c(\d+)$/i, '$1행$2열');
+      const prettyKey = key.replace(/^r(\d+)c(\d+)$/i, 'row $1, col $2');
       changes.push(`${prettyKey} ${lv} → ${rv}`);
       if (changes.length >= 3) break;
     }
@@ -554,12 +555,12 @@ export class CompareDialog {
   }
 
   private kindLabel(kind: DiffItem['kind']): string {
-    if (kind === 'table') return '표';
-    if (kind === 'shape') return '도형';
-    if (kind === 'image') return '이미지';
-    if (kind === 'chart') return '그래프';
-    if (kind === 'text') return '텍스트';
-    return '메타';
+    if (kind === 'table') return 'Table';
+    if (kind === 'shape') return 'Shape';
+    if (kind === 'image') return 'Image';
+    if (kind === 'chart') return 'Chart';
+    if (kind === 'text') return 'Text';
+    return 'Meta';
   }
 }
 

@@ -57,9 +57,9 @@ export class CompareResultWindow {
       this.build();
       document.body.appendChild(this.wrap);
     }
-    this.titleEl.textContent = `문서 비교 상세 · ${session.left.name} ↔ ${session.right.name}`;
-    this.leftTitleEl.textContent = `왼쪽 문서: ${session.left.name}`;
-    this.rightTitleEl.textContent = `오른쪽 문서: ${session.right.name}`;
+    this.titleEl.textContent = `Compare Documents details · ${session.left.name} ↔ ${session.right.name}`;
+    this.leftTitleEl.textContent = `Left document: ${session.left.name}`;
+    this.rightTitleEl.textContent = `Right document: ${session.right.name}`;
     void this.focusDiff(initialIndex);
   }
 
@@ -103,7 +103,7 @@ export class CompareResultWindow {
     const head = document.createElement('div');
     head.className = 'compare-inspector-head';
     this.titleEl = document.createElement('span');
-    this.titleEl.textContent = '문서 비교 상세';
+    this.titleEl.textContent = 'Compare Documents details';
     const close = document.createElement('button');
     close.className = 'dialog-close';
     close.textContent = '\u00D7';
@@ -121,10 +121,10 @@ export class CompareResultWindow {
     const leftWrap = document.createElement('div');
     leftWrap.className = 'compare-inspector-pane';
     this.leftTitleEl = document.createElement('h4');
-    this.leftTitleEl.textContent = '왼쪽 문서';
+    this.leftTitleEl.textContent = 'Left document';
     this.leftStatusEl = document.createElement('div');
     this.leftStatusEl.className = 'compare-inspector-page-status';
-    this.leftStatusEl.textContent = '페이지 준비 중...';
+    this.leftStatusEl.textContent = 'Preparing page...';
     this.leftCanvasWrap = document.createElement('div');
     this.leftCanvasWrap.className = 'compare-inspector-canvas-wrap';
     this.leftCanvas = document.createElement('canvas');
@@ -139,10 +139,10 @@ export class CompareResultWindow {
     const rightWrap = document.createElement('div');
     rightWrap.className = 'compare-inspector-pane';
     this.rightTitleEl = document.createElement('h4');
-    this.rightTitleEl.textContent = '오른쪽 문서';
+    this.rightTitleEl.textContent = 'Right document';
     this.rightStatusEl = document.createElement('div');
     this.rightStatusEl.className = 'compare-inspector-page-status';
-    this.rightStatusEl.textContent = '페이지 준비 중...';
+    this.rightStatusEl.textContent = 'Preparing page...';
     this.rightCanvasWrap = document.createElement('div');
     this.rightCanvasWrap.className = 'compare-inspector-canvas-wrap';
     this.rightCanvas = document.createElement('canvas');
@@ -159,7 +159,7 @@ export class CompareResultWindow {
     nav.className = 'compare-inspector-nav';
     const prev = document.createElement('button');
     prev.className = 'dialog-btn';
-    prev.textContent = '이전 차이';
+    prev.textContent = 'Previous Difference';
     prev.addEventListener('click', () => {
       const item = this.store?.prevDiff();
       if (!item || !this.session) return;
@@ -167,7 +167,7 @@ export class CompareResultWindow {
     });
     const next = document.createElement('button');
     next.className = 'dialog-btn';
-    next.textContent = '다음 차이';
+    next.textContent = 'Next Difference';
     next.addEventListener('click', () => {
       const item = this.store?.nextDiff();
       if (!item || !this.session) return;
@@ -192,12 +192,12 @@ export class CompareResultWindow {
         leftText = narrowed.left;
         rightText = narrowed.right;
       } else {
-        leftText = this.formatInspectorText(item.leftPreview || '(없음)');
-        rightText = this.formatInspectorText(item.rightPreview || '(없음)');
+        leftText = this.formatInspectorText(item.leftPreview || '(none)');
+        rightText = this.formatInspectorText(item.rightPreview || '(none)');
       }
     } else {
-      leftText = this.formatInspectorText(item.leftPreview || '(없음)');
-      rightText = this.formatInspectorText(item.rightPreview || '(없음)');
+      leftText = this.formatInspectorText(item.leftPreview || '(none)');
+      rightText = this.formatInspectorText(item.rightPreview || '(none)');
     }
     const raw = side === 'left' ? item.leftPreview : item.rightPreview;
     const text = side === 'left' ? leftText : rightText;
@@ -244,9 +244,9 @@ export class CompareResultWindow {
     const rk = this.parseKvSummary(rightRaw);
     const pick = (kv: Record<string, string>) => {
       const cp = kv.cprev;
-      if (cp && cp !== '(없음)') return cp;
+      if (cp && cp !== '(없음)') return cp; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
       const tp = kv.tprev;
-      if (tp && tp !== '(없음)') return tp;
+      if (tp && tp !== '(없음)') return tp; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
       return '';
     };
     const lc = pick(lk);
@@ -270,10 +270,10 @@ export class CompareResultWindow {
       const cb = Number(mb[2]);
       return ra !== rb ? ra - rb : ca - cb;
     });
-    if (changed.length === 0) return { left: '(셀 텍스트 동일)', right: '(셀 텍스트 동일)' };
-    const cellLabel = (k: string) => k.replace(/^r(\d+)c(\d+)$/i, '$1행$2열');
-    const left = changed.map((k) => `${cellLabel(k)}: ${Lm.get(k) ?? '(없음)'}`).join('\n');
-    const right = changed.map((k) => `${cellLabel(k)}: ${Rm.get(k) ?? '(없음)'}`).join('\n');
+    if (changed.length === 0) return { left: '(cell text identical)', right: '(cell text identical)' };
+    const cellLabel = (k: string) => k.replace(/^r(\d+)c(\d+)$/i, 'row $1, col $2');
+    const left = changed.map((k) => `${cellLabel(k)}: ${Lm.get(k) ?? '(none)'}`).join('\n');
+    const right = changed.map((k) => `${cellLabel(k)}: ${Rm.get(k) ?? '(none)'}`).join('\n');
     return { left, right };
   }
 
@@ -284,7 +284,7 @@ export class CompareResultWindow {
   }
 
   private formatInspectorText(raw: string): string {
-    if (!raw) return '(없음)';
+    if (!raw) return '(none)';
     if (!raw.includes('=')) return raw;
 
     const kv = this.parseKvSummary(raw);
@@ -292,34 +292,34 @@ export class CompareResultWindow {
 
     const lines: string[] = [];
     const push = (label: string, value?: string) => {
-      if (!value || value === '(없음)' || value === 'nopix' || value === 'nobox') return;
+      if (!value || value === '(없음)' || value === 'nopix' || value === 'nobox') return; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
       lines.push(`${label}: ${value}`);
     };
 
     const cprev = kv.cprev;
-    if (cprev && cprev !== '(없음)') {
+    if (cprev && cprev !== '(없음)') { // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
       const cells = this.parseCellPreview(cprev);
       if (cells.length > 0) {
         for (const [cell, text] of cells.slice(0, 5)) {
-          lines.push(`${cell.replace(/^r(\d+)c(\d+)$/i, '$1행$2열')}: ${text}`);
+          lines.push(`${cell.replace(/^r(\d+)c(\d+)$/i, 'row $1, col $2')}: ${text}`);
         }
-        if (cells.length > 5) lines.push(`... 외 ${cells.length - 5}개 셀`);
+        if (cells.length > 5) lines.push(`... and ${cells.length - 5} more cells`);
       } else {
-        push('셀 텍스트', cprev);
+        push('Cell text', cprev);
       }
     }
 
-    push('행', kv.r);
-    push('열', kv.c);
-    push('크기', kv.box?.replace(/^(-?\d+)x(-?\d+)$/, '$1px × $2px'));
-    push('텍스트', kv.text);
-    push('자르기', kv.crop);
-    push('효과', kv.effect);
-    push('밝기/대비', kv.bc);
-    push('회전', kv.rot ? `${kv.rot}도` : undefined);
-    push('대칭', kv.flip);
-    push('배치', kv.wrap);
-    push('기준', kv.rel);
+    push('Row', kv.r);
+    push('Column', kv.c);
+    push('Size', kv.box?.replace(/^(-?\d+)x(-?\d+)$/, '$1px × $2px'));
+    push('Text', kv.text);
+    push('Crop', kv.crop);
+    push('Effect', kv.effect);
+    push('Brightness/contrast', kv.bc);
+    push('Rotation', kv.rot ? `${kv.rot}°` : undefined);
+    push('Flip', kv.flip);
+    push('Layout', kv.wrap);
+    push('Anchor', kv.rel);
 
     if (lines.length === 0) return raw;
     return lines.join('\n');
@@ -327,7 +327,7 @@ export class CompareResultWindow {
 
   private parseKvSummary(summary: string): Record<string, string> {
     const out: Record<string, string> = {};
-    for (const m of summary.matchAll(/([a-z]+)=("([^"]*)"|[^\s]+)/g)) {
+    for (const m of summary.matchAll(new RegExp(String.raw`([a-z]+)=("([^"]*)"|[^\s]+)`, 'g'))) {
       const raw = m[2] ?? '';
       const unquoted = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
       out[m[1]] = unquoted;
@@ -372,8 +372,8 @@ export class CompareResultWindow {
   private async ensureCompareDocumentsLoaded(): Promise<void> {
     if (!this.leftSource || !this.rightSource) return;
     const token = ++this.loadingToken;
-    this.leftStatusEl.textContent = '왼쪽 문서 로딩 중...';
-    this.rightStatusEl.textContent = '오른쪽 문서 로딩 중...';
+    this.leftStatusEl.textContent = 'Loading left document...';
+    this.rightStatusEl.textContent = 'Loading right document...';
     try {
       const leftKey = `${this.leftSource.fileName}:${this.leftSource.bytes.byteLength}`;
       const rightKey = `${this.rightSource.fileName}:${this.rightSource.bytes.byteLength}`;
@@ -408,12 +408,12 @@ export class CompareResultWindow {
         /* noop */
       }
       if (this.loadingToken !== token) return;
-      this.leftStatusEl.textContent = '왼쪽 문서 페이지 준비 완료';
-      this.rightStatusEl.textContent = '오른쪽 문서 페이지 준비 완료';
+      this.leftStatusEl.textContent = 'Left document page ready';
+      this.rightStatusEl.textContent = 'Right document page ready';
     } catch (e) {
       const msg = toEnglishMessage(e instanceof Error ? e.message : String(e));
-      this.leftStatusEl.textContent = `페이지 로드 실패: ${msg}`;
-      this.rightStatusEl.textContent = `페이지 로드 실패: ${msg}`;
+      this.leftStatusEl.textContent = `Failed to load page: ${msg}`;
+      this.rightStatusEl.textContent = `Failed to load page: ${msg}`;
     }
   }
 
@@ -463,7 +463,7 @@ export class CompareResultWindow {
     item: DiffItem,
   ): void {
     if (!wasm) {
-      statusEl.textContent = '문서가 아직 로드되지 않았습니다.';
+      statusEl.textContent = 'The document has not loaded yet.';
       marker.style.display = 'none';
       return;
     }
@@ -472,8 +472,8 @@ export class CompareResultWindow {
       const locShort = formatParagraphLocationForSide(item, side);
       const base =
         side === 'left'
-          ? '왼쪽: 스냅샷 직후 위치 정보가 없습니다. (텍스트 미리보기만 참고)'
-          : '오른쪽: 스냅샷 직후 위치 정보가 없습니다. (텍스트 미리보기만 참고)';
+          ? 'Left: no position info right after the snapshot. (text preview only)'
+          : 'Right: no position info right after the snapshot. (text preview only)';
       statusEl.textContent = locShort ? `${locShort} · ${base}` : base;
       const ctx = canvas.getContext('2d');
       if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -496,8 +496,8 @@ export class CompareResultWindow {
           canvas.height = Math.max(1, Math.ceil(info.height * scale));
           wasm.renderPageToCanvasFiltered(pageIdx, canvas, scale, 'all');
           const locShort = formatParagraphLocationForSide(item, side);
-          const pageLine = `${ea.pageIndex + 1}쪽`;
-          const contextNote = !fromDiffEngine ? ' · 직전 정렬 짝 문단 기준(마커 없음)' : '';
+          const pageLine = `page ${ea.pageIndex + 1}`;
+          const contextNote = !fromDiffEngine ? ' · based on the nearest aligned paragraph (no marker)' : '';
           if (fromDiffEngine) {
             marker.style.display = 'block';
             marker.style.left = `${Math.max(0, Math.floor(ea.x * scale))}px`;
@@ -507,11 +507,11 @@ export class CompareResultWindow {
           } else {
             marker.style.display = 'none';
           }
-          statusEl.textContent = `${locShort ? `${locShort} · ` : ''}${pageLine} 실제 화면${contextNote}`;
+          statusEl.textContent = `${locShort ? `${locShort} · ` : ''}${pageLine} actual view${contextNote}`;
           wrap.scrollTop = Math.max(0, marker.offsetTop - Math.floor(wrap.clientHeight * 0.15));
         } catch (err) {
           const msg = toEnglishMessage(err instanceof Error ? err.message : String(err));
-          statusEl.textContent = `페이지 렌더 실패: ${msg}`;
+          statusEl.textContent = `Failed to render page: ${msg}`;
           marker.style.display = 'none';
         }
       };
@@ -520,7 +520,7 @@ export class CompareResultWindow {
       });
     } catch (e) {
       const msg = toEnglishMessage(e instanceof Error ? e.message : String(e));
-      statusEl.textContent = `페이지 렌더 실패: ${msg}`;
+      statusEl.textContent = `Failed to render page: ${msg}`;
       marker.style.display = 'none';
     }
   }

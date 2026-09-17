@@ -154,7 +154,7 @@ export async function saveHistoryIrSnapshot(
   const byteLength = new TextEncoder().encode(json).length;
   const meta: MetaRow = {
     id,
-    label: label.trim() || `스냅샷 ${new Date(createdAt).toLocaleString('ko-KR')}`,
+    label: label.trim() || `Snapshot ${new Date(createdAt).toLocaleString('en-US')}`,
     createdAt,
     sourceFileName,
     byteLength,

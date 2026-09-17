@@ -88,7 +88,7 @@ export class HistoryDialog {
 
     const title = document.createElement('div');
     title.className = 'compare-dialog-title';
-    title.innerHTML = '<span>문서 이력 관리</span>';
+    title.innerHTML = '<span>Version History</span>';
     const close = document.createElement('button');
     close.className = 'dialog-close';
     close.textContent = '\u00D7';
@@ -102,31 +102,31 @@ export class HistoryDialog {
     const hint = document.createElement('p');
     hint.className = 'history-hint';
     hint.textContent =
-      '이력은 문단 stable_id가 보존된 IR 스냅샷(JSON)으로 저장됩니다. "선택과 현재 비교"는 같은 편집 세션에서 identity(Map) 비교가 됩니다. 예전에 HWP 바이트만 저장된 항목(legacy)은 비교 시 정렬(alignment)로 폴백됩니다.';
+      'History is saved as an IR snapshot (JSON) that preserves paragraph stable_id. "Compare Selected With Current" uses identity (Map) comparison within the same editing session. Older entries that only stored HWP bytes (legacy) fall back to alignment comparison.';
     body.appendChild(hint);
 
     const saveRow = document.createElement('div');
     saveRow.className = 'compare-row';
     const lab = document.createElement('label');
     lab.className = 'compare-label';
-    lab.textContent = '스냅샷';
+    lab.textContent = 'Snapshot';
     lab.htmlFor = 'history-snap-label';
     this.labelInput = document.createElement('input');
     this.labelInput.id = 'history-snap-label';
     this.labelInput.type = 'text';
     this.labelInput.className = 'history-label-input';
-    this.labelInput.placeholder = '메모 (비우면 시각 기본값)';
+    this.labelInput.placeholder = 'Note (defaults to the current time if left blank)';
     this.labelInput.value = '';
     const saveBtn = document.createElement('button');
     saveBtn.className = 'dialog-btn';
-    saveBtn.textContent = '현재 문서 저장';
+    saveBtn.textContent = 'Save Current Document';
     saveBtn.addEventListener('click', () => void this.onSaveSnapshot());
     saveRow.append(lab, this.labelInput, saveBtn);
     body.appendChild(saveRow);
 
     const listTitle = document.createElement('div');
     listTitle.className = 'compare-kinds-title';
-    listTitle.textContent = '저장된 이력 (클릭하여 선택)';
+    listTitle.textContent = 'Saved History (Click to Select)';
     body.appendChild(listTitle);
     this.listEl = document.createElement('ul');
     this.listEl.className = 'history-list';
@@ -136,26 +136,26 @@ export class HistoryDialog {
     actions.className = 'compare-actions';
     const delBtn = document.createElement('button');
     delBtn.className = 'dialog-btn';
-    delBtn.textContent = '선택 삭제';
+    delBtn.textContent = 'Delete Selected';
     delBtn.addEventListener('click', () => void this.onDeleteSelected());
     const clrBtn = document.createElement('button');
     clrBtn.className = 'dialog-btn';
-    clrBtn.textContent = '전체 비우기';
+    clrBtn.textContent = 'Clear All';
     clrBtn.addEventListener('click', () => void this.onClearAll());
     const cmpBtn = document.createElement('button');
     cmpBtn.className = 'dialog-btn';
-    cmpBtn.textContent = '선택과 현재 문서 비교';
+    cmpBtn.textContent = 'Compare Selected With Current';
     cmpBtn.addEventListener('click', () => void this.onCompareWithCurrent());
     actions.append(delBtn, clrBtn, cmpBtn);
     body.appendChild(actions);
 
     const resTitle = document.createElement('div');
     resTitle.className = 'compare-kinds-title';
-    resTitle.textContent = '비교 결과';
+    resTitle.textContent = 'Comparison Results';
     body.appendChild(resTitle);
     this.resultMetaEl = document.createElement('span');
     this.resultMetaEl.className = 'compare-result-meta';
-    this.resultMetaEl.textContent = '비교 실행 전';
+    this.resultMetaEl.textContent = 'Not compared yet';
     this.resultListEl = document.createElement('ul');
     this.resultListEl.className = 'compare-result-list';
     body.appendChild(this.resultMetaEl);
@@ -172,8 +172,8 @@ export class HistoryDialog {
       li.className = 'history-entry';
       if (e.id === this.selectedId) li.classList.add('selected');
       li.dataset.id = e.id;
-      const dt = new Date(e.createdAt).toLocaleString('ko-KR');
-      const kindNote = e.storageKind === 'legacy' ? ' · 구바이트' : '';
+      const dt = new Date(e.createdAt).toLocaleString('en-US');
+      const kindNote = e.storageKind === 'legacy' ? ' · legacy bytes' : '';
       li.innerHTML = `<strong>${this.escape(e.label)}</strong><div class="history-entry-meta">${this.escape(e.sourceFileName)} · ${(e.byteLength / 1024).toFixed(1)} KB${kindNote} · ${dt}</div>`;
       li.addEventListener('click', () => {
         this.selectedId = e.id;
@@ -188,54 +188,54 @@ export class HistoryDialog {
   private async onSaveSnapshot(): Promise<void> {
     const { wasm } = this.services;
     try {
-      const label = this.labelInput.value.trim() || new Date().toLocaleString('ko-KR');
+      const label = this.labelInput.value.trim() || new Date().toLocaleString('en-US');
       const snap = buildSnapshotFromWasm(wasm, label, HISTORY_COMPARE_OPTS);
       await saveHistoryIrSnapshot(label, wasm.fileName, snap);
       this.labelInput.value = '';
       await this.refreshList();
-      this.resultMetaEl.textContent = '스냅샷을 저장했습니다.';
+      this.resultMetaEl.textContent = 'Snapshot saved.';
     } catch (err) {
       const msg = toEnglishMessage(err instanceof Error ? err.message : String(err));
-      this.resultMetaEl.textContent = `저장 실패: ${msg}`;
+      this.resultMetaEl.textContent = `Save failed: ${msg}`;
     }
   }
 
   private async onDeleteSelected(): Promise<void> {
     if (!this.selectedId) {
-      this.resultMetaEl.textContent = '삭제할 항목을 목록에서 먼저 선택하세요.';
+      this.resultMetaEl.textContent = 'Select an item from the list to delete first.';
       return;
     }
     await deleteHistorySnapshot(this.selectedId);
     this.selectedId = null;
     await this.refreshList();
-    this.resultMetaEl.textContent = '삭제했습니다.';
+    this.resultMetaEl.textContent = 'Deleted.';
     this.resultListEl.replaceChildren();
   }
 
   private async onClearAll(): Promise<void> {
-    if (!window.confirm('저장된 문서 이력을 모두 지울까요?')) return;
+    if (!window.confirm('Clear all saved document history?')) return;
     await clearHistory();
     this.selectedId = null;
     await this.refreshList();
-    this.resultMetaEl.textContent = '이력을 비웠습니다.';
+    this.resultMetaEl.textContent = 'History cleared.';
     this.resultListEl.replaceChildren();
   }
 
   private async onCompareWithCurrent(): Promise<void> {
     const { wasm } = this.services;
     if (!this.selectedId) {
-      this.resultMetaEl.textContent = '비교할 스냅샷을 목록에서 선택하세요.';
+      this.resultMetaEl.textContent = 'Select a snapshot from the list to compare.';
       return;
     }
     const payload = await getHistoryPayload(this.selectedId);
     if (!payload) {
-      this.resultMetaEl.textContent = '스냅샷 데이터를 읽을 수 없습니다.';
+      this.resultMetaEl.textContent = 'Could not read the snapshot data.';
       return;
     }
     const meta = this.entries.find((x) => x.id === this.selectedId);
-    const leftName = meta?.label ?? '이력 스냅샷';
-    const rightName = wasm.fileName || '현재 문서.hwp';
-    this.resultMetaEl.textContent = '비교 중...';
+    const leftName = meta?.label ?? 'History snapshot';
+    const rightName = wasm.fileName || 'Current document.hwp';
+    this.resultMetaEl.textContent = 'Comparing...';
     this.resultListEl.replaceChildren();
     try {
       let session;
@@ -247,7 +247,7 @@ export class HistoryDialog {
         try {
           cur = wasm.exportHwp();
         } catch {
-          this.resultMetaEl.textContent = '현재 문서가 없습니다. 문서를 연 뒤 다시 시도하세요.';
+          this.resultMetaEl.textContent = 'No current document. Open a document and try again.';
           return;
         }
         session = await compareDocuments(payload.bytes, leftName, cur, rightName, HISTORY_COMPARE_OPTS);
@@ -255,8 +255,8 @@ export class HistoryDialog {
       console.log('[rhwp:history] 최종 Diff 배열', session.diffItems);
       this.compareSessionStore.set(session);
       const mode =
-        session.textCompareStrategyUsed === 'identity' ? '본문=id(Map)' : '본문=정렬(alignment)';
-      this.resultMetaEl.textContent = `${session.diffItems.length}개 차이 · ${mode} · "${leftName}" vs "${rightName}"`;
+        session.textCompareStrategyUsed === 'identity' ? 'text=id (Map)' : 'text=alignment';
+      this.resultMetaEl.textContent = `${session.diffItems.length} ${session.diffItems.length === 1 ? 'difference' : 'differences'} · ${mode} · "${leftName}" vs "${rightName}"`;
       this.renderDiffList(session.diffItems);
       this.services.eventBus.emit('compare:mode-changed', true);
       if (session.diffItems.length > 0) {
@@ -264,7 +264,7 @@ export class HistoryDialog {
       }
     } catch (e) {
       const msg = toEnglishMessage(e instanceof Error ? e.message : String(e));
-      this.resultMetaEl.textContent = `비교 실패: ${msg}`;
+      this.resultMetaEl.textContent = `Comparison failed: ${msg}`;
     }
   }
 
@@ -302,7 +302,7 @@ export class HistoryDialog {
 
   private formatPreviewText(text: string): string {
     const trimmed = text.trim();
-    if (!trimmed) return '(없음)';
+    if (!trimmed) return '(none)';
     const visible = this.makeWhitespaceVisible(trimmed);
     return this.truncateText(visible, 140);
   }
@@ -336,7 +336,7 @@ export class HistoryDialog {
       const l = this.formatPreviewText(item.leftPreview);
       const r = this.formatPreviewText(item.rightPreview);
       if (l === r) return '';
-      return `<div class="compare-result-kv compare-result-kv-text"><div class="compare-result-kv-head">텍스트 변경</div><div class="compare-result-kv-line"><span class="k">기존</span><span class="v">${this.escape(l)}</span></div><div class="compare-result-kv-line"><span class="k">변경</span><span class="v">${this.escape(r)}</span></div></div>`;
+      return `<div class="compare-result-kv compare-result-kv-text"><div class="compare-result-kv-head">Text changed</div><div class="compare-result-kv-line"><span class="k">Before</span><span class="v">${this.escape(l)}</span></div><div class="compare-result-kv-line"><span class="k">After</span><span class="v">${this.escape(r)}</span></div></div>`;
     }
     const left = this.parseKvSummary(item.leftPreview);
     const right = this.parseKvSummary(item.rightPreview);
@@ -344,29 +344,29 @@ export class HistoryDialog {
     if (keys.size === 0) return '';
 
     const labels: Record<string, string> = {
-      r: '행',
-      c: '열',
-      tprev: '텍스트',
-      cprev: '셀 텍스트',
-      txt: '텍스트 해시',
-      props: '속성 해시',
-      box: '크기',
-      sig: '시그니처',
-      crop: '자르기',
-      effect: '효과',
-      bc: '밝기/대비',
-      rot: '회전',
-      flip: '대칭',
-      wrap: '본문배치',
-      rel: '기준',
-      pix: '시각 내용',
+      r: 'Row',
+      c: 'Column',
+      tprev: 'Text',
+      cprev: 'Cell text',
+      txt: 'Text hash',
+      props: 'Property hash',
+      box: 'Size',
+      sig: 'Signature',
+      crop: 'Crop',
+      effect: 'Effect',
+      bc: 'Brightness/contrast',
+      rot: 'Rotation',
+      flip: 'Flip',
+      wrap: 'Text wrap',
+      rel: 'Anchor',
+      pix: 'Visual content',
     };
 
     const rows: string[] = [];
     for (const k of keys) {
       if (k === 'txt' || k === 'sig' || k === 'csha') continue;
-      const lv = left[k] ?? '(없음)';
-      const rv = right[k] ?? '(없음)';
+      const lv = left[k] ?? '(없음)'; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
+      const rv = right[k] ?? '(없음)'; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
       if (lv === rv) continue;
       if (k === 'cprev') {
         const cellDiff = this.formatCellPreviewDiff(lv, rv, left.csha, right.csha);
@@ -377,29 +377,29 @@ export class HistoryDialog {
       rows.push(`${labels[k] ?? k}: ${this.formatFieldValue(k, lv)} → ${this.formatFieldValue(k, rv)}`);
     }
     if (rows.length === 0) {
-      if (item.title.includes('텍스트 변경')) {
+      if (item.title.toLowerCase().includes('text changed')) {
         const changedCells = this.countChangedCellsFromHash(left.csha, right.csha);
         if (changedCells > 0) {
-          return `<div class="compare-result-kv">변경값:<br/>변경 셀 ${changedCells}개 (셀 미리보기 범위를 벗어나거나 텍스트가 길어 일부 생략됨)</div>`;
+          return `<div class="compare-result-kv">Changed values:<br/>${changedCells} changed cells (some omitted — outside the cell preview range or text too long)</div>`;
         }
       }
-      if (item.title.includes('속성 변경')) {
-        const lp = left.props ?? '(없음)';
-        const rp = right.props ?? '(없음)';
+      if (item.title.toLowerCase().includes('properties changed')) {
+        const lp = left.props ?? '(없음)'; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
+        const rp = right.props ?? '(없음)'; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
         if (lp !== rp) {
-          return `<div class="compare-result-kv">변경값:<br/>속성 해시: ${this.escape(lp)} → ${this.escape(rp)}</div>`;
+          return `<div class="compare-result-kv">Changed values:<br/>Property hash: ${this.escape(lp)} → ${this.escape(rp)}</div>`;
         }
-        return '<div class="compare-result-kv">변경값:<br/>속성 값 변경</div>';
+        return '<div class="compare-result-kv">Changed values:<br/>Property value changed</div>';
       }
       return '';
     }
     const body = rows.slice(0, 4).map((r) => this.escape(r)).join('<br/>');
-    return `<div class="compare-result-kv">변경값:<br/>${body}</div>`;
+    return `<div class="compare-result-kv">Changed values:<br/>${body}</div>`;
   }
 
   private parseKvSummary(summary: string): Record<string, string> {
     const out: Record<string, string> = {};
-    for (const m of summary.matchAll(/([a-z]+)=("([^"]*)"|[^\s]+)/g)) {
+    for (const m of summary.matchAll(new RegExp(String.raw`([a-z]+)=("([^"]*)"|[^\s]+)`, 'g'))) {
       const raw = m[2] ?? '';
       out[m[1]] = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
     }
@@ -408,21 +408,22 @@ export class HistoryDialog {
 
   private sanitizeControlPreview(text: string): string {
     return text
-      .replace(/\s(?:txt|props|sig|cprev|csha|pix)=\"[^\"]*\"/g, '')
+      .replace(new RegExp(String.raw`\s(?:txt|props|sig|cprev|csha|pix)="[^"]*"`, 'g'), '')
       .replace(/\s(?:sig|txt|props)=[^\s]+/g, '')
       .replace(/(?:^|\s)(sig|txt|props|csha|pix)=[^\s]+/g, '')
+      .replaceAll('(없음)', '(none)') // hwpword-keep-korean — display substitution for the persisted "no value" sentinel (added/removed items render the raw .summary, unlike the modified path's re-parsed fields)
       .trim();
   }
 
   private formatFieldValue(key: string, value: string): string {
-    if (value === '(없음)') return value;
+    if (value === '(없음)') return '(none)'; // hwpword-keep-korean — comparison matches diff-engine's persisted "no value" sentinel
     if (key === 'box') {
       const m = value.match(/^(-?\d+)x(-?\d+)$/);
       if (m) return `${m[1]}px × ${m[2]}px`;
     }
     if (key === 'crop') {
       const nums = value.split(',');
-      if (nums.length === 4) return `좌${nums[0]}, 상${nums[1]}, 우${nums[2]}, 하${nums[3]}`;
+      if (nums.length === 4) return `left ${nums[0]}, top ${nums[1]}, right ${nums[2]}, bottom ${nums[3]}`;
     }
     if (key === 'cprev') {
       const map = this.parseCellPreviewMap(value);
@@ -433,25 +434,25 @@ export class HistoryDialog {
           .join(' | ');
       }
       const normalized = value.replaceAll('&amp;', '&');
-      return normalized || '(없음)';
+      return normalized || '(none)';
     }
-    if (key === 'rot') return `${value}도`;
+    if (key === 'rot') return `${value}°`;
     if (key === 'bc') {
       const [b, c] = value.split('/');
-      if (b != null && c != null) return `밝기 ${b}, 대비 ${c}`;
+      if (b != null && c != null) return `brightness ${b}, contrast ${c}`;
     }
     if (key === 'flip') {
-      if (value === '10') return '가로';
-      if (value === '01') return '세로';
-      if (value === '11') return '가로+세로';
-      if (value === '00') return '없음';
+      if (value === '10') return 'Horizontal';
+      if (value === '01') return 'Vertical';
+      if (value === '11') return 'Horizontal + Vertical';
+      if (value === '00') return 'None';
     }
     return value;
   }
 
   private parseCellPreviewMap(value: string): Map<string, string> {
     const map = new Map<string, string>();
-    if (!value || value === '(없음)') return map;
+    if (!value || value === '(없음)') return map; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
     const normalized = value.replaceAll('&amp;', '&');
     const parts = normalized.includes('&') ? normalized.split('&') : normalized.split(';');
     for (const part of parts) {
@@ -468,14 +469,14 @@ export class HistoryDialog {
         text = raw;
       }
       if (!cell) continue;
-      map.set(cell, text || '(빈값)');
+      map.set(cell, text || '(empty)');
     }
     return map;
   }
 
   private parseCellHashMap(value: string): Map<string, string> {
     const map = new Map<string, string>();
-    if (!value || value === '(없음)') return map;
+    if (!value || value === '(없음)') return map; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
     const normalized = value.replaceAll('&amp;', '&');
     const parts = normalized.includes('&') ? normalized.split('&') : normalized.split(';');
     for (const part of parts) {
@@ -498,10 +499,10 @@ export class HistoryDialog {
     const keys = hashChangedKeys.length > 0 ? hashChangedKeys : unionKeys;
     const changes: string[] = [];
     for (const key of keys) {
-      const lv = lmap.get(key) ?? '(없음)';
-      const rv = rmap.get(key) ?? '(없음)';
+      const lv = lmap.get(key) ?? '(none)';
+      const rv = rmap.get(key) ?? '(none)';
       if (lv === rv) continue;
-      const prettyKey = key.replace(/^r(\d+)c(\d+)$/i, '$1행$2열');
+      const prettyKey = key.replace(/^r(\d+)c(\d+)$/i, 'row $1, col $2');
       changes.push(`${prettyKey} ${lv} → ${rv}`);
       if (changes.length >= 3) break;
     }
@@ -521,11 +522,11 @@ export class HistoryDialog {
   }
 
   private kindLabel(kind: DiffItem['kind']): string {
-    if (kind === 'table') return '표';
-    if (kind === 'shape') return '도형';
-    if (kind === 'image') return '이미지';
-    if (kind === 'chart') return '그래프';
-    if (kind === 'text') return '텍스트';
-    return '메타';
+    if (kind === 'table') return 'Table';
+    if (kind === 'shape') return 'Shape';
+    if (kind === 'image') return 'Image';
+    if (kind === 'chart') return 'Chart';
+    if (kind === 'text') return 'Text';
+    return 'Meta';
   }
 }

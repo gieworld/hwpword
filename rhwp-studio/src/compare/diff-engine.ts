@@ -443,19 +443,19 @@ function charEditOpsHirschberg(a: string, b: string): string {
 function myersCharDiffSummary(left: string, right: string): string {
   if (left.length === 0 && right.length === 0) return '';
   if (left.length + right.length > CHAR_DIFF_TOTAL_MAX) {
-    return `문자 diff 요약 생략(길이: ${left.length}+${right.length})`;
+    return `Character diff summary skipped (length: ${left.length}+${right.length})`;
   }
   const { a, b } = stripCommonAffixChars(left, right);
   const n = a.length;
   const m = b.length;
   if (n === 0 && m === 0) return '';
   if (n * m > CHAR_DIFF_CELL_HARD) {
-    return `문자 diff 요약 생략(과대: ${n}×${m})`;
+    return `Character diff summary skipped (too large: ${n}×${m})`;
   }
   const dist = levenshteinDistanceTwoRow(a, b);
   const opStr = charEditOpsHirschberg(a, b);
   const pat = opStr.replace(/=+/g, '·').slice(0, 100);
-  return `편집거리 ${dist} · ${pat}`;
+  return `Edit distance ${dist} · ${pat}`;
 }
 
 // ─── 정규화·해시·Diff ID (문단 시그니처·컨트롤 요약에 공통 사용) ───────────────
@@ -529,7 +529,7 @@ function controlSnapshotQuality(c: CompareControlSnapshot): number {
   // 요소별 변경 추적 품질 점수:
   // - 텍스트/픽셀해시/유효 bbox가 있는 스냅샷을 우선 채택해
   //   동일 key 중 더 "정보가 풍부한" 항목을 남긴다.  
-  if (c.summary.includes('text="') && !c.summary.includes('text="(없음)"')) score += 4;
+  if (c.summary.includes('text="') && !c.summary.includes('text="(없음)"')) score += 4; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel in .summary
   if (!c.summary.includes('pix=nopix')) score += 2;
   if (!c.summary.includes('nobox')) score += 1;
   if (c.type === 'shape') score += 1; // group보다 shape 상세값이 많은 편
@@ -538,12 +538,12 @@ function controlSnapshotQuality(c: CompareControlSnapshot): number {
 
 /** DiffKind → 짧은 한글 제목(컨트롤 추가/삭제 카드 등). UI `kindLabel`과 문구를 맞출 때 동기화 */
 function kindLabel(kind: DiffKind): string {
-  if (kind === 'table') return '표';
-  if (kind === 'shape') return '도형';
-  if (kind === 'image') return '이미지';
-  if (kind === 'chart') return '그래프';
-  if (kind === 'text') return '텍스트';
-  return '메타';
+  if (kind === 'table') return 'Table';
+  if (kind === 'shape') return 'Shape';
+  if (kind === 'image') return 'Image';
+  if (kind === 'chart') return 'Chart';
+  if (kind === 'text') return 'Text';
+  return 'Meta';
 }
 
 /**
@@ -630,7 +630,9 @@ function buildTableSummary(
   }
   const cellPreview = cellPreviewPairs.join('&');
   const cellHash = cellHashPairs.join('&');
-  return `table r=${dim.rowCount} c=${dim.colCount} tprev="${textPreview || '(없음)'}" cprev="${cellPreview || '(없음)'}" csha="${cellHash || '(없음)'}" txt=${textDigest} props=${propsDigest} box=${bboxDigest} sig=${sigDigest}`;
+  // "(없음)" is the "no value" sentinel embedded in CompareControlSnapshot.summary, persisted to IndexedDB
+  // (src/history/idb-store.ts) — every reader of this field must keep matching it, so it stays Korean.
+  return `table r=${dim.rowCount} c=${dim.colCount} tprev="${textPreview || '(없음)'}" cprev="${cellPreview || '(없음)'}" csha="${cellHash || '(없음)'}" txt=${textDigest} props=${propsDigest} box=${bboxDigest} sig=${sigDigest}`; // hwpword-keep-korean
 }
 
 // ─── 표 요약 파싱·셀 단위 변경 집계 (buildGranularControlDiffs에서 사용) ───────
@@ -666,7 +668,7 @@ function buildRightToLeftParaMapFromAligned(aligned: AlignedPair[]): Map<string,
 /** `buildTableSummary` 등이 만든 `key=value` 나열을 Record로 파싱. 값에 따옴표가 있으면 제거한다. */
 function parseSummaryKV(summary: string): Record<string, string> {
   const out: Record<string, string> = {};
-  for (const m of summary.matchAll(/([a-z]+)=("([^"]*)"|[^\s]+)/g)) {
+  for (const m of summary.matchAll(new RegExp(String.raw`([a-z]+)=("([^"]*)"|[^\s]+)`, 'g'))) {
     const raw = m[2] ?? '';
     out[m[1]] = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
   }
@@ -680,7 +682,7 @@ function parseSummaryKV(summary: string): Record<string, string> {
 function countChangedCellsByHash(leftHash: string, rightHash: string): number {
   const parse = (v: string): Map<string, string> => {
     const out = new Map<string, string>();
-    if (!v || v === '(없음)') return out;
+    if (!v || v === '(없음)') return out; // hwpword-keep-korean — matches diff-engine's persisted "no value" sentinel
     for (const pair of v.split('&')) {
       const i = pair.indexOf('=');
       if (i <= 0) continue;
@@ -731,48 +733,50 @@ function buildGranularControlDiffs(
   };
 
   if (l.type === 'table' && r.type === 'table') {
+    // (없음) below is the "no value" sentinel parsed back out of the persisted .summary field (see
+    // buildTableSummary) — every comparison/fallback against it must keep matching that exact string.
     const hasCellText =
-      (lk.cprev && lk.cprev !== '(없음)') ||
-      (rk.cprev && rk.cprev !== '(없음)') ||
-      (lk.tprev && lk.tprev !== '(없음)') ||
-      (rk.tprev && rk.tprev !== '(없음)');
-    const tableLabel = hasCellText ? '표' : '테이블';
+      (lk.cprev && lk.cprev !== '(없음)') || // hwpword-keep-korean
+      (rk.cprev && rk.cprev !== '(없음)') || // hwpword-keep-korean
+      (lk.tprev && lk.tprev !== '(없음)') || // hwpword-keep-korean
+      (rk.tprev && rk.tprev !== '(없음)'); // hwpword-keep-korean
+    const tableLabel = hasCellText ? 'Table' : 'Table'; // 표/테이블 both mean "table"; merged into one English label
     const rowsColsChanged = (lk.r ?? '') !== (rk.r ?? '') || (lk.c ?? '') !== (rk.c ?? '');
-    push('rows-cols', `${tableLabel} 행/열 변경`, `r=${lk.r ?? '(없음)'} c=${lk.c ?? '(없음)'}`, `r=${rk.r ?? '(없음)'} c=${rk.c ?? '(없음)'}`);
-    push('size', `${tableLabel} 크기 변경`, `box=${lk.box ?? '(없음)'}`, `box=${rk.box ?? '(없음)'}`);
+    push('rows-cols', `${tableLabel} rows/columns changed`, `r=${lk.r ?? '(없음)'} c=${lk.c ?? '(없음)'}`, `r=${rk.r ?? '(없음)'} c=${rk.c ?? '(없음)'}`); // hwpword-keep-korean
+    push('size', `${tableLabel} size changed`, `box=${lk.box ?? '(없음)'}`, `box=${rk.box ?? '(없음)'}`); // hwpword-keep-korean
     // UI의 행/열별 셀 비교는 cprev(r1c1=...&r1c2=...) 포맷을 기준으로 동작한다.
     // cprev가 없을 때만 tprev로 폴백한다.
-    const lText = `cprev="${lk.cprev ?? lk.tprev ?? '(없음)'}"`;
-    const rText = `cprev="${rk.cprev ?? rk.tprev ?? '(없음)'}"`;
+    const lText = `cprev="${lk.cprev ?? lk.tprev ?? '(없음)'}"`; // hwpword-keep-korean
+    const rText = `cprev="${rk.cprev ?? rk.tprev ?? '(없음)'}"`; // hwpword-keep-korean
     const tableTextChanged = (lk.txt ?? '') !== (rk.txt ?? '') || lText !== rText;
     const changedCells = countChangedCellsByHash(lk.csha ?? '', rk.csha ?? '');
     const textTitle = rowsColsChanged
-      ? `${tableLabel} 텍스트 변경(구조변경 동반${changedCells > 0 ? `, ${changedCells}셀` : ''})`
-      : `${tableLabel} 텍스트 변경${changedCells > 0 ? `(${changedCells}셀)` : ''}`;
+      ? `${tableLabel} text changed (structure changed too${changedCells > 0 ? `, ${changedCells} cells` : ''})`
+      : `${tableLabel} text changed${changedCells > 0 ? ` (${changedCells} cells)` : ''}`;
     push('text', textTitle, lText, rText, tableTextChanged);
     // props= 는 `getTableProperties` 전체 JSON 해시라 조판·저장 경로만 달라도 달라져 노이즈가 크다. UI에는 내리지 않는다.
     return items;
   }
 
   if (l.type === 'image' && r.type === 'image') {
-    push('size', '그림 크기 변경', `box=${lk.box ?? '(없음)'}`, `box=${rk.box ?? '(없음)'}`);
+    push('size', 'Picture size changed', `box=${lk.box ?? '(없음)'}`, `box=${rk.box ?? '(없음)'}`); // hwpword-keep-korean
     const imageTextChanged = (lk.text ?? '') !== (rk.text ?? '') || ((lk.pix ?? '') !== (rk.pix ?? '') && (lk.text ?? '') === (rk.text ?? ''));
-    push('text', '그림 텍스트 변경', `text="${lk.text ?? '(없음)'}" pix=${lk.pix ?? '(없음)'}`, `text="${rk.text ?? '(없음)'}" pix=${rk.pix ?? '(없음)'}`, imageTextChanged);
-    push('crop', '그림 자르기 변경', `crop=${lk.crop ?? '(없음)'}`, `crop=${rk.crop ?? '(없음)'}`);
-    push('effect', '그림 효과 변경', `effect=${lk.effect ?? '(없음)'} bc=${lk.bc ?? '(없음)'}`, `effect=${rk.effect ?? '(없음)'} bc=${rk.bc ?? '(없음)'}`);
+    push('text', 'Picture text changed', `text="${lk.text ?? '(없음)'}" pix=${lk.pix ?? '(없음)'}`, `text="${rk.text ?? '(없음)'}" pix=${rk.pix ?? '(없음)'}`, imageTextChanged); // hwpword-keep-korean
+    push('crop', 'Picture crop changed', `crop=${lk.crop ?? '(없음)'}`, `crop=${rk.crop ?? '(없음)'}`); // hwpword-keep-korean
+    push('effect', 'Picture effect changed', `effect=${lk.effect ?? '(없음)'} bc=${lk.bc ?? '(없음)'}`, `effect=${rk.effect ?? '(없음)'} bc=${rk.bc ?? '(없음)'}`); // hwpword-keep-korean
     return items;
   }
 
   if ((l.type === 'shape' || l.type === 'group') && (r.type === 'shape' || r.type === 'group')) {
-    push('size', `${label} 크기 변경`, `box=${lk.box ?? '(없음)'}`, `box=${rk.box ?? '(없음)'}`);
+    push('size', `${label} size changed`, `box=${lk.box ?? '(없음)'}`, `box=${rk.box ?? '(없음)'}`); // hwpword-keep-korean
     const shapeTextChanged = (lk.text ?? '') !== (rk.text ?? '') || ((lk.pix ?? '') !== (rk.pix ?? '') && (lk.text ?? '') === (rk.text ?? ''));
-    push('text', `${label} 텍스트 변경`, `text="${lk.text ?? '(없음)'}" pix=${lk.pix ?? '(없음)'}`, `text="${rk.text ?? '(없음)'}" pix=${rk.pix ?? '(없음)'}`, shapeTextChanged);
-    push('rotate', `${label} 회전/대칭 변경`, `rot=${lk.rot ?? '(없음)'} flip=${lk.flip ?? '(없음)'}`, `rot=${rk.rot ?? '(없음)'} flip=${rk.flip ?? '(없음)'}`);
-    push('layout', `${label} 배치 변경`, `wrap=${lk.wrap ?? '(없음)'} rel=${lk.rel ?? '(없음)'}`, `wrap=${rk.wrap ?? '(없음)'} rel=${rk.rel ?? '(없음)'}`);
+    push('text', `${label} text changed`, `text="${lk.text ?? '(없음)'}" pix=${lk.pix ?? '(없음)'}`, `text="${rk.text ?? '(없음)'}" pix=${rk.pix ?? '(없음)'}`, shapeTextChanged); // hwpword-keep-korean
+    push('rotate', `${label} rotation/flip changed`, `rot=${lk.rot ?? '(없음)'} flip=${lk.flip ?? '(없음)'}`, `rot=${rk.rot ?? '(없음)'} flip=${rk.flip ?? '(없음)'}`); // hwpword-keep-korean
+    push('layout', `${label} layout changed`, `wrap=${lk.wrap ?? '(없음)'} rel=${lk.rel ?? '(없음)'}`, `wrap=${rk.wrap ?? '(없음)'} rel=${rk.rel ?? '(없음)'}`); // hwpword-keep-korean
     return items;
   }
 
-  push('generic', `${label} 속성 변경`, l.summary, r.summary);
+  push('generic', `${label} properties changed`, l.summary, r.summary);
   return items;
 }
 
@@ -1072,7 +1076,7 @@ function fillSnapshotFromWasm(
           } catch {
             pix = 'nopix';
           }
-          summary = `image box=${w}x${h} crop=${crop} effect=${effect} bc=${bc} text="${desc || '(없음)'}" pix=${pix}`;
+          summary = `image box=${w}x${h} crop=${crop} effect=${effect} bc=${bc} text="${desc || '(없음)'}" pix=${pix}`; // hwpword-keep-korean
         } else if ((item.type === 'shape' || item.type === 'group') && sec >= 0 && para >= 0 && ci >= 0) {
           const props = wasm.getShapeProperties(sec, para, ci);
           const box = `${Math.round(props.width)}x${Math.round(props.height)}`;
@@ -1098,7 +1102,7 @@ function fillSnapshotFromWasm(
           } catch {
             pix = 'nopix';
           }
-          summary = `shape box=${box} rot=${rot} flip=${flip} wrap=${wrap} rel=${rel} text="${desc || '(없음)'}" pix=${pix}`;
+          summary = `shape box=${box} rot=${rot} flip=${flip} wrap=${wrap} rel=${rel} text="${desc || '(없음)'}" pix=${pix}`; // hwpword-keep-korean
           shapeDebugRows.push({
             source: 'layout',
             sec,
@@ -1200,7 +1204,7 @@ function fillSnapshotFromWasm(
     const withDescription = rows.filter((r) => r.usedDescription).length;
     const withParaFallback = rows.filter((r) => r.usedParaFallback).length;
     const withPix = rows.filter((r) => r.hasPix).length;
-    compareDbg('[shape-text-debug] 수집 요약', {
+    compareDbg('[shape-text-debug] collection summary', {
       total: rows.length,
       bySource,
       withShapeText,
@@ -1209,7 +1213,7 @@ function fillSnapshotFromWasm(
       withPix,
     });
     compareDbg(
-      '[shape-text-debug] 샘플(최대 20)',
+      '[shape-text-debug] sample (max 20)',
       rows.slice(0, 20).map((r) => ({
         src: r.source,
         sec: r.sec,
@@ -1223,7 +1227,7 @@ function fillSnapshotFromWasm(
       })),
     );
     compareDbg(
-      '[shape-text-debug] 미추출 대상(shapeTextLen=0)',
+      '[shape-text-debug] unextracted (shapeTextLen=0)',
       rows
         .filter((r) => r.shapeTextLen === 0)
         .map((r) => ({
@@ -1321,7 +1325,7 @@ function stripNoiseOnlyParagraphAlignSteps(steps: ParagraphAlignStep[]): Paragra
 }
 
 function formatParaLocTitle(p: { section: number; paragraph: number }): string {
-  return `구역 ${p.section}, 문단 ${p.paragraph}`;
+  return `Section ${p.section}, paragraph ${p.paragraph}`;
 }
 
 // ─── identity 경로: 이력(동일 혈통)에서 stable_id 기준 O(N) 근사 텍스트 diff ───
@@ -1369,7 +1373,7 @@ function buildIdentityTextDiffs(left: CompareDocumentSnapshot, right: CompareDoc
           kind: 'text',
           severity: 'removed',
           path: { section: l.section, paragraph: l.paragraph },
-          title: '문단 삭제',
+          title: 'Paragraph removed',
           leftPreview: l.text,
           rightPreview: '',
           leftAnchor: l.anchor,
@@ -1384,7 +1388,7 @@ function buildIdentityTextDiffs(left: CompareDocumentSnapshot, right: CompareDoc
           kind: 'text',
           severity: 'added',
           path: { section: r.section, paragraph: r.paragraph },
-          title: '문단 추가',
+          title: 'Paragraph added',
           leftPreview: '',
           rightPreview: r.text,
           rightAnchor: r.anchor,
@@ -1400,7 +1404,7 @@ function buildIdentityTextDiffs(left: CompareDocumentSnapshot, right: CompareDoc
         kind: 'text',
         severity: 'modified',
         path: preferRightPath(l, r),
-        title: '텍스트 변경',
+        title: 'Text changed',
         leftPreview: l.text,
         rightPreview: r.text,
         leftAnchor: l.anchor,
@@ -1419,7 +1423,7 @@ function buildIdentityTextDiffs(left: CompareDocumentSnapshot, right: CompareDoc
         kind: 'paragraphMeta',
         severity: 'modified',
         path: preferRightPath(l, r),
-        title: '문단 순서 이동',
+        title: 'Paragraph reordered',
         leftPreview: `A idx=${l.globalIndex}`,
         rightPreview: `B idx=${r.globalIndex}`,
         leftAnchor: l.anchor,
@@ -1433,7 +1437,7 @@ function buildIdentityTextDiffs(left: CompareDocumentSnapshot, right: CompareDoc
         kind: 'paragraphMeta',
         severity: 'modified',
         path: preferRightPath(l, r),
-        title: '문단 개체 수 변경',
+        title: 'Paragraph object count changed',
         leftPreview: `controls=${l.controlCount}`,
         rightPreview: `controls=${r.controlCount}`,
         leftAnchor: l.anchor,
@@ -2278,7 +2282,7 @@ function cleanupParagraphAlignStepsToDiffItems(
         kind: 'text',
         severity: 'modified',
         path: preferRightPath(s0.l, s1.r),
-        title: `텍스트 변경 (${formatParaLocTitle(s0.l)})`,
+        title: `Text changed (${formatParaLocTitle(s0.l)})`,
         leftPreview: s0.l.text,
         rightPreview: s1.r.text,
         leftAnchor: s0.l.anchor,
@@ -2293,7 +2297,7 @@ function cleanupParagraphAlignStepsToDiffItems(
         kind: 'text',
         severity: 'modified',
         path: preferRightPath(s1.l, s0.r),
-        title: `텍스트 변경 (${formatParaLocTitle(s1.l)})`,
+        title: `Text changed (${formatParaLocTitle(s1.l)})`,
         leftPreview: s1.l.text,
         rightPreview: s0.r.text,
         leftAnchor: s1.l.anchor,
@@ -2310,7 +2314,7 @@ function cleanupParagraphAlignStepsToDiffItems(
         kind: 'text',
         severity: 'modified',
         path: preferRightPath(s0.l, r2),
-        title: `텍스트 변경 (${formatParaLocTitle(r2)})`,
+        title: `Text changed (${formatParaLocTitle(r2)})`,
         leftPreview: s0.l.text,
         rightPreview: r2.text,
         leftAnchor: s0.l.anchor,
@@ -2328,7 +2332,7 @@ function cleanupParagraphAlignStepsToDiffItems(
         kind: 'text',
         severity: 'modified',
         path: preferRightPath(l2, s0.r),
-        title: `텍스트 변경 (${formatParaLocTitle(s0.r)})`,
+        title: `Text changed (${formatParaLocTitle(s0.r)})`,
         leftPreview: l2.text,
         rightPreview: s0.r.text,
         leftAnchor: l2.anchor,
@@ -2350,7 +2354,7 @@ function cleanupParagraphAlignStepsToDiffItems(
           kind: 'text',
           severity: 'modified',
           path: preferRightPath(L, rHead),
-          title: `텍스트 변경 (${formatParaLocTitle(rHead)})`,
+          title: `Text changed (${formatParaLocTitle(rHead)})`,
           leftPreview: L.text,
           rightPreview: rHead.text,
           leftAnchor: L.anchor,
@@ -2366,7 +2370,7 @@ function cleanupParagraphAlignStepsToDiffItems(
                 kind: 'text' as const,
                 severity: 'added' as const,
                 path: { section: rTail.section, paragraph: rTail.paragraph },
-                title: `문단 추가 (${formatParaLocTitle(rTail)})`,
+                title: `Paragraph added (${formatParaLocTitle(rTail)})`,
                 leftPreview: '',
                 rightPreview: rTail.text,
                 rightAnchor: rTail.anchor,
@@ -2388,7 +2392,7 @@ function cleanupParagraphAlignStepsToDiffItems(
           kind: 'text',
           severity: 'added',
           path: { section: r.section, paragraph: r.paragraph },
-          title: `문단 추가 (${formatParaLocTitle(r)})`,
+          title: `Paragraph added (${formatParaLocTitle(r)})`,
           leftPreview: '',
           rightPreview: r.text,
           rightAnchor: r.anchor,
@@ -2408,7 +2412,7 @@ function cleanupParagraphAlignStepsToDiffItems(
           kind: 'text',
           severity: 'removed',
           path: preferRightPath(l, null),
-          title: `문단 삭제 (${formatParaLocTitle(l)})`,
+          title: `Paragraph removed (${formatParaLocTitle(l)})`,
           leftPreview: l.text,
           rightPreview: '',
           leftAnchor: l.anchor,
@@ -2428,7 +2432,7 @@ function cleanupParagraphAlignStepsToDiffItems(
         kind: 'text',
         severity: 'modified',
         path: preferRightPath(l, r),
-        title: `텍스트 변경 (${formatParaLocTitle(l)})`,
+        title: `Text changed (${formatParaLocTitle(l)})`,
         leftPreview: l.text,
         rightPreview: r.text,
         leftAnchor: l.anchor,
@@ -2442,7 +2446,7 @@ function cleanupParagraphAlignStepsToDiffItems(
         kind: 'paragraphMeta',
         severity: 'modified',
         path: { section: l.section, paragraph: l.paragraph },
-        title: `문단 이동 감지 (${formatParaLocTitle(l)})`,
+        title: `Paragraph move detected (${formatParaLocTitle(l)})`,
         leftPreview: `A idx=${l.globalIndex}`,
         rightPreview: `B idx=${r.globalIndex}`,
         leftAnchor: l.anchor,
@@ -2456,7 +2460,7 @@ function cleanupParagraphAlignStepsToDiffItems(
         kind: 'paragraphMeta',
         severity: 'modified',
         path: { section: l.section, paragraph: l.paragraph },
-        title: `문단 개체 수 변경 (${formatParaLocTitle(l)})`,
+        title: `Paragraph object count changed (${formatParaLocTitle(l)})`,
         leftPreview: `controls=${l.controlCount}`,
         rightPreview: `controls=${r.controlCount}`,
         leftAnchor: l.anchor,
@@ -2490,8 +2494,8 @@ function buildTextDiffs(left: CompareDocumentSnapshot, right: CompareDocumentSna
   const anchors = buildAnchorPairs(lps, rps, anchorTuning);
   if (isCompareDebugEnabled()) {
     compareDbg(
-      '[③ 앵커] 시그니처 유일 + 품질필터(길이/공백비율/엔트로피). 빈 줄·패턴 문장이 많으면 구간이 어긋날 수 있음.',
-      `앵커 ${anchors.length}쌍 (앞 20개)`,
+      '[③ anchors] unique signature + quality filter (length/whitespace ratio/entropy). Segments can drift when there are many blank lines or repeated pattern sentences.',
+      `${anchors.length} anchor pairs (first 20)`,
       anchors.slice(0, 20).map(({ li, ri }) => ({
         li,
         ri,
@@ -2752,7 +2756,7 @@ function buildControlDiffs(
       kind: r.kind,
       severity: 'added',
       path: { section: r.section, paragraph: r.paragraph, controlKey: key },
-      title: `${kindLabel(r.kind)} 추가`,
+      title: `${kindLabel(r.kind)} added`,
       leftPreview: '',
       rightPreview: r.summary,
       rightAnchor: r.anchor,
@@ -2766,7 +2770,7 @@ function buildControlDiffs(
       kind: l.kind,
       severity: 'removed',
       path: { section: l.section, paragraph: l.paragraph, controlKey: key },
-      title: `${kindLabel(l.kind)} 삭제`,
+      title: `${kindLabel(l.kind)} removed`,
       leftPreview: l.summary,
       rightPreview: '',
       leftAnchor: l.anchor,
@@ -2819,9 +2823,9 @@ function tableControlPairContentSimilarity(l: CompareControlSnapshot, r: Compare
 
   const pickCells = (kv: Record<string, string>) => {
     const cp = kv.cprev;
-    if (cp && cp !== '(없음)') return cp;
+    if (cp && cp !== '(없음)') return cp; // hwpword-keep-korean
     const tp = kv.tprev;
-    if (tp && tp !== '(없음)') return tp;
+    if (tp && tp !== '(없음)') return tp; // hwpword-keep-korean
     return kv.txt ?? '';
   };
   const a = pickCells(lk);
@@ -3012,7 +3016,7 @@ export function compareSnapshots(
         if (rmap.has(id)) sharedStable += 1;
       }
     }
-    compareDbg('[① stable_id] 스냅샷 요약', {
+    compareDbg('[① stable_id] snapshot summary', {
       left: left.meta.name,
       right: right.meta.name,
       leftParas: left.paragraphs.length,
@@ -3020,25 +3024,25 @@ export function compareSnapshots(
       leftHead: left.paragraphs.slice(0, 10).map((p) => ({
         sec: p.section,
         para: p.paragraph,
-        id: p.stableId ? `${p.stableId.slice(0, 14)}…` : '(빈)',
+        id: p.stableId ? `${p.stableId.slice(0, 14)}…` : '(empty)',
         t: p.text.slice(0, 32),
       })),
       rightHead: right.paragraphs.slice(0, 10).map((p) => ({
         sec: p.section,
         para: p.paragraph,
-        id: p.stableId ? `${p.stableId.slice(0, 14)}…` : '(빈)',
+        id: p.stableId ? `${p.stableId.slice(0, 14)}…` : '(empty)',
         t: p.text.slice(0, 32),
       })),
     });
-    compareDbg('[② 전략·폴백]', {
+    compareDbg('[② strategy/fallback]', {
       optionsStrategy: strategy,
       textMode,
       mapsBuildOk: Boolean(lmap && rmap),
       sharedStableIdCount: lmap && rmap ? sharedStable : null,
       path:
         textMode === 'identity'
-          ? 'buildIdentityTextDiffs (Map<stableId>, 인덱스 1:1 아님)'
-          : 'buildTextDiffs (앵커 + 구간 DP/그리디 — ③ 로그 참고)',
+          ? 'buildIdentityTextDiffs (Map<stableId>, not a 1:1 index)'
+          : 'buildTextDiffs (anchors + segment DP/greedy — see ③ log)',
     });
   }
 
@@ -3060,7 +3064,7 @@ export function compareSnapshots(
   );
   annotateDiffSectionPages(filtered, left, right);
   if (isCompareDebugEnabled() && activeRuntimeGuard?.bailedOut) {
-    compareDbg('[성능 가드레일] 타임버짓 초과로 일부 구간을 greedy/fallback으로 처리했습니다.');
+    compareDbg('[performance guardrail] time budget exceeded — some segments were processed via greedy/fallback.');
   }
   // 목록 정렬: 구역 → 문단 순으로 탐색하기 쉽게
   filtered.sort((a, b) => {
