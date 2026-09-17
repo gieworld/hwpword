@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { join, resolve } from 'node:path';
-import { resolveAppPath } from '../lib/app-path.mjs';
+import { originOf, resolveAppPath } from '../lib/app-path.mjs';
 
 const root = resolve('studio-dist-fixture');
 
@@ -26,4 +26,14 @@ test('refuses other hosts and malformed URLs', () => {
   assert.equal(resolveAppPath(root, 'app://other/index.html', 'hwpword'), null);
   assert.equal(resolveAppPath(root, 'not a url', 'hwpword'), null);
   assert.equal(resolveAppPath(root, 'app://hwpword/%E0%A4%A', 'hwpword'), null);
+});
+
+test('originOf reduces URLs to scheme://host, including custom schemes', () => {
+  assert.equal(originOf('app://hwpword/index.html'), 'app://hwpword');
+  assert.equal(originOf('http://127.0.0.1:7700/src/main.ts'), 'http://127.0.0.1:7700');
+  assert.equal(originOf('not a url'), null);
+});
+
+test('originOf sees through userinfo that fools a string prefix check', () => {
+  assert.equal(originOf('http://127.0.0.1:7700@evil.com/'), 'http://evil.com');
 });

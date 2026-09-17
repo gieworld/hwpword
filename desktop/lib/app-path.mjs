@@ -23,3 +23,13 @@ export function resolveAppPath(rootDir, requestUrl, host) {
   if (rel === '' || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) return null;
   return filePath;
 }
+
+/** `scheme://host[:port]` of a URL, or null if unparseable. WHATWG `URL#origin` is "null" for custom schemes such as app:, so it is built by hand. */
+export function originOf(url) {
+  try {
+    const { protocol, host } = new URL(url);
+    return `${protocol}//${host}`;
+  } catch {
+    return null;
+  }
+}

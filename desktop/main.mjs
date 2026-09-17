@@ -2,13 +2,14 @@
 import { app, BrowserWindow, dialog, Menu, net, protocol, session, shell } from 'electron';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { resolveAppPath } from './lib/app-path.mjs';
+import { originOf, resolveAppPath } from './lib/app-path.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const APP_HOST = 'hwpword';
 const APP_ORIGIN = `app://${APP_HOST}`;
 const devUrlArg = process.argv.find((arg) => arg.startsWith('--dev-url='));
 const DEV_URL = devUrlArg ? devUrlArg.slice('--dev-url='.length) : null;
+const DEV_ORIGIN = DEV_URL ? originOf(DEV_URL) : null;
 const STUDIO_DIST = app.isPackaged
   ? join(process.resourcesPath, 'studio')
   : join(here, '..', 'rhwp-studio', 'dist');
@@ -19,7 +20,8 @@ protocol.registerSchemesAsPrivileged([
 ]);
 
 function isTrustedUrl(url) {
-  return url.startsWith(`${APP_ORIGIN}/`) || (DEV_URL !== null && url.startsWith(DEV_URL));
+  const origin = originOf(url);
+  return origin !== null && (origin === APP_ORIGIN || origin === DEV_ORIGIN);
 }
 
 function openExternally(url) {
