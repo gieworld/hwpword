@@ -15,7 +15,7 @@ test('편집기 셸은 제목과 header, main, footer landmark를 제공한다',
   const html = source('index.html');
 
   assert.match(html, /<header id="studio-header">/);
-  assert.match(html, /<h1 class="visually-hidden">rhwp-studio 문서 편집기<\/h1>/);
+  assert.match(html, /<h1 class="visually-hidden">HWP Word document editor<\/h1>/);
   assert.match(html, /<nav id="menu-bar" aria-label="주 메뉴">/);
   assert.match(html, /<main id="editor-area" aria-label="Document Editing Area">/);
   assert.match(html, /<footer id="status-bar">/);

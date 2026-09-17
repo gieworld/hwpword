@@ -65,12 +65,19 @@ export class AboutDialog extends ModalDialog {
     tech.textContent = 'Rust + WebAssembly + TypeScript';
     body.appendChild(tech);
 
-    // HWP 스펙 고지 문구 (필수)
+    // HWP 스펙 고지 문구 (필수) — Hancom's public HWP spec licence requires this exact Korean sentence.
     const notice = document.createElement('div');
     notice.className = 'about-notice';
     notice.textContent =
       '본 제품은 한글과컴퓨터의 한글 문서 파일(.hwp) 공개 문서를 참고하여 개발하였습니다.';
     body.appendChild(notice);
+
+    // English translation of the notice above, directly beneath it.
+    const noticeEn = document.createElement('div');
+    noticeEn.className = 'about-notice';
+    noticeEn.textContent =
+      "This product was developed with reference to Hancom's public HWP (.hwp) file format documentation.";
+    body.appendChild(noticeEn);
 
     // 오픈소스 라이선스
     const licenseTitle = document.createElement('div');
