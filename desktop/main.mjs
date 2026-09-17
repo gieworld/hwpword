@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { isAllowedPermission, originOf, resolveAppPath } from './lib/app-path.mjs';
 import { createSerialWriter, LaunchFileRegistry, launchPathsFromArgv, pathKey } from './lib/launch-files.mjs';
+import { isAppTitle } from './lib/window-title.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const APP_HOST = 'hwpword';
@@ -63,7 +64,11 @@ function createWindow(launchPaths = []) {
   const ownerId = win.webContents.id;
   launchFiles.register(ownerId, launchPaths);
   win.on('closed', () => launchFiles.release(ownerId));
-  win.on('page-title-updated', (event) => event.preventDefault());
+  // The studio sets document.title to "<document> - HWP Word" whenever it refreshes document
+  // status; print briefly sets a bare basename title. Only the former should reach the window.
+  win.on('page-title-updated', (event, title) => {
+    if (!isAppTitle(title)) event.preventDefault();
+  });
   // rhwp-studio registers beforeunload while the document is dirty; Electron would otherwise block the close silently.
   win.webContents.on('will-prevent-unload', (event) => {
     const choice = dialog.showMessageBoxSync(win, {

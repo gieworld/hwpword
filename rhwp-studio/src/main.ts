@@ -282,6 +282,7 @@ const commandServices: CommandServices = {
   gotoPage: (globalPage) => canvasView?.gotoPage(globalPage) ?? false,
   refreshDocumentStatus: () => {
     sbMessage().textContent = `${wasm.fileName} — ${wasm.pageCount} pages`;
+    setWindowTitle(wasm.fileName);
   },
   setEditMode,
 };
@@ -397,6 +398,13 @@ const sbMessage = () => document.getElementById('sb-message')!;
 const sbPage = () => document.getElementById('sb-page')!;
 const sbSection = () => document.getElementById('sb-section')!;
 const sbZoomVal = () => document.getElementById('sb-zoom-val')!;
+
+// HWP Word desktop: main.mjs only lets a title ending in this suffix reach the OS window chrome
+// (page-title-updated ignores anything else, e.g. print's temporary basename-only title).
+function setWindowTitle(fileName: string): void {
+  document.title = `${fileName} - HWP Word`;
+}
+
 let autosaveStatusRestoreTimer: ReturnType<typeof setTimeout> | null = null;
 let autosavePreviousMessage: string | null = null;
 
@@ -1393,6 +1401,7 @@ async function initializeDocument(
     inputHandler?.activateWithCaretPosition();
     // 최종 단계 뒤에는 비동기 작업이 없으므로 100% progress paint를 기다리지 않는다.
     msg.textContent = displayName;
+    setWindowTitle(wasm.fileName);
     console.log('[initDoc] 9. 완료');
 
     // #2527: 자동 보정을 하지 않으므로 로드 직후 문서는 항상 clean.
