@@ -781,9 +781,11 @@ async function initialize(): Promise<void> {
       // HWP Word desktop: a window launched with a file skips recovery and the blank document, and only a lone window offers recovery.
       const plan = await desktopStartupPlan(window as unknown as DesktopWindowLike);
       await loadFromUrlParam();
-      // embed 프로파일: 자동저장 복구 다이얼로그의 드래프트 복원도 호스트가 감지할 수
-      // 없는 문서 교체 경로이므로 띄우지 않는다 (드래프트 기록 자체는 유지).
-      if (chromeMode !== 'embed' && plan.offerRecovery) await offerAutosaveRecoveryIfIdle();
+      if (plan.offerRecovery) {
+        // embed 프로파일: 자동저장 복구 다이얼로그의 드래프트 복원도 호스트가 감지할 수
+        // 없는 문서 교체 경로이므로 띄우지 않는다 (드래프트 기록 자체는 유지).
+        if (chromeMode !== 'embed') await offerAutosaveRecoveryIfIdle();
+      }
       if (!plan.hasLaunchFiles) await openBlankDocumentIfIdle();
     })();
     // embed 프로파일: PWA launch queue로 문서를 넘겨받는 진입도 문서 교체 경로이므로

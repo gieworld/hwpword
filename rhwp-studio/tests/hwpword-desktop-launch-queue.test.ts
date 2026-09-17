@@ -152,6 +152,6 @@ test('studio startup follows the desktop startup plan', () => {
   const mainTs = codeOnly(readFileSync(new URL('../src/main.ts', import.meta.url), 'utf8'));
   assert.match(
     mainTs,
-    /const plan = await desktopStartupPlan\(window as unknown as DesktopWindowLike\);\s*await loadFromUrlParam\(\);\s*if \(chromeMode !== 'embed' && plan\.offerRecovery\) await offerAutosaveRecoveryIfIdle\(\);\s*if \(!plan\.hasLaunchFiles\) await openBlankDocumentIfIdle\(\);/,
+    /const plan = await desktopStartupPlan\(window as unknown as DesktopWindowLike\);\s*await loadFromUrlParam\(\);\s*if \(plan\.offerRecovery\) \{\s*if \(chromeMode !== 'embed'\) await offerAutosaveRecoveryIfIdle\(\);\s*\}\s*if \(!plan\.hasLaunchFiles\) await openBlankDocumentIfIdle\(\);/,
   );
 });
