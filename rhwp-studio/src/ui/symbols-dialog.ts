@@ -13,44 +13,44 @@ export { isCodePointInBlock } from './unicode-block.ts';
 // ── 유니코드 블록 정의 ──
 
 const UNICODE_BLOCKS: UnicodeBlock[] = [
-  { name: '기본 라틴 문자', start: 0x0020, end: 0x007F },
-  { name: '라틴 문자-1 보충', start: 0x0080, end: 0x00FF },
-  { name: '라틴 확장-A', start: 0x0100, end: 0x017F },
-  { name: '라틴 확장-B', start: 0x0180, end: 0x024F },
-  { name: 'IPA 확장', start: 0x0250, end: 0x02AF },
-  { name: '공백 변환 문자', start: 0x02B0, end: 0x02FF },
-  { name: '조합 분음 부호', start: 0x0300, end: 0x036F },
-  { name: '그리스·콥트 문자', start: 0x0370, end: 0x03FF },
-  { name: '키릴 문자', start: 0x0400, end: 0x04FF },
-  { name: '일반 구두점', start: 0x2000, end: 0x206F },
-  { name: '위 첨자·아래 첨자', start: 0x2070, end: 0x209F },
-  { name: '통화 기호', start: 0x20A0, end: 0x20CF },
-  { name: '문자형 기호', start: 0x2100, end: 0x214F },
-  { name: '숫자 형태', start: 0x2150, end: 0x218F },
-  { name: '화살표', start: 0x2190, end: 0x21FF },
-  { name: '수학 연산자', start: 0x2200, end: 0x22FF },
-  { name: '기타 기술 기호', start: 0x2300, end: 0x23FF },
-  { name: '제어 그림 문자', start: 0x2400, end: 0x243F },
-  { name: '광학 문자 인식', start: 0x2440, end: 0x245F },
-  { name: '테두리 문자', start: 0x2500, end: 0x257F },
-  { name: '블록 요소', start: 0x2580, end: 0x259F },
-  { name: '도형', start: 0x25A0, end: 0x25FF },
-  { name: '여러 가지 기호', start: 0x2600, end: 0x26FF },
-  { name: '딩뱃 기호', start: 0x2700, end: 0x27BF },
-  { name: '여러 가지 수학 기호-A', start: 0x27C0, end: 0x27EF },
-  { name: '화살표 보충-A', start: 0x27F0, end: 0x27FF },
-  { name: '점자 패턴', start: 0x2800, end: 0x28FF },
-  { name: '화살표 보충-B', start: 0x2900, end: 0x297F },
-  { name: '여러 가지 수학 기호-B', start: 0x2980, end: 0x29FF },
-  { name: 'CJK 기호 및 구두점', start: 0x3000, end: 0x303F },
-  { name: '히라가나', start: 0x3040, end: 0x309F },
-  { name: '가타카나', start: 0x30A0, end: 0x30FF },
-  { name: '한글 호환 자모', start: 0x3130, end: 0x318F },
-  { name: 'CJK 호환 문자', start: 0x3300, end: 0x33FF },
-  { name: 'CJK 통합 한자 (일부)', start: 0x4E00, end: 0x4FFF },
-  { name: '한글 음절 (가~깋)', start: 0xAC00, end: 0xAD0F },
-  { name: '한글 음절 (나~닣)', start: 0xB098, end: 0xB1FF },
-  { name: '반각·전각 형태', start: 0xFF00, end: 0xFFEF },
+  { name: 'Basic Latin', start: 0x0020, end: 0x007F },
+  { name: 'Latin-1 Supplement', start: 0x0080, end: 0x00FF },
+  { name: 'Latin Extended-A', start: 0x0100, end: 0x017F },
+  { name: 'Latin Extended-B', start: 0x0180, end: 0x024F },
+  { name: 'IPA Extensions', start: 0x0250, end: 0x02AF },
+  { name: 'Spacing Modifier Letters', start: 0x02B0, end: 0x02FF },
+  { name: 'Combining Diacritical Marks', start: 0x0300, end: 0x036F },
+  { name: 'Greek and Coptic', start: 0x0370, end: 0x03FF },
+  { name: 'Cyrillic', start: 0x0400, end: 0x04FF },
+  { name: 'General Punctuation', start: 0x2000, end: 0x206F },
+  { name: 'Superscripts and Subscripts', start: 0x2070, end: 0x209F },
+  { name: 'Currency Symbols', start: 0x20A0, end: 0x20CF },
+  { name: 'Letterlike Symbols', start: 0x2100, end: 0x214F },
+  { name: 'Number Forms', start: 0x2150, end: 0x218F },
+  { name: 'Arrows', start: 0x2190, end: 0x21FF },
+  { name: 'Mathematical Operators', start: 0x2200, end: 0x22FF },
+  { name: 'Miscellaneous Technical', start: 0x2300, end: 0x23FF },
+  { name: 'Control Pictures', start: 0x2400, end: 0x243F },
+  { name: 'Optical Character Recognition', start: 0x2440, end: 0x245F },
+  { name: 'Box Drawing', start: 0x2500, end: 0x257F },
+  { name: 'Block Elements', start: 0x2580, end: 0x259F },
+  { name: 'Geometric Shapes', start: 0x25A0, end: 0x25FF },
+  { name: 'Miscellaneous Symbols', start: 0x2600, end: 0x26FF },
+  { name: 'Dingbats', start: 0x2700, end: 0x27BF },
+  { name: 'Miscellaneous Mathematical Symbols-A', start: 0x27C0, end: 0x27EF },
+  { name: 'Supplemental Arrows-A', start: 0x27F0, end: 0x27FF },
+  { name: 'Braille Patterns', start: 0x2800, end: 0x28FF },
+  { name: 'Supplemental Arrows-B', start: 0x2900, end: 0x297F },
+  { name: 'Miscellaneous Mathematical Symbols-B', start: 0x2980, end: 0x29FF },
+  { name: 'CJK Symbols and Punctuation', start: 0x3000, end: 0x303F },
+  { name: 'Hiragana', start: 0x3040, end: 0x309F },
+  { name: 'Katakana', start: 0x30A0, end: 0x30FF },
+  { name: 'Hangul Compatibility Jamo', start: 0x3130, end: 0x318F },
+  { name: 'CJK Compatibility', start: 0x3300, end: 0x33FF },
+  { name: 'CJK Unified Ideographs (Partial)', start: 0x4E00, end: 0x4FFF },
+  { name: 'Hangul Syllables (가~깋)', start: 0xAC00, end: 0xAD0F }, // hwpword-keep-korean 가/깋 are literal example characters marking this block's codepoint range, not translatable UI text
+  { name: 'Hangul Syllables (나~닣)', start: 0xB098, end: 0xB1FF }, // hwpword-keep-korean 나/닣 are literal example characters marking this block's codepoint range, not translatable UI text
+  { name: 'Halfwidth and Fullwidth Forms', start: 0xFF00, end: 0xFFEF },
 ];
 
 const COLS = 16;
@@ -125,7 +125,7 @@ export class SymbolsDialog {
     // 타이틀
     const titleBar = document.createElement('div');
     titleBar.className = 'dialog-title';
-    titleBar.textContent = '문자표 입력';
+    titleBar.textContent = 'Insert Symbol';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'dialog-close';
     closeBtn.textContent = '\u00D7';
@@ -147,7 +147,7 @@ export class SymbolsDialog {
     blockCol.className = 'sym-block-col';
     const blockLabel = document.createElement('div');
     blockLabel.className = 'sym-label';
-    blockLabel.textContent = '문자 영역(I):';
+    blockLabel.textContent = 'Character area:';
     blockCol.appendChild(blockLabel);
     this.blockList = document.createElement('div');
     this.blockList.className = 'sym-block-list';
@@ -170,14 +170,14 @@ export class SymbolsDialog {
     codeRow.className = 'sym-code-row';
     const selLabel = document.createElement('span');
     selLabel.className = 'sym-label';
-    selLabel.textContent = '문자 선택(C):';
+    selLabel.textContent = 'Selected character:';
     codeRow.appendChild(selLabel);
     const codeSpacer = document.createElement('span');
     codeSpacer.style.flex = '1';
     codeRow.appendChild(codeSpacer);
     const codePrefix = document.createElement('span');
     codePrefix.className = 'sym-label';
-    codePrefix.textContent = '유니코드(U):';
+    codePrefix.textContent = 'Unicode:';
     codeRow.appendChild(codePrefix);
     this.codeLabel = document.createElement('span');
     this.codeLabel.className = 'sym-code-value';
@@ -200,7 +200,7 @@ export class SymbolsDialog {
     // 최근 사용한 문자
     const recentLabel = document.createElement('div');
     recentLabel.className = 'sym-label';
-    recentLabel.textContent = '최근 사용한 문자(Q):';
+    recentLabel.textContent = 'Recently used characters:';
     recentLabel.style.marginTop = '8px';
     body.appendChild(recentLabel);
 
@@ -215,11 +215,11 @@ export class SymbolsDialog {
     footer.className = 'dialog-footer';
     const insertBtn = document.createElement('button');
     insertBtn.className = 'dialog-btn dialog-btn-primary';
-    insertBtn.textContent = '넣기(D)';
+    insertBtn.textContent = 'Insert';
     insertBtn.addEventListener('click', () => this.doInsert());
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'dialog-btn';
-    cancelBtn.textContent = '닫기';
+    cancelBtn.textContent = 'Close';
     cancelBtn.addEventListener('click', () => this.hide());
     footer.appendChild(insertBtn);
     footer.appendChild(cancelBtn);
@@ -338,7 +338,7 @@ export class SymbolsDialog {
     if (recents.length === 0) {
       const msg = document.createElement('span');
       msg.className = 'sym-recent-empty';
-      msg.textContent = '최근에 [문자표]에서 사용한 문자가 없습니다.';
+      msg.textContent = 'No recently used characters.';
       this.recentGrid.appendChild(msg);
       return;
     }

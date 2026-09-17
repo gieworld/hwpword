@@ -116,7 +116,7 @@ export const LANG = {
 } as const;
 
 /** 언어 인덱스 → 한국어 라벨 */
-export const LANG_LABELS = ['한글', '영문', '한자', '일어', '외국어', '기호', '사용자'] as const;
+export const LANG_LABELS = ['Hangul', 'Latin', 'Hanja', 'Japanese', 'Other', 'Symbol', 'User'] as const;
 
 /** 언어 인덱스 → FontSet 키 매핑 */
 const LANG_KEYS: (keyof Omit<FontSet, 'name'>)[] = [
@@ -126,7 +126,7 @@ const LANG_KEYS: (keyof Omit<FontSet, 'name'>)[] = [
 /** 내장 기본 대표 글꼴 (편집/삭제 불가) */
 export const BUILTIN_FONT_SETS: readonly FontSet[] = [
   {
-    name: '함초롬',
+    name: '함초롬', // hwpword-keep-korean font-set display name, rendered via fontDisplayName() (romanized automatically)
     korean: '함초롬바탕', english: '함초롬바탕', chinese: '함초롬바탕',
     japanese: '함초롬바탕', other: '함초롬바탕', symbol: '함초롬바탕', user: '함초롬바탕',
   },

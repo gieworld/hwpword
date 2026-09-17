@@ -18,7 +18,7 @@ export class FontSetDialog extends ModalDialog {
   private deleteBtn!: HTMLButtonElement;
 
   constructor() {
-    super('대표 글꼴 등록하기', 520);
+    super('Representative Fonts', 520);
   }
 
   protected createBody(): HTMLElement {
@@ -31,20 +31,20 @@ export class FontSetDialog extends ModalDialog {
 
     const addBtn = document.createElement('button');
     addBtn.className = 'dialog-btn fs-icon-btn';
-    addBtn.title = '대표 글꼴 추가하기';
+    addBtn.title = 'Add representative font';
     addBtn.textContent = '+';
     addBtn.addEventListener('click', () => this.onAdd());
 
     this.editBtn = document.createElement('button');
     this.editBtn.className = 'dialog-btn fs-icon-btn';
-    this.editBtn.title = '대표 글꼴 편집하기';
+    this.editBtn.title = 'Edit representative font';
     this.editBtn.textContent = '✎';
     this.editBtn.disabled = true;
     this.editBtn.addEventListener('click', () => this.onEdit());
 
     this.deleteBtn = document.createElement('button');
     this.deleteBtn.className = 'dialog-btn fs-icon-btn';
-    this.deleteBtn.title = '대표 글꼴 지우기';
+    this.deleteBtn.title = 'Delete representative font';
     this.deleteBtn.textContent = '−';
     this.deleteBtn.disabled = true;
     this.deleteBtn.addEventListener('click', () => this.onDelete());
@@ -108,7 +108,7 @@ export class FontSetDialog extends ModalDialog {
     if (isBuiltin) {
       const badge = document.createElement('span');
       badge.className = 'fs-badge';
-      badge.textContent = '내장';
+      badge.textContent = 'Built-in';
       item.appendChild(badge);
     }
 
@@ -134,7 +134,7 @@ export class FontSetDialog extends ModalDialog {
     if (!fs) {
       const empty = document.createElement('div');
       empty.className = 'fs-info-empty';
-      empty.textContent = '대표 글꼴을 선택하세요';
+      empty.textContent = 'Select a representative font';
       this.infoEl.appendChild(empty);
       return;
     }
@@ -165,7 +165,7 @@ export class FontSetDialog extends ModalDialog {
       if (userSettings.addFontSet(newFs)) {
         this.refreshList();
       } else {
-        alert('같은 이름의 대표 글꼴이 이미 등록되어 있습니다.');
+        alert('A representative font with the same name is already registered.');
       }
     });
     dlg.show();
@@ -185,7 +185,7 @@ export class FontSetDialog extends ModalDialog {
         return s.name === updated.name;
       });
       if (dup) {
-        alert('같은 이름의 대표 글꼴이 이미 등록되어 있습니다.');
+        alert('A representative font with the same name is already registered.');
         return;
       }
       userSettings.updateFontSet(this.selectedIndex, updated);
@@ -200,7 +200,7 @@ export class FontSetDialog extends ModalDialog {
     const fs = customs[this.selectedIndex];
     if (!fs) return;
 
-    if (confirm(`선택한 대표 글꼴 "${fs.name}"을(를) 지울까요?`)) {
+    if (confirm(`Delete the selected representative font "${fs.name}"?`)) {
       userSettings.removeFontSet(this.selectedIndex);
       this.refreshList();
     }

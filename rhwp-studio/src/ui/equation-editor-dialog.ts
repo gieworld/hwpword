@@ -35,8 +35,8 @@ interface TemplateGroup { id: string; name: string; items: TemplateEntry[] }
 interface CommandEntry { name: string; display: string; hwpInsert: string; latexInsert: string; group: string }
 
 const TEMPLATE_GROUPS: TemplateGroup[] = [
-  { id: 'struct', name: '구조', items: [
-    { label: '분수', hwp: '{} over {}', latex: '\\frac{}{}'  },
+  { id: 'struct', name: 'Structure', items: [
+    { label: 'Frac', hwp: '{} over {}', latex: '\\frac{}{}'  },
     { label: 'x²', hwp: '{}^{}', latex: '{}^{}' },
     { label: 'x₂', hwp: '{}_{}', latex: '{}_{}' },
     { label: '√', hwp: 'sqrt {}', latex: '\\sqrt{}' },
@@ -52,11 +52,11 @@ const TEMPLATE_GROUPS: TemplateGroup[] = [
     { label: '⌈⌉', hwp: 'LEFT lceil {} RIGHT rceil', latex: '\\left\\lceil {} \\right\\rceil' },
     { label: '⌊⌋', hwp: 'LEFT lfloor {} RIGHT rfloor', latex: '\\left\\lfloor {} \\right\\rfloor' },
     { label: '||', hwp: 'LEFT | {} RIGHT |', latex: '\\left| {} \\right|' },
-    { label: '행렬', hwp: 'matrix { {} # {} ; {} # {} }', latex: '\\begin{matrix} {} & {} \\\\ {} & {} \\end{matrix}' },
+    { label: 'Matrix', hwp: 'matrix { {} # {} ; {} # {} }', latex: '\\begin{matrix} {} & {} \\\\ {} & {} \\end{matrix}' },
     { label: 'cases', hwp: 'cases { {} ; {} }', latex: '\\begin{cases} {} \\\\ {} \\end{cases}' },
     { label: 'lim', hwp: 'lim _{} {}', latex: '\\lim_{} {}' },
   ] },
-  { id: 'greek', name: '그리스', items: [
+  { id: 'greek', name: 'Greek', items: [
     { label: 'α', hwp: 'alpha', latex: '\\alpha' },
     { label: 'β', hwp: 'beta', latex: '\\beta' },
     { label: 'γ', hwp: 'gamma', latex: '\\gamma' },
@@ -91,7 +91,7 @@ const TEMPLATE_GROUPS: TemplateGroup[] = [
     { label: 'Ψ', hwp: 'Psi', latex: '\\Psi' },
     { label: 'Ω', hwp: 'Omega', latex: '\\Omega' },
   ] },
-  { id: 'op', name: '연산자', items: [
+  { id: 'op', name: 'Operators', items: [
     { label: '±', hwp: 'pm', latex: '\\pm' },
     { label: '∓', hwp: 'mp', latex: '\\mp' },
     { label: '×', hwp: 'times', latex: '\\times' },
@@ -126,7 +126,7 @@ const TEMPLATE_GROUPS: TemplateGroup[] = [
     { label: '∴', hwp: 'therefore', latex: '\\therefore' },
     { label: '∵', hwp: 'because', latex: '\\because' },
   ] },
-  { id: 'arrow', name: '화살표', items: [
+  { id: 'arrow', name: 'Arrows', items: [
     { label: '←', hwp: 'larrow', latex: '\\leftarrow' },
     { label: '→', hwp: 'rarrow', latex: '\\rightarrow' },
     { label: '↑', hwp: 'uparrow', latex: '\\uparrow' },
@@ -139,7 +139,7 @@ const TEMPLATE_GROUPS: TemplateGroup[] = [
     { label: '↗', hwp: 'nearrow', latex: '\\nearrow' },
     { label: '↘', hwp: 'searrow', latex: '\\searrow' },
   ] },
-  { id: 'func', name: '함수', items: [
+  { id: 'func', name: 'Functions', items: [
     { label: 'sin', hwp: 'sin', latex: '\\sin' },
     { label: 'cos', hwp: 'cos', latex: '\\cos' },
     { label: 'tan', hwp: 'tan', latex: '\\tan' },
@@ -161,7 +161,7 @@ const TEMPLATE_GROUPS: TemplateGroup[] = [
     { label: 'gcd', hwp: 'gcd', latex: '\\gcd' },
     { label: 'mod', hwp: 'mod', latex: '\\mod' },
   ] },
-  { id: 'deco', name: '장식', items: [
+  { id: 'deco', name: 'Accents', items: [
     { label: 'â', hwp: 'hat {}', latex: '\\hat{}' },
     { label: 'ā', hwp: 'bar {}', latex: '\\bar{}' },
     { label: 'ã', hwp: 'tilde {}', latex: '\\tilde{}' },
@@ -173,7 +173,7 @@ const TEMPLATE_GROUPS: TemplateGroup[] = [
     { label: 'a̲', hwp: 'UNDERLINE {}', latex: '\\underline{}' },
     { label: 'a̅', hwp: 'OVERLINE {}', latex: '\\overline{}' },
   ] },
-  { id: 'special', name: '특수', items: [
+  { id: 'special', name: 'Special', items: [
     { label: 'ℓ', hwp: 'ell', latex: '\\ell' },
     { label: 'ℏ', hwp: 'hbar', latex: '\\hbar' },
     { label: 'ℵ', hwp: 'aleph', latex: '\\aleph' },
@@ -333,7 +333,7 @@ export class EquationEditorDialog {
     titleBar.className = 'dialog-title';
 
     const titleText = document.createElement('span');
-    titleText.textContent = '수식 편집';
+    titleText.textContent = 'Edit Equation';
 
     // 모드 토글 버튼
     this.modeBtn = document.createElement('button');
@@ -364,7 +364,7 @@ export class EquationEditorDialog {
     this.searchInput = document.createElement('input');
     this.searchInput.type = 'text';
     this.searchInput.className = 'eq-search-input';
-    this.searchInput.placeholder = '기호 검색 (이름 또는 유니코드)';
+    this.searchInput.placeholder = 'Search symbols (name or Unicode)';
     this.searchInput.addEventListener('input', () => this.onSearchInput());
     this.searchResults = document.createElement('div');
     this.searchResults.className = 'eq-search-results';
@@ -376,10 +376,10 @@ export class EquationEditorDialog {
     this.latexHint = document.createElement('div');
     this.latexHint.className = 'eq-latex-hint';
     this.latexHint.style.display = 'none';
-    this.latexHint.innerHTML = '<span>💡 백슬래시(\\) 명령어가 감지됨 — </span>';
+    this.latexHint.innerHTML = '<span>💡 Backslash (\\) command detected — </span>';
     const hintLink = document.createElement('a');
     hintLink.href = '#';
-    hintLink.textContent = 'LaTeX 모드로 전환';
+    hintLink.textContent = 'Switch to LaTeX mode';
     hintLink.addEventListener('click', (e) => { e.preventDefault(); this.setMode('latex'); });
     this.latexHint.appendChild(hintLink);
     body.appendChild(this.latexHint);
@@ -412,7 +412,7 @@ export class EquationEditorDialog {
     this.scriptErrorLabel.style.color = '#c00';
     this.scriptErrorLabel.style.fontSize = '11px';
     this.scriptErrorLabel.style.display = 'none';
-    this.scriptErrorLabel.textContent = `수식 스크립트는 ${MAX_EQUATION_SCRIPT_LEN}자를 넘을 수 없습니다.`;
+    this.scriptErrorLabel.textContent = `The equation script cannot exceed ${MAX_EQUATION_SCRIPT_LEN} characters.`;
     body.appendChild(this.scriptErrorLabel);
 
     // 6) 속성 행
@@ -421,7 +421,7 @@ export class EquationEditorDialog {
 
     const sizeLabel = document.createElement('span');
     sizeLabel.className = 'dialog-label';
-    sizeLabel.textContent = '글자 크기';
+    sizeLabel.textContent = 'Font size';
     this.fontSizeInput = document.createElement('input');
     this.fontSizeInput.type = 'number';
     this.fontSizeInput.className = 'dialog-input';
@@ -435,7 +435,7 @@ export class EquationEditorDialog {
 
     const colorLabel = document.createElement('span');
     colorLabel.className = 'dialog-label';
-    colorLabel.textContent = '색';
+    colorLabel.textContent = 'Color';
     this.colorInput = document.createElement('input');
     this.colorInput.type = 'color';
     this.colorInput.className = 'eq-color-input';
@@ -449,11 +449,11 @@ export class EquationEditorDialog {
     footer.className = 'dialog-footer';
     const okBtn = document.createElement('button');
     okBtn.className = 'dialog-btn dialog-btn-primary';
-    okBtn.textContent = '확인';
+    okBtn.textContent = 'OK';
     okBtn.addEventListener('click', () => this.handleOk());
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'dialog-btn';
-    cancelBtn.textContent = '취소';
+    cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', () => this.hide());
     footer.append(okBtn, cancelBtn);
 
@@ -483,7 +483,7 @@ export class EquationEditorDialog {
   private setMode(m: InputMode): void {
     this.mode = m;
     this.modeBtn.textContent = m === 'hwp' ? 'HWP' : 'LaTeX';
-    this.modeBtn.title = m === 'hwp' ? 'LaTeX 모드로 전환' : 'HWP 모드로 전환';
+    this.modeBtn.title = m === 'hwp' ? 'Switch to LaTeX mode' : 'Switch to HWP mode';
     this.latexHint.style.display = 'none';
     this.refreshToolbar();
   }
@@ -689,7 +689,7 @@ export class EquationEditorDialog {
   private updatePreview(): void {
     const script = this.scriptArea.value.trim();
     if (!script) {
-      this.showPreviewMessage('eq-preview-empty', '수식을 입력하세요');
+      this.showPreviewMessage('eq-preview-empty', 'Enter an equation');
       return;
     }
 
@@ -702,7 +702,7 @@ export class EquationEditorDialog {
       this.previewContainer.replaceChildren();
       appendSvgMarkup(this.previewContainer, svg);
     } catch (err) {
-      this.showPreviewMessage('eq-preview-error', '미리보기 오류');
+      this.showPreviewMessage('eq-preview-error', 'Preview error');
       console.warn('[EquationEditor] 미리보기 오류:', err);
     }
   }

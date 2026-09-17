@@ -25,7 +25,7 @@ export class FontSetEditDialog extends ModalDialog {
   private onApply: (fs: FontSet) => void;
 
   constructor(editTarget: FontSet | null, onApply: (fs: FontSet) => void) {
-    super(editTarget ? '대표 글꼴 편집하기' : '대표 글꼴 추가하기', 400);
+    super(editTarget ? 'Edit Representative Font' : 'Add Representative Font', 400);
     this.editTarget = editTarget;
     this.onApply = onApply;
   }
@@ -45,12 +45,12 @@ export class FontSetEditDialog extends ModalDialog {
 
     const nameLabel = document.createElement('label');
     nameLabel.className = 'dialog-label fse-label';
-    nameLabel.textContent = '대표 글꼴 이름';
+    nameLabel.textContent = 'Representative font name';
 
     this.nameInput = document.createElement('input');
     this.nameInput.type = 'text';
     this.nameInput.className = 'dialog-input fse-name-input';
-    this.nameInput.placeholder = '예: 나의 글꼴 세트';
+    this.nameInput.placeholder = 'e.g. My Font Set';
     if (this.editTarget) this.nameInput.value = this.editTarget.name;
 
     nameRow.appendChild(nameLabel);
@@ -76,7 +76,7 @@ export class FontSetEditDialog extends ModalDialog {
 
       // 웹폰트 optgroup
       const webGroup = document.createElement('optgroup');
-      webGroup.label = '웹 글꼴';
+      webGroup.label = 'Web Fonts';
       for (const fontName of webFonts) {
         const opt = document.createElement('option');
         opt.value = fontName;
@@ -88,7 +88,7 @@ export class FontSetEditDialog extends ModalDialog {
       // 로컬 글꼴 optgroup (감지된 경우에만)
       if (localFonts.length > 0) {
         const localGroup = document.createElement('optgroup');
-        localGroup.label = '로컬 글꼴';
+        localGroup.label = 'Local Fonts';
         for (const fontName of localFonts) {
           const opt = document.createElement('option');
           opt.value = fontName;
@@ -118,7 +118,7 @@ export class FontSetEditDialog extends ModalDialog {
   protected onConfirm(): void {
     const name = this.nameInput.value.trim();
     if (!name) {
-      alert('대표 글꼴 이름을 입력하세요.');
+      alert('Enter a representative font name.');
       return;
     }
 

@@ -21,43 +21,43 @@ interface FormulaContext {
 }
 
 const FUNCTIONS = [
-  { name: 'SUM', desc: '합계' },
-  { name: 'AVERAGE', desc: '평균' },
-  { name: 'PRODUCT', desc: '곱' },
-  { name: 'MIN', desc: '최소값' },
-  { name: 'MAX', desc: '최대값' },
-  { name: 'COUNT', desc: '개수' },
-  { name: 'ABS', desc: '절대값' },
-  { name: 'SQRT', desc: '제곱근' },
-  { name: 'ROUND', desc: '반올림' },
-  { name: 'CEILING', desc: '올림' },
-  { name: 'FLOOR', desc: '내림' },
-  { name: 'TRUNC', desc: '절삭' },
-  { name: 'MOD', desc: '나머지' },
-  { name: 'IF', desc: '조건' },
-  { name: 'INT', desc: '정수' },
-  { name: 'SIGN', desc: '부호' },
-  { name: 'EXP', desc: 'e 거듭제곱' },
-  { name: 'LOG', desc: '자연로그' },
-  { name: 'LOG10', desc: '상용로그' },
-  { name: 'SIN', desc: '사인' },
-  { name: 'COS', desc: '코사인' },
-  { name: 'TAN', desc: '탄젠트' },
+  { name: 'SUM', desc: 'Sum' },
+  { name: 'AVERAGE', desc: 'Average' },
+  { name: 'PRODUCT', desc: 'Product' },
+  { name: 'MIN', desc: 'Minimum' },
+  { name: 'MAX', desc: 'Maximum' },
+  { name: 'COUNT', desc: 'Count' },
+  { name: 'ABS', desc: 'Absolute value' },
+  { name: 'SQRT', desc: 'Square root' },
+  { name: 'ROUND', desc: 'Round' },
+  { name: 'CEILING', desc: 'Round up' },
+  { name: 'FLOOR', desc: 'Round down' },
+  { name: 'TRUNC', desc: 'Truncate' },
+  { name: 'MOD', desc: 'Remainder' },
+  { name: 'IF', desc: 'Condition' },
+  { name: 'INT', desc: 'Integer' },
+  { name: 'SIGN', desc: 'Sign' },
+  { name: 'EXP', desc: 'Exponential' },
+  { name: 'LOG', desc: 'Natural log' },
+  { name: 'LOG10', desc: 'Common log' },
+  { name: 'SIN', desc: 'Sine' },
+  { name: 'COS', desc: 'Cosine' },
+  { name: 'TAN', desc: 'Tangent' },
 ];
 
 const EASY_RANGES = [
-  { value: '', label: '(선택)' },
-  { value: 'left', label: '왼쪽 (left)' },
-  { value: 'right', label: '오른쪽 (right)' },
-  { value: 'above', label: '위쪽 (above)' },
-  { value: 'below', label: '아래쪽 (below)' },
+  { value: '', label: '(Select)' },
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
+  { value: 'above', label: 'Above' },
+  { value: 'below', label: 'Below' },
 ];
 
 const FORMATS = [
-  { value: 'default', label: '기본 형식' },
-  { value: 'integer', label: '정수' },
-  { value: 'decimal1', label: '소수 1자리' },
-  { value: 'decimal2', label: '소수 2자리' },
+  { value: 'default', label: 'Default format' },
+  { value: 'integer', label: 'Integer' },
+  { value: 'decimal1', label: '1 decimal place' },
+  { value: 'decimal2', label: '2 decimal places' },
 ];
 
 export class FormulaDialog extends ModalDialog {
@@ -71,7 +71,7 @@ export class FormulaDialog extends ModalDialog {
   private errorMsg!: HTMLDivElement;
 
   constructor(wasm: any, eventBus: EventBus, ctx: FormulaContext, private services?: CommandServices) {
-    super('계산식', 420);
+    super('Formula', 420);
     this.wasm = wasm;
     this.eventBus = eventBus;
     this.ctx = ctx;
@@ -82,7 +82,7 @@ export class FormulaDialog extends ModalDialog {
     body.className = 'formula-dialog-body';
 
     // 계산식 입력
-    body.appendChild(this.createRow('계산식(E):', () => {
+    body.appendChild(this.createRow('Formula:', () => {
       this.formulaInput = document.createElement('input');
       this.formulaInput.type = 'text';
       this.formulaInput.className = 'formula-input';
@@ -92,10 +92,10 @@ export class FormulaDialog extends ModalDialog {
     }));
 
     // 함수 선택
-    body.appendChild(this.createRow('함수(F):', () => {
+    body.appendChild(this.createRow('Function:', () => {
       this.funcSelect = document.createElement('select');
       this.funcSelect.className = 'formula-select';
-      this.funcSelect.appendChild(makeOption('', '(선택)'));
+      this.funcSelect.appendChild(makeOption('', '(Select)'));
       FUNCTIONS.forEach(f => this.funcSelect.appendChild(makeOption(f.name, `${f.name} - ${f.desc}`)));
       this.funcSelect.addEventListener('change', () => {
         const func = this.funcSelect.value;
@@ -113,7 +113,7 @@ export class FormulaDialog extends ModalDialog {
     }));
 
     // 쉬운 범위
-    body.appendChild(this.createRow('쉬운 범위(R):', () => {
+    body.appendChild(this.createRow('Quick range:', () => {
       const sel = document.createElement('select');
       sel.className = 'formula-select';
       EASY_RANGES.forEach(r => sel.appendChild(makeOption(r.value, r.label)));
@@ -131,7 +131,7 @@ export class FormulaDialog extends ModalDialog {
     }));
 
     // 형식
-    body.appendChild(this.createRow('형식(M):', () => {
+    body.appendChild(this.createRow('Format:', () => {
       this.formatSelect = document.createElement('select');
       this.formatSelect.className = 'formula-select';
       FORMATS.forEach(f => this.formatSelect.appendChild(makeOption(f.value, f.label)));
@@ -146,7 +146,7 @@ export class FormulaDialog extends ModalDialog {
     this.commaCheck.type = 'checkbox';
     this.commaCheck.checked = true;
     commaLabel.appendChild(this.commaCheck);
-    commaLabel.appendChild(document.createTextNode(' 세 자리마다 쉼표로 자리 구분(C)'));
+    commaLabel.appendChild(document.createTextNode(' Separate thousands with commas'));
     commaRow.appendChild(commaLabel);
     body.appendChild(commaRow);
 
@@ -179,7 +179,7 @@ export class FormulaDialog extends ModalDialog {
     this.clearError();
 
     if (!formula || formula === '=' || formula === '@') {
-      this.showError('계산식을 입력하세요.');
+      this.showError('Enter a formula.');
       return false;
     }
 
@@ -202,7 +202,7 @@ export class FormulaDialog extends ModalDialog {
       const validated = JSON.parse(validateResult);
 
       if (!validated.ok) {
-        this.showError(validated.error || '계산식에 오류가 있습니다.');
+        this.showError(validated.error || 'There is an error in the formula.');
         return false;
       }
 
@@ -265,7 +265,7 @@ export class FormulaDialog extends ModalDialog {
       }
       return true; // 성공 → 대화상자 닫기
     } catch (e: any) {
-      this.showError('계산식 실행 실패: ' + (e.message || e));
+      this.showError('Formula execution failed: ' + (e.message || e));
       return false; // 실패 → 대화상자 유지
     }
   }

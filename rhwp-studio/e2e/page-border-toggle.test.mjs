@@ -49,7 +49,7 @@ async function clickPageBorderButton(page, title) {
 async function getPageBorderState(page) {
   return await page.evaluate(() => {
     const svg = document.querySelector('.dialog-wrap svg');
-    const noneCheck = document.querySelector('input[data-label="테두리 사용 안 함"]');
+    const noneCheck = document.querySelector('input[data-label="No border"]');
     return {
       lineCount: svg?.querySelectorAll('line').length ?? -1,
       noneChecked: Boolean(noneCheck?.checked),
@@ -59,7 +59,7 @@ async function getPageBorderState(page) {
 
 async function setBorderNone(page, checked) {
   await page.evaluate((nextChecked) => {
-    const noneCheck = document.querySelector('input[data-label="테두리 사용 안 함"]');
+    const noneCheck = document.querySelector('input[data-label="No border"]');
     if (!noneCheck) throw new Error('테두리 사용 안 함 체크박스를 찾을 수 없습니다');
     noneCheck.checked = nextChecked;
     noneCheck.dispatchEvent(new Event('change', { bubbles: true }));
@@ -85,33 +85,33 @@ runTest('쪽 테두리/배경 미리보기 버튼 토글', async ({ page }) => {
   assert(initial.lineCount === 0, 'TC1: 새 문서의 쪽 테두리 preview는 선 없음 상태다');
   assert(initial.noneChecked, 'TC1: 새 문서의 테두리 사용 안 함 체크가 켜져 있다');
 
-  await clickPageBorderButton(page, '위쪽');
+  await clickPageBorderButton(page, 'Top');
   const topOn = await getPageBorderState(page);
   assert(topOn.lineCount === 1, 'TC2: 위쪽 버튼 1회 클릭 시 preview 선이 1개가 된다');
   assert(!topOn.noneChecked, 'TC2: 위쪽 버튼 1회 클릭 시 테두리 사용 안 함 체크가 꺼진다');
 
-  await clickPageBorderButton(page, '위쪽');
+  await clickPageBorderButton(page, 'Top');
   const topOff = await getPageBorderState(page);
   assert(topOff.lineCount === 0, 'TC2: 위쪽 버튼 2회 클릭 시 preview 선이 다시 0개가 된다');
   assert(topOff.noneChecked, 'TC2: 위쪽 버튼 2회 클릭 시 테두리 사용 안 함 체크가 다시 켜진다');
 
-  await clickPageBorderButton(page, '모두');
+  await clickPageBorderButton(page, 'All');
   const allOn = await getPageBorderState(page);
   assert(allOn.lineCount === 4, 'TC3: 모두 버튼 1회 클릭 시 사방 선이 켜진다');
   assert(!allOn.noneChecked, 'TC3: 모두 버튼 1회 클릭 시 테두리 사용 안 함 체크가 꺼진다');
 
-  await clickPageBorderButton(page, '모두');
+  await clickPageBorderButton(page, 'All');
   const allOff = await getPageBorderState(page);
   assert(allOff.lineCount === 0, 'TC3: 모두 버튼 2회 클릭 시 사방 선이 모두 꺼진다');
   assert(allOff.noneChecked, 'TC3: 모두 버튼 2회 클릭 시 테두리 사용 안 함 체크가 다시 켜진다');
 
-  await clickPageBorderButton(page, '위쪽');
+  await clickPageBorderButton(page, 'Top');
   await setLineType(page, '2');
   const immediate = await getPageBorderState(page);
   assert(immediate.lineCount === 1, 'TC4: 선 모양 바로 적용은 켜진 방향 1개에만 반영된다');
   assert(!immediate.noneChecked, 'TC4: 선 모양 바로 적용 후에도 활성 테두리 상태가 유지된다');
 
-  await clickPageBorderButton(page, '모두');
+  await clickPageBorderButton(page, 'All');
   const allOnBeforeNone = await getPageBorderState(page);
   assert(allOnBeforeNone.lineCount === 4, 'TC5: 테두리 사용 안 함 확인 전 사방 선을 켠다');
 
@@ -120,13 +120,13 @@ runTest('쪽 테두리/배경 미리보기 버튼 토글', async ({ page }) => {
   assert(noneAfterAllOn.lineCount === 0, 'TC5: 테두리 사용 안 함 체크 시 preview 선이 모두 사라진다');
   assert(noneAfterAllOn.noneChecked, 'TC5: 테두리 사용 안 함 체크 상태가 유지된다');
 
-  await clickPageBorderButton(page, '모두');
+  await clickPageBorderButton(page, 'All');
   const allOnAfterNone = await getPageBorderState(page);
   assert(allOnAfterNone.lineCount === 4, 'TC5: 테두리 사용 안 함 상태에서 모두 버튼 1회 클릭으로 사방 선이 켜진다');
   assert(!allOnAfterNone.noneChecked, 'TC5: 모두 버튼 적용 시 테두리 사용 안 함 체크가 꺼진다');
 
   await setBorderNone(page, true);
-  await clickPageBorderButton(page, '위쪽');
+  await clickPageBorderButton(page, 'Top');
   const topOnlyAfterNone = await getPageBorderState(page);
   assert(topOnlyAfterNone.lineCount === 1, 'TC6: 테두리 사용 안 함 상태에서 위쪽 버튼 클릭 시 위쪽 선만 켜진다');
   assert(!topOnlyAfterNone.noneChecked, 'TC6: 위쪽 버튼 적용 시 테두리 사용 안 함 체크가 꺼진다');

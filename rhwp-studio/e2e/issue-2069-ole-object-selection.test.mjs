@@ -129,8 +129,8 @@ async function setOleCaptionAndReadBack(page) {
   await page.waitForSelector('.dialog-wrap', { timeout: 5000 });
   const dialogState = await page.evaluate(() => {
     const marginTab = [...document.querySelectorAll('.dialog-tab')]
-      .find(el => el.textContent?.trim() === '여백/캡션');
-    if (!marginTab) throw new Error('여백/캡션 tab not found');
+      .find(el => el.textContent?.trim() === 'Margin/Caption');
+    if (!marginTab) throw new Error('Margin/Caption tab not found');
     marginTab.click();
 
     const captionBtns = [...document.querySelectorAll('.pp-caption-btn')];
@@ -140,12 +140,12 @@ async function setOleCaptionAndReadBack(page) {
     captionBtns[8].click();
 
     const expandLabel = [...document.querySelectorAll('label')]
-      .find(el => el.textContent?.includes('여백 부분까지 너비 확대'));
+      .find(el => el.textContent?.includes('Expand width to margin'));
     if (expandLabel) expandLabel.click();
 
     const ok = [...document.querySelectorAll('button')]
-      .find(el => el.textContent?.trim() === '설정(D)');
-    if (!ok) throw new Error('설정(D) button not found');
+      .find(el => el.textContent?.trim() === 'OK');
+    if (!ok) throw new Error('OK button not found');
     const state = {
       tabTexts: [...document.querySelectorAll('.dialog-tab')].map(el => el.textContent?.trim()),
       captionCount: captionBtns.length,
@@ -188,8 +188,8 @@ async function removeOleCaptionAndReadBack(page) {
   await page.waitForSelector('.dialog-wrap', { timeout: 5000 });
   const dialogState = await page.evaluate(() => {
     const marginTab = [...document.querySelectorAll('.dialog-tab')]
-      .find(el => el.textContent?.trim() === '여백/캡션');
-    if (!marginTab) throw new Error('여백/캡션 tab not found');
+      .find(el => el.textContent?.trim() === 'Margin/Caption');
+    if (!marginTab) throw new Error('Margin/Caption tab not found');
     marginTab.click();
 
     const captionBtns = [...document.querySelectorAll('.pp-caption-btn')];
@@ -199,8 +199,8 @@ async function removeOleCaptionAndReadBack(page) {
     captionBtns[4].click();
 
     const ok = [...document.querySelectorAll('button')]
-      .find(el => el.textContent?.trim() === '설정(D)');
-    if (!ok) throw new Error('설정(D) button not found');
+      .find(el => el.textContent?.trim() === 'OK');
+    if (!ok) throw new Error('OK button not found');
     const state = {
       captionCount: captionBtns.length,
       activeIndex: captionBtns.findIndex(el => el.classList.contains('active')),

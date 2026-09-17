@@ -152,7 +152,7 @@ async function getPageBorderStyles(page) {
 async function applyTopPageBorder(page) {
   await page.evaluate(() => {
     const topButton = Array.from(document.querySelectorAll('.page-border-side-btn'))
-      .find((button) => button.getAttribute('title') === '위쪽');
+      .find((button) => button.getAttribute('title') === 'Top');
     if (!topButton) throw new Error('쪽 테두리 위쪽 버튼을 찾을 수 없습니다');
     topButton.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
   });

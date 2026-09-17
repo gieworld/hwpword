@@ -26,7 +26,7 @@ export class OptionsDialog extends ModalDialog {
   private pdfPrintGuidanceCheck!: HTMLInputElement;
 
   constructor(private readonly eventBus?: EventBus) {
-    super('환경 설정', 480);
+    super('Options', 480);
   }
 
   protected createBody(): HTMLElement {
@@ -39,13 +39,13 @@ export class OptionsDialog extends ModalDialog {
 
     const fontTab = document.createElement('button');
     fontTab.className = 'dialog-tab active';
-    fontTab.textContent = '글꼴';
+    fontTab.textContent = 'Font';
     fontTab.dataset.tab = 'font';
     tabs.appendChild(fontTab);
 
     const fileTab = document.createElement('button');
     fileTab.className = 'dialog-tab';
-    fileTab.textContent = '파일';
+    fileTab.textContent = 'File';
     fileTab.dataset.tab = 'file';
     tabs.appendChild(fileTab);
 
@@ -87,7 +87,7 @@ export class OptionsDialog extends ModalDialog {
 
     const viewTitle = document.createElement('div');
     viewTitle.className = 'dialog-section-title';
-    viewTitle.textContent = '글꼴 보기';
+    viewTitle.textContent = 'Font View';
     viewSection.appendChild(viewTitle);
 
     // 최근 사용 글꼴 보이기
@@ -101,7 +101,7 @@ export class OptionsDialog extends ModalDialog {
 
     const recentLabel = document.createElement('label');
     recentLabel.htmlFor = 'opt-show-recent';
-    recentLabel.textContent = '최근에 사용한 글꼴 보이기';
+    recentLabel.textContent = 'Show recently used fonts';
 
     this.recentCountInput = document.createElement('input');
     this.recentCountInput.type = 'number';
@@ -112,7 +112,7 @@ export class OptionsDialog extends ModalDialog {
 
     const countLabel = document.createElement('span');
     countLabel.className = 'opt-count-label';
-    countLabel.textContent = '개';
+    countLabel.textContent = '';
 
     recentRow.appendChild(this.showRecentCheck);
     recentRow.appendChild(recentLabel);
@@ -128,17 +128,17 @@ export class OptionsDialog extends ModalDialog {
 
     const fontSetTitle = document.createElement('div');
     fontSetTitle.className = 'dialog-section-title';
-    fontSetTitle.textContent = '대표 글꼴 등록';
+    fontSetTitle.textContent = 'Representative Fonts';
     fontSetSection.appendChild(fontSetTitle);
 
     const fontSetDesc = document.createElement('p');
     fontSetDesc.className = 'opt-desc';
-    fontSetDesc.textContent = '대표 글꼴은 각 언어별 글꼴을 짝지어 한 번에 적용하는 글꼴 세트입니다.';
+    fontSetDesc.textContent = 'A representative font is a set that pairs a font for each language and applies them all at once.';
     fontSetSection.appendChild(fontSetDesc);
 
     const fontSetBtn = document.createElement('button');
     fontSetBtn.className = 'dialog-btn opt-fontset-btn';
-    fontSetBtn.textContent = '대표 글꼴 등록하기';
+    fontSetBtn.textContent = 'Register Representative Fonts…';
     fontSetBtn.addEventListener('click', () => {
       const dlg = new FontSetDialog();
       dlg.show();
@@ -153,12 +153,12 @@ export class OptionsDialog extends ModalDialog {
 
     const localTitle = document.createElement('div');
     localTitle.className = 'dialog-section-title';
-    localTitle.textContent = '로컬 글꼴';
+    localTitle.textContent = 'Local Fonts';
     localSection.appendChild(localTitle);
 
     const localDesc = document.createElement('p');
     localDesc.className = 'opt-desc';
-    localDesc.textContent = 'PC에 설치된 글꼴을 감지하여 글꼴 목록에 추가합니다. (Chrome/Edge는 목록 열거 후 문서에서 누락된 후보를 추가 확인, Firefox는 문서에 필요한 후보만 확인)';
+    localDesc.textContent = 'Detects fonts installed on your PC and adds them to the font list. (Chrome/Edge enumerate the full list and then check for candidates missing from the document; Firefox only checks the candidates the document needs.)';
     localSection.appendChild(localDesc);
 
     const localRow = document.createElement('div');
@@ -166,11 +166,11 @@ export class OptionsDialog extends ModalDialog {
 
     const localBtn = document.createElement('button');
     localBtn.className = 'dialog-btn opt-fontset-btn';
-    localBtn.textContent = '로컬 글꼴 감지하기';
+    localBtn.textContent = 'Detect Local Fonts';
 
     const resetBtn = document.createElement('button');
     resetBtn.className = 'dialog-btn opt-fontset-btn';
-    resetBtn.textContent = '감지 결과 초기화';
+    resetBtn.textContent = 'Reset Detection Results';
 
     const localStatus = document.createElement('p');
     localStatus.className = 'opt-local-status';
@@ -179,28 +179,28 @@ export class OptionsDialog extends ModalDialog {
       const state = getLocalFontState();
       localStatus.textContent = message ?? formatLocalFontStatus(state);
       resetBtn.disabled = !state.stored;
-      localBtn.textContent = state.stored ? '로컬 글꼴 재감지' : '로컬 글꼴 감지하기';
+      localBtn.textContent = state.stored ? 'Redetect Local Fonts' : 'Detect Local Fonts';
     };
 
-    updateLocalStatus('감지 결과 확인 중...');
+    updateLocalStatus('Checking detection results…');
     void loadStoredLocalFonts().then(
       () => updateLocalStatus(),
-      () => updateLocalStatus('저장된 감지 결과를 확인하지 못했습니다.'),
+      () => updateLocalStatus('Could not check the saved detection results.'),
     );
 
     localBtn.addEventListener('click', async () => {
       if (!isLocalFontAccessSupported()) {
         localStatus.textContent = getLocalFontState().method === 'font-presence-probe'
-          ? '이 브라우저는 전체 로컬 글꼴 목록 감지를 지원하지 않습니다. 문서를 열 때 필요한 글꼴만 확인합니다.'
-          : '이 브라우저는 로컬 글꼴 감지를 지원하지 않습니다.';
+          ? 'This browser does not support detecting the full local font list. Only the fonts a document needs are checked when it is opened.'
+          : 'This browser does not support local font detection.';
         return;
       }
       localBtn.disabled = true;
       resetBtn.disabled = true;
-      localStatus.textContent = '감지 중...';
+      localStatus.textContent = 'Detecting…';
       try {
         const fonts = await detectLocalFonts({ force: true });
-        updateLocalStatus(`${fonts.length}개 로컬 글꼴 열거 결과를 저장했습니다. 문서별 누락 후보는 문서를 열 때 추가 확인합니다.`);
+        updateLocalStatus(`Saved the enumeration results for ${fonts.length} local fonts. Missing per-document candidates are checked when a document is opened.`);
         this.eventBus?.emit('local-fonts-changed', { fonts, source: 'options-dialog' });
       } catch (error) {
         updateLocalStatus(describeLocalFontDetectionError(error));
@@ -211,13 +211,13 @@ export class OptionsDialog extends ModalDialog {
     resetBtn.addEventListener('click', async () => {
       localBtn.disabled = true;
       resetBtn.disabled = true;
-      localStatus.textContent = '감지 결과 초기화 중...';
+      localStatus.textContent = 'Resetting detection results…';
       try {
         await clearStoredLocalFonts();
-        updateLocalStatus('저장된 로컬 글꼴 감지 결과를 삭제했습니다.');
+        updateLocalStatus('Deleted the saved local font detection results.');
         this.eventBus?.emit('local-fonts-changed', { fonts: [], source: 'options-dialog-clear' });
       } catch {
-        updateLocalStatus('저장된 감지 결과를 삭제하지 못했습니다.');
+        updateLocalStatus('Could not delete the saved detection results.');
       }
       localBtn.disabled = false;
     });
@@ -242,12 +242,12 @@ export class OptionsDialog extends ModalDialog {
 
     const saveTitle = document.createElement('div');
     saveTitle.className = 'dialog-section-title';
-    saveTitle.textContent = '복구용 임시 파일 자동 저장';
+    saveTitle.textContent = 'Auto-Save Recovery File';
     saveSection.appendChild(saveTitle);
 
     const desc = document.createElement('p');
     desc.className = 'opt-desc';
-    desc.textContent = '대형 문서는 자동저장 시 전체 HWP 복구본을 만들기 때문에 간격을 길게 두면 편집 중 멈춤을 줄일 수 있습니다.';
+    desc.textContent = 'For large documents, autosave creates a full HWP recovery copy, so a longer interval can reduce pauses while editing.';
     saveSection.appendChild(desc);
 
     this.recoveryEnabledCheck = document.createElement('input');
@@ -264,9 +264,9 @@ export class OptionsDialog extends ModalDialog {
 
     saveSection.appendChild(createAutosaveNumberRow({
       checkbox: this.recoveryEnabledCheck,
-      labelText: '복구용 자동 저장',
+      labelText: 'Auto-save for recovery',
       numberInput: this.recoveryIntervalInput,
-      unitText: '분',
+      unitText: 'min',
     }));
 
     this.idleSaveEnabledCheck = document.createElement('input');
@@ -283,9 +283,9 @@ export class OptionsDialog extends ModalDialog {
 
     saveSection.appendChild(createAutosaveNumberRow({
       checkbox: this.idleSaveEnabledCheck,
-      labelText: '쉴 때 자동 저장',
+      labelText: 'Auto-save when idle',
       numberInput: this.idleDelayInput,
-      unitText: '초',
+      unitText: 'sec',
     }));
 
     const syncDisabled = (): void => {
@@ -303,13 +303,13 @@ export class OptionsDialog extends ModalDialog {
 
     const pdfTitle = document.createElement('div');
     pdfTitle.className = 'dialog-section-title';
-    pdfTitle.textContent = 'PDF 저장';
+    pdfTitle.textContent = 'Save as PDF';
     pdfSection.appendChild(pdfTitle);
 
     const pdfDesc = document.createElement('p');
     pdfDesc.className = 'opt-desc';
     pdfDesc.textContent =
-      '안내를 끄면 PDF로 저장을 선택하는 즉시 문서 준비가 시작됩니다. 준비 진행률과 오류는 계속 표시됩니다.';
+      'If you turn off the guidance, document preparation starts as soon as you choose to save as PDF. Preparation progress and errors are still shown.';
     pdfSection.appendChild(pdfDesc);
 
     const pdfRow = document.createElement('div');
@@ -322,7 +322,7 @@ export class OptionsDialog extends ModalDialog {
 
     const pdfLabel = document.createElement('label');
     pdfLabel.htmlFor = 'opt-pdf-print-guidance';
-    pdfLabel.textContent = 'PDF로 저장할 때 저장 방법 안내 표시';
+    pdfLabel.textContent = 'Show save method guidance when saving as PDF';
 
     pdfRow.append(this.pdfPrintGuidanceCheck, pdfLabel);
     pdfSection.appendChild(pdfRow);
@@ -380,27 +380,27 @@ function clampInteger(value: string, fallback: number, min: number, max: number)
 
 function formatLocalFontStatus(state: LocalFontState): string {
   if (state.lastError) {
-    return `저장소 접근 실패: ${state.lastError}`;
+    return `Storage access failed: ${state.lastError}`;
   }
   if (!state.stored) {
     if (state.method === 'font-presence-probe') {
-      return '저장된 감지 결과가 없습니다. Firefox에서는 문서를 열 때 필요한 글꼴만 확인합니다.';
+      return 'No saved detection results. On Firefox, only the fonts a document needs are checked when it is opened.';
     }
     if (!state.supported) {
-      return '이 브라우저는 로컬 글꼴 감지를 지원하지 않습니다.';
+      return 'This browser does not support local font detection.';
     }
-    return '저장된 감지 결과가 없습니다.';
+    return 'No saved detection results.';
   }
 
   const detectedAt = formatDetectedAt(state.detectedAt);
   const dateSuffix = detectedAt ? ` · ${detectedAt}` : '';
   if (state.source === 'font-presence-probe') {
-    return `문서별 확인 결과 저장됨: 사용 가능 ${state.count}개 / 확인한 글꼴 ${state.checkedFamilies.length}개${dateSuffix}`;
+    return `Per-document check results saved: ${state.count} available / ${state.checkedFamilies.length} fonts checked${dateSuffix}`;
   }
   if (state.checkedFamilies.length > 0) {
-    return `로컬 글꼴 결과 저장됨: 사용 가능 ${state.count}개 / 문서 후보 ${state.checkedFamilies.length}개 / 열거 누락 확인 ${state.probedFamilies.length}개${dateSuffix}`;
+    return `Local font results saved: ${state.count} available / ${state.checkedFamilies.length} document candidates / ${state.probedFamilies.length} missing-enumeration checks${dateSuffix}`;
   }
-  return `로컬 글꼴 열거 결과 저장됨: ${state.count}개 · 문서별 누락 후보는 문서를 열 때 추가 확인${dateSuffix}`;
+  return `Local font enumeration results saved: ${state.count} · missing per-document candidates are checked when a document is opened${dateSuffix}`;
 }
 
 function formatDetectedAt(value: string | null): string {
@@ -418,7 +418,7 @@ function describeLocalFontDetectionError(error: unknown): string {
   const message = error instanceof Error ? error.message : String(error ?? '');
   const normalized = `${name} ${message}`.toLowerCase();
   if (name === 'NotAllowedError' || normalized.includes('permission') || normalized.includes('denied')) {
-    return '로컬 글꼴 접근 권한이 허용되지 않았습니다. 브라우저 권한 설정에서 허용한 뒤 다시 시도해 주세요.';
+    return 'Local font access was not allowed. Allow it in your browser’s permission settings and try again.';
   }
-  return '글꼴 감지에 실패했습니다. 웹 대체 글꼴로 계속 사용할 수 있습니다.';
+  return 'Font detection failed. You can continue using web fallback fonts.';
 }
