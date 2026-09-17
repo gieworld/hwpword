@@ -44,6 +44,10 @@ const ALLOWLIST = [
   '가,나,다',
   'ㄱ,ㄴ,ㄷ',
   '일,이,삼',
+  // Character dialog font preview: needs actual Hangul glyphs to judge how a font renders Korean
+  // text, same idea as any font picker's sample text (rhwp-studio/src/ui/char-shape-dialog.ts,
+  // hwpword-keep-korean, x2 — Basic and Extended tabs each have their own preview element).
+  'AaBbCc 가나다 123',
 ];
 
 function stripAllowlisted(text) {
@@ -182,8 +186,9 @@ async function selectRibbonTab(page, tabId) {
   await page.waitForSelector(`#ribbon-panel-${tabId}:not([hidden])`, { timeout: 5000 });
 }
 
-/** Every dialog here (ModalDialog, FindDialog, SymbolsDialog, CommandPalette, ContextMenu) captures
- * Escape at the document level and closes unconditionally on it — verified by reading each class.
+/** Every dialog here (ModalDialog, FindDialog, SymbolsDialog, CommandPalette, ContextMenu,
+ * CompareDialog) closes on Escape or its own .dialog-close/.dialog-btn (verified by reading each
+ * class) — CompareDialog has no Escape handler at all, only .dialog-close, so both steps stay.
  * Never send Enter/click a primary button here: that would run the command instead of cancelling. */
 async function closeOverlay(page) {
   await page.keyboard.press('Escape').catch(() => {});
@@ -197,6 +202,21 @@ async function closeOverlay(page) {
   await sleep(100);
 }
 
+/** Every dialog in this codebase (ModalDialog, FindDialog, SymbolsDialog, CompareDialog, the
+ * table:create grid picker) appends a brand-new top-level element to document.body on open — so
+ * polling body.childElementCount for growth is positive evidence a dialog actually opened, not an
+ * assumption. Without this, a regression that silently prevents a dialog from opening would make
+ * check:english pass without having checked anything for that state. */
+async function waitForNewBodyChild(page, before, timeoutMs = 2000) {
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    const count = await page.evaluate(() => document.body.childElementCount);
+    if (count > before) return true;
+    await sleep(50);
+  }
+  return false;
+}
+
 /** Opens a ribbon/file-page command that opens a DOM dialog, snapshots its visible text, and closes
  * it. Ribbon buttons dispatch their command on 'mousedown' (Ribbon.renderButton), before the paired
  * mouseup of a real click would land — and for commands whose dialog is a full-viewport popup (e.g.
@@ -206,13 +226,18 @@ async function checkDialogCommand(page, tabId, cmd) {
   await selectRibbonTab(page, tabId);
   const sel = `[data-ribbon-cmd="${cmd}"]`;
   const handle = await page.$(sel);
-  if (!handle) return { skipped: true, reason: 'button not present in this ribbon state' };
+  // Every DIALOG_COMMANDS entry names its actual tab per ribbon-data.ts, so its button should always
+  // exist there — a miss means the command id is wrong/removed (e.g. a typo or an upstream rename),
+  // which is a hard failure like a dialog not opening, not a legitimate skip.
+  if (!handle) return { failed: true, reason: `[data-ribbon-cmd="${cmd}"] not found on the ${tabId} tab` };
   const disabled = await page.$eval(sel, (el) => el.disabled).catch(() => true);
   if (disabled) return { skipped: true, reason: 'disabled (command not available in this context)' };
+  const before = await page.evaluate(() => document.body.childElementCount);
   await page.$eval(sel, (el) =>
     el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 })),
   );
-  await sleep(250);
+  const opened = await waitForNewBodyChild(page, before);
+  if (!opened) return { failed: true, reason: `no dialog appeared after dispatching ${cmd}` };
   const texts = await getVisibleText(page);
   await closeOverlay(page);
   return { skipped: false, texts };
@@ -247,10 +272,15 @@ async function checkPrintToPdf(page) {
     await page.click('.ribbon-file-back').catch(() => {});
     return { skipped: true, reason: 'disabled' };
   }
+  const before = await page.evaluate(() => document.body.childElementCount);
   await page.$eval(sel, (el) =>
     el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 })),
   );
-  await sleep(300);
+  const opened = await waitForNewBodyChild(page, before);
+  if (!opened) {
+    await page.click('.ribbon-file-back').catch(() => {});
+    return { failed: true, reason: 'no dialog appeared after dispatching file:print-to-pdf' };
+  }
   const texts = await getVisibleText(page);
   // Escape only — never Enter/the primary "Open Print Dialog" button, which would launch a real print.
   await page.keyboard.press('Escape');
@@ -272,6 +302,20 @@ async function clickBodyTextPoint(page) {
   return point;
 }
 
+/** Click-drags a real text *selection* starting at `point` (per the known quirk in
+ * gui-verification.md: double-click word selection doesn't register in this canvas editor). Needed
+ * for format:char-shape, whose execute() silently no-ops without one — its `canExecute` only checks
+ * `hasDocument`, so the ribbon button stays enabled and dispatching it on a bare caret does nothing.
+ * A short drag (~150px) was unreliable in practice; a longer one spanning two lines registers
+ * consistently. */
+async function selectBodyTextRun(page, point) {
+  await page.mouse.move(point.x, point.y);
+  await page.mouse.down();
+  await page.mouse.move(point.x + 400, point.y + 60, { steps: 10 });
+  await page.mouse.up();
+  await sleep(200);
+}
+
 // Ribbon buttons whose command opens a DOM dialog (rhwp-studio CommandDef.opensDialog === true),
 // cross-referenced against rhwp-studio/src/ui/ribbon-data.ts. table:create, table:cell-props and
 // table:cell-split are driven separately below (they need an actual table to act on); file:print-to-pdf
@@ -279,9 +323,14 @@ async function clickBodyTextPoint(page) {
 //
 // Skipped entirely — native OS pickers or the print dialog, per the task brief:
 //   file:open, file:save, file:save-as, file:save-as-hwp, file:save-as-hwpx, file:print,
-//   file:export-doc, file:export-html, insert:image, edit:compare-documents.
+//   file:export-doc, file:export-html, insert:image.
 // Also skipped: file:new-doc — on this (unmodified-so-far) document it opens no dialog at all, and by
 // the time this script has exercised anything else the document is no longer unmodified.
+//
+// edit:compare-documents opens a genuine DOM dialog (CompareDialog, class "compare-dialog
+// doc-compare-dialog") before any native picker is involved — the native file picker only opens if
+// its "Choose File" button is clicked, which this script never does. It's checked like any other
+// dialog command below; closeOverlay()'s .dialog-close fallback closes it (it has no Escape handler).
 const DIALOG_COMMANDS = [
   { tab: 'home', cmd: 'format:char-shape' },
   { tab: 'home', cmd: 'format:para-shape' },
@@ -301,6 +350,7 @@ const DIALOG_COMMANDS = [
   // Needs a picture or table selected as an object; expected to report "skipped: disabled" here.
   { tab: 'layout', cmd: 'format:object-properties' },
   { tab: 'references', cmd: 'insert:endnote-shape' },
+  { tab: 'review', cmd: 'edit:compare-documents' },
   { tab: 'review', cmd: 'edit:document-history' },
   { tab: 'view', cmd: 'view:zoom-dialog' },
   { tab: 'view', cmd: 'view:grid-settings' },
@@ -358,13 +408,36 @@ async function main() {
     // button specifically: it's the last of the six tabs appended in RIBBON_TABS order, so its
     // presence proves the whole ribbon (and the style-bar it mounts) is fully built.
     await page.waitForSelector('.ribbon-tabs button[aria-controls="ribbon-panel-view"]', { timeout: 20000 });
+    // The ribbon existing doesn't mean the *document* has finished loading: ribbon command states
+    // (e.g. format:char-shape's hasDocument gate) and the style-bar's own content stay stale/empty
+    // until it has. The studio sets the window title to "<document> - HWP Word" only once it does
+    // (desktop/lib/window-title.mjs) — a real readiness signal, not a guessed fixed delay.
+    const titleDeadline = Date.now() + 20000;
+    let sawAppTitle = false;
+    while (Date.now() < titleDeadline) {
+      if ((await page.title()).endsWith(' - HWP Word')) {
+        sawAppTitle = true;
+        break;
+      }
+      await sleep(200);
+    }
+    if (!sawAppTitle) throw new Error('Document never finished loading (window title never became "<document> - HWP Word")');
     // Defensive: an autosave-recovery dialog can appear from an earlier force-stopped session. In
     // practice desktopStartupPlan() suppresses recovery whenever launch files are present (always true
     // here), but Escape on an already-clean state is a harmless no-op either way.
     await page.keyboard.press('Escape').catch(() => {});
     await sleep(200);
 
+    // A `failed` result (a dialog that should have opened didn't) is a hard failure, not a soft
+    // skip: it goes into the same `offenders` list that decides the exit code, so a regression that
+    // silently prevents a dialog from opening makes check:english fail loudly instead of passing
+    // having checked nothing for that state.
     const record = (state, result) => {
+      if (result.failed) {
+        console.error(`[FAIL] ${state}: ${result.reason}`);
+        offenders.push({ state, items: [`(dialog did not open) ${result.reason}`] });
+        return;
+      }
       if (result.skipped) {
         console.log(`[skip] ${state}: ${result.reason}`);
         return;
@@ -408,51 +481,80 @@ async function main() {
     await sleep(100);
 
     // 7. Every ribbon/File-page dialog command that doesn't need a table (run before one exists, so
-    // insert:equation's !inTable gate etc. stay enabled).
+    // insert:equation's !inTable gate etc. stay enabled). format:char-shape is first in the list and
+    // needs a real selection (not just the caret from clickBodyTextPoint above) — see
+    // selectBodyTextRun's docstring — so establish one right before this loop rather than trust it
+    // survived the context-menu/command-palette interaction above.
+    await selectBodyTextRun(page, bodyPoint);
     for (const { tab, cmd } of DIALOG_COMMANDS) {
       record(`dialog: ${cmd}`, await checkDialogCommand(page, tab, cmd));
     }
     record('dialog: file:print-to-pdf (guidance)', await checkPrintToPdf(page));
 
+    // The selection from selectBodyTextRun is still active here and table:create would insert over
+    // it instead of at a plain caret — collapse back to a caret first so the new table lands cleanly.
+    await page.mouse.click(bodyPoint.x, bodyPoint.y);
+    await sleep(150);
+
     // 8-12. Insert a 2x2 table, then the table-context checks: its own picker text, the context menu
-    // inside the table, and the two dialogs that require inTable.
+    // inside the table, and the two dialogs that require inTable. If table setup fails at any step,
+    // all four states below it are hard failures (via `record`), not silent skips — otherwise a
+    // regression here would drop 4 states from the run without affecting the exit code.
+    const TABLE_DEPENDENT_STATES = [
+      'dialog: table:create (grid picker)',
+      'context menu: inside table',
+      'dialog: table:cell-props',
+      'dialog: table:cell-split',
+    ];
+    const failAllTableStates = (reason) => {
+      for (const state of TABLE_DEPENDENT_STATES) record(state, { failed: true, reason });
+    };
+
     await selectRibbonTab(page, 'insert');
     const tcSel = '[data-ribbon-cmd="table:create"]';
     const tcDisabled = await page.$eval(tcSel, (el) => el.disabled).catch(() => true);
     if (tcDisabled) {
-      console.error('[check-english-ui] table:create is disabled; skipping all table-context checks');
+      failAllTableStates('table:create is disabled; could not set up the 2x2 table these checks need');
     } else {
+      const tcBefore = await page.evaluate(() => document.body.childElementCount);
       await page.$eval(tcSel, (el) =>
         el.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true, button: 0 })),
       );
-      await sleep(200);
-      check('dialog: table:create (grid picker)', await getVisibleText(page));
-      const cellHandle = await page.evaluateHandle(() => {
-        for (const el of Array.from(document.body.children).reverse()) {
-          const cell = el.querySelector?.('[data-row="1"][data-col="1"]');
-          if (cell) return cell;
-        }
-        return null;
-      });
-      const cellEl = cellHandle.asElement();
-      if (!cellEl) {
-        console.error('[check-english-ui] could not find the 2x2 grid cell; skipping table-context checks');
-        await page.keyboard.press('Escape').catch(() => {});
+      const tcOpened = await waitForNewBodyChild(page, tcBefore);
+      if (!tcOpened) {
+        failAllTableStates('no grid picker appeared after dispatching table:create');
       } else {
-        await cellEl.click(); // real click: the grid picker's own listener, not a ribbon command
-        await sleep(300);
+        check('dialog: table:create (grid picker)', await getVisibleText(page));
+        const cellHandle = await page.evaluateHandle(() => {
+          for (const el of Array.from(document.body.children).reverse()) {
+            const cell = el.querySelector?.('[data-row="1"][data-col="1"]');
+            if (cell) return cell;
+          }
+          return null;
+        });
+        const cellEl = cellHandle.asElement();
+        if (!cellEl) {
+          const reason = 'could not find the 2x2 grid cell in the picker; no table was created';
+          record('context menu: inside table', { failed: true, reason });
+          record('dialog: table:cell-props', { failed: true, reason });
+          record('dialog: table:cell-split', { failed: true, reason });
+          await page.keyboard.press('Escape').catch(() => {});
+        } else {
+          await cellEl.click(); // real click: the grid picker's own listener, not a ribbon command
+          await sleep(300);
 
-        // createTable doesn't guarantee the caret lands in the new table; click it explicitly.
-        await page.mouse.click(bodyPoint.x, bodyPoint.y);
-        await sleep(150);
-        await page.mouse.click(bodyPoint.x, bodyPoint.y, { button: 'right' });
-        await sleep(200);
-        check('context menu: inside table', await getVisibleText(page));
-        await page.keyboard.press('Escape');
-        await sleep(100);
+          // createTable doesn't guarantee the caret lands in the new table; click it explicitly.
+          await page.mouse.click(bodyPoint.x, bodyPoint.y);
+          await sleep(150);
+          await page.mouse.click(bodyPoint.x, bodyPoint.y, { button: 'right' });
+          await sleep(200);
+          check('context menu: inside table', await getVisibleText(page));
+          await page.keyboard.press('Escape');
+          await sleep(100);
 
-        record('dialog: table:cell-props', await checkDialogCommand(page, 'layout', 'table:cell-props'));
-        record('dialog: table:cell-split', await checkDialogCommand(page, 'layout', 'table:cell-split'));
+          record('dialog: table:cell-props', await checkDialogCommand(page, 'layout', 'table:cell-props'));
+          record('dialog: table:cell-split', await checkDialogCommand(page, 'layout', 'table:cell-split'));
+        }
       }
     }
 
