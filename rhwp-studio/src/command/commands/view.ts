@@ -217,7 +217,7 @@ function closeMm(a: number, b: number): boolean {
 export const viewCommands: CommandDef[] = [
   {
     id: 'view:zoom-in',
-    label: '확대',
+    label: 'Zoom In',
     icon: 'icon-zoom-menu-in',
     shortcutLabel: 'Ctrl++',
     execute(services) {
@@ -227,7 +227,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:zoom-out',
-    label: '축소',
+    label: 'Zoom Out',
     icon: 'icon-zoom-menu-out',
     shortcutLabel: 'Ctrl+-',
     execute(services) {
@@ -237,7 +237,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:zoom-dialog',
-    label: '화면 확대/축소...',
+    label: 'Zoom…',
     opensDialog: true,
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
@@ -291,7 +291,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:zoom-fit-page',
-    label: '쪽 맞춤',
+    label: 'One Page',
     shortcutLabel: 'Ctrl+G,P',
     execute(services) {
       applyZoomFit(services, 'fitPage');
@@ -299,7 +299,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:zoom-fit-width',
-    label: '폭 맞춤',
+    label: 'Page Width',
     shortcutLabel: 'Ctrl+G,W',
     execute(services) {
       applyZoomFit(services, 'fitWidth');
@@ -313,16 +313,16 @@ export const viewCommands: CommandDef[] = [
   zoomLevel(200),
   zoomLevel(300),
   zoomLevel(500),
-  themeModeCommand('system', '시스템 설정'),
-  themeModeCommand('light', '밝게'),
-  themeModeCommand('dark', '어둡게'),
-  themeSkinCommand('oldschool', '올드스쿨'),
-  themeSkinCommand('default', '클래식'),
-  themeSkinCommand('flat', '모던'),
+  themeModeCommand('system', 'System'),
+  themeModeCommand('light', 'Light'),
+  themeModeCommand('dark', 'Dark'),
+  themeSkinCommand('oldschool', 'Oldschool'),
+  themeSkinCommand('default', 'Classic'),
+  themeSkinCommand('flat', 'Modern'),
   // ─── 보기 메뉴: 표시/숨기기 ─────────────────────────
   {
     id: 'view:form-mode',
-    label: '양식 모드',
+    label: 'Form Mode',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       const next = services.getContext().isFormMode ? 'normal' : 'form';
@@ -331,7 +331,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:ctrl-mark',
-    label: '조판 부호',
+    label: 'Control Codes',
     icon: 'icon-ctrl-mark',
     shortcutLabel: 'Ctrl+G,C',
     canExecute: (ctx) => ctx.hasDocument,
@@ -350,7 +350,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:para-mark',
-    label: '문단 부호',
+    label: 'Paragraph Marks',
     icon: 'icon-para-mark',
     shortcutLabel: 'Ctrl+G,T',
     canExecute: (ctx) => ctx.hasDocument,
@@ -366,7 +366,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:border-transparent',
-    label: '투명 선',
+    label: 'Table Gridlines',
     shortcutLabel: 'Alt+V,T',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
@@ -381,7 +381,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:toggle-clip',
-    label: '잘림 보기',
+    label: 'Show Clipping',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       const next = !clipEnabled;
@@ -393,7 +393,7 @@ export const viewCommands: CommandDef[] = [
   } satisfies CommandDef,
   {
     id: 'view:toggle-grid',
-    label: '격자 보기',
+    label: 'Grid',
     icon: 'icon-grid',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
@@ -407,7 +407,7 @@ export const viewCommands: CommandDef[] = [
   {
     id: 'view:grid-settings',
     opensDialog: true,
-    label: '격자 설정',
+    label: 'Grid Settings…',
     icon: 'icon-grid',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
@@ -430,7 +430,7 @@ export const viewCommands: CommandDef[] = [
   },
   {
     id: 'view:toolbox-basic',
-    label: '기본',
+    label: 'Basic Toolbar',
     shortcutLabel: 'Ctrl+F1',
     execute() {
       userSettings.setToolbarBasic(!userSettings.getViewSettings().toolbarBasic);
@@ -439,7 +439,7 @@ export const viewCommands: CommandDef[] = [
   } satisfies CommandDef,
   {
     id: 'view:toolbox-format',
-    label: '서식',
+    label: 'Format Toolbar',
     execute() {
       userSettings.setToolbarFormat(!userSettings.getViewSettings().toolbarFormat);
       syncToolboxMenu();

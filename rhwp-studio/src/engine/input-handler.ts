@@ -73,8 +73,8 @@ export class DocumentAgentRenderCommitError extends Error {
 
   constructor(cause: unknown, recovered: boolean) {
     super(recovered
-      ? 'document-agent render 실패 후 snapshot을 복구했습니다.'
-      : 'document-agent render 실패 후 snapshot 복구도 실패했습니다.');
+      ? 'The document agent recovered the snapshot after a render failure.'
+      : 'The document agent could not recover the snapshot after a render failure.');
     this.name = 'DocumentAgentRenderCommitError';
     this.recovered = recovered;
     this.cause = cause;
@@ -597,7 +597,7 @@ export class InputHandler {
       div.setAttribute('autocapitalize', 'off');
       div.setAttribute('spellcheck', 'false');
       div.setAttribute('inputmode', 'text');
-      div.setAttribute('aria-label', '문서 편집 입력');
+      div.setAttribute('aria-label', 'Document edit input');
       inputHost.appendChild(div);
       // textarea 인터페이스 호환을 위한 프록시
       Object.defineProperty(div, 'value', {
@@ -613,7 +613,7 @@ export class InputHandler {
       this.textarea.setAttribute('autocorrect', 'off');
       this.textarea.setAttribute('autocapitalize', 'off');
       this.textarea.setAttribute('spellcheck', 'false');
-      this.textarea.setAttribute('aria-label', '문서 편집 입력');
+      this.textarea.setAttribute('aria-label', 'Document edit input');
       inputHost.appendChild(this.textarea);
     }
 
@@ -846,10 +846,10 @@ export class InputHandler {
   ): { ok: boolean; error?: string } {
     const pagePoint = this.pagePointFromClientPoint(clientX, clientY);
     if (!pagePoint) {
-      return { ok: false, error: '그림을 넣을 문단을 찾지 못했습니다.' };
+      return { ok: false, error: 'Could not find a paragraph to place the picture.' };
     }
     if (naturalWidth <= 0 || naturalHeight <= 0) {
-      return { ok: false, error: '이미지 크기를 확인할 수 없습니다.' };
+      return { ok: false, error: 'Could not read the image dimensions.' };
     }
 
     let hit: DocumentPosition | null = null;
@@ -859,7 +859,7 @@ export class InputHandler {
       hit = null;
     }
     if (!hit) {
-      return { ok: false, error: '그림을 넣을 문단을 찾지 못했습니다.' };
+      return { ok: false, error: 'Could not find a paragraph to place the picture.' };
     }
 
     const sec = hit.sectionIndex;
@@ -874,8 +874,9 @@ export class InputHandler {
     const cellPathJson = cellPath.length > 0 ? JSON.stringify(cellPath) : '';
     const pageInfo = this.getPageInfoForDrop(pagePoint.pageIdx);
     const { width, height } = fitDroppedImageSizeRaw(naturalWidth, naturalHeight, pageInfo, pagePoint.pageX);
+    // Default alt-text embedded in the picture control's document data (matches Hancom's own default).
     const desc =
-      `그림입니다.\r\n원본 그림의 이름: ${fileName}\r\n원본 그림의 크기: 가로 ${naturalWidth}pixel, 세로 ${naturalHeight}pixel`;
+      `그림입니다.\r\n원본 그림의 이름: ${fileName}\r\n원본 그림의 크기: 가로 ${naturalWidth}pixel, 세로 ${naturalHeight}pixel`; // hwpword-keep-korean
 
     try {
       // 삽입 + 인라인 전환을 하나의 스냅샷으로 기록 (Undo 지원, pasteImage 경로와 동일 패턴)
@@ -897,7 +898,7 @@ export class InputHandler {
           undefined,
         );
         if (!result.ok) {
-          insertError = (result as any).error || '삽입 위치 또는 이미지 정보를 확인할 수 없습니다.';
+          insertError = (result as any).error || 'Could not verify the insertion point or image information.';
           return hit;
         }
 
@@ -1805,13 +1806,13 @@ export class InputHandler {
       { type: 'command', commandId: 'edit:copy' },
       { type: 'command', commandId: 'edit:paste' },
       { type: 'separator' },
-      { type: 'command', commandId: 'table:caption-toggle', label: '캡션 넣기(A)' },
+      { type: 'command', commandId: 'table:caption-toggle', label: 'Insert Caption' },
       { type: 'separator' },
-      { type: 'command', commandId: 'table:cell-props', label: '표 속성...' },
+      { type: 'command', commandId: 'table:cell-props', label: 'Table Properties…' },
       { type: 'separator' },
       // 표 나누기는 커서 행이 분할 기준이라 셀 내부 메뉴에만 둔다 —
       // 객체 선택 상태에는 기준 행이 없다.
-      { type: 'command', commandId: 'table:attach', label: '표 붙이기' },
+      { type: 'command', commandId: 'table:attach', label: 'Attach Table' },
       { type: 'separator' },
       { type: 'command', commandId: 'table:delete' },
     ];
@@ -1834,9 +1835,9 @@ export class InputHandler {
     // 다중 선택: 개체 묶기 메뉴
     if (this.cursor.isMultiPictureSelection()) {
       return [
-        { type: 'command', commandId: 'insert:group-shapes', label: '개체 묶기(G)' },
+        { type: 'command', commandId: 'insert:group-shapes', label: 'Group' },
         { type: 'separator' },
-        { type: 'command', commandId: 'insert:picture-delete', label: '지우기(D)' },
+        { type: 'command', commandId: 'insert:picture-delete', label: 'Delete' },
       ];
     }
 
@@ -1849,41 +1850,41 @@ export class InputHandler {
     // 수식 객체: "수식 편집..." 항목 추가
     if (ref?.type === 'equation') {
       items.push(
-        { type: 'command', commandId: 'insert:equation-edit', label: '수식 편집...' },
+        { type: 'command', commandId: 'insert:equation-edit', label: 'Edit Equation…' },
         { type: 'separator' },
       );
     }
     // [#4694] 차트(ole) 객체: 열거·대조가 성공하는 선택에만 데이터 편집 항목을 노출한다.
     if (ref?.type === 'ole' && this.isChartDataEditable(ref)) {
       items.push(
-        { type: 'command', commandId: 'insert:chart-data-edit', label: '차트 데이터 편집...' },
+        { type: 'command', commandId: 'insert:chart-data-edit', label: 'Edit Chart Data…' },
         { type: 'separator' },
       );
     }
     items.push(
-      { type: 'command', commandId: 'insert:arrange-front', label: '맨 앞으로' },
-      { type: 'command', commandId: 'insert:arrange-forward', label: '앞으로' },
-      { type: 'command', commandId: 'insert:arrange-backward', label: '뒤로' },
-      { type: 'command', commandId: 'insert:arrange-back', label: '맨 뒤로' },
+      { type: 'command', commandId: 'insert:arrange-front', label: 'Bring to Front' },
+      { type: 'command', commandId: 'insert:arrange-forward', label: 'Bring Forward' },
+      { type: 'command', commandId: 'insert:arrange-backward', label: 'Send Backward' },
+      { type: 'command', commandId: 'insert:arrange-back', label: 'Send to Back' },
       { type: 'separator' },
     );
     // 그룹 개체: 개체 풀기
     if (ref?.type === 'group') {
       items.push(
-        { type: 'command', commandId: 'insert:ungroup-shapes', label: '개체 풀기(U)' },
+        { type: 'command', commandId: 'insert:ungroup-shapes', label: 'Ungroup' },
         { type: 'separator' },
       );
     }
     // 그림/도형 객체: 캡션 넣기
     if (ref?.type === 'image' || ref?.type === 'shape') {
       items.push(
-        { type: 'command', commandId: 'insert:caption-toggle', label: '캡션 넣기(A)' },
+        { type: 'command', commandId: 'insert:caption-toggle', label: 'Insert Caption' },
       );
     }
     items.push(
-      { type: 'command', commandId: 'insert:picture-props', label: '개체 속성(P)...' },
+      { type: 'command', commandId: 'insert:picture-props', label: 'Object Properties…' },
       { type: 'separator' },
-      { type: 'command', commandId: 'insert:picture-delete', label: '지우기(D)' },
+      { type: 'command', commandId: 'insert:picture-delete', label: 'Delete' },
     );
     return items;
   }
@@ -1897,7 +1898,7 @@ export class InputHandler {
       { type: 'command', commandId: 'edit:format-copy' },
       { type: 'command', commandId: 'edit:format-paste' },
       { type: 'separator' },
-      { type: 'command', commandId: 'table:cell-props', label: '셀 속성...' },
+      { type: 'command', commandId: 'table:cell-props', label: 'Cell Properties…' },
       { type: 'separator' },
       { type: 'command', commandId: 'table:insert-row-col' },
       { type: 'separator' },
@@ -1911,15 +1912,15 @@ export class InputHandler {
       { type: 'command', commandId: 'table:transpose-copy' },
       { type: 'command', commandId: 'table:transpose-paste' },
       { type: 'separator' },
-      { type: 'command', commandId: 'table:border-each', label: '셀 테두리/배경 - 각 셀마다 적용(E)...' },
-      { type: 'command', commandId: 'table:border-one', label: '셀 테두리/배경 - 하나의 셀처럼 적용(Z)...' },
+      { type: 'command', commandId: 'table:border-each', label: 'Borders and Shading (Each Cell)…' },
+      { type: 'command', commandId: 'table:border-one', label: 'Borders and Shading (As One Cell)…' },
       { type: 'separator' },
-      { type: 'command', commandId: 'table:caption-toggle', label: '캡션 넣기(A)' },
+      { type: 'command', commandId: 'table:caption-toggle', label: 'Insert Caption' },
       { type: 'separator' },
-      { type: 'command', commandId: 'table:formula', label: '계산식(F)...' },
+      { type: 'command', commandId: 'table:formula', label: 'Formula…' },
       { type: 'separator' },
-      { type: 'command', commandId: 'table:split', label: '표 나누기' },
-      { type: 'command', commandId: 'table:attach', label: '표 붙이기' },
+      { type: 'command', commandId: 'table:split', label: 'Split Table' },
+      { type: 'command', commandId: 'table:attach', label: 'Attach Table' },
       { type: 'command', commandId: 'table:delete' },
     ];
   }
@@ -1934,10 +1935,10 @@ export class InputHandler {
       { type: 'command', commandId: 'edit:format-paste' },
       { type: 'command', commandId: 'table:transpose-paste' },
       { type: 'separator' },
-      { type: 'command', commandId: 'format:char-shape', label: '글자 모양' },
-      { type: 'command', commandId: 'format:para-shape', label: '문단 모양' },
+      { type: 'command', commandId: 'format:char-shape', label: 'Character…' },
+      { type: 'command', commandId: 'format:para-shape', label: 'Paragraph…' },
       { type: 'separator' },
-      { type: 'command', commandId: 'format:para-num-shape', label: '문단 번호 모양(N)...' },
+      { type: 'command', commandId: 'format:para-num-shape', label: 'Bullets and Numbering…' },
     ];
   }
 
@@ -2749,7 +2750,7 @@ export class InputHandler {
         operationType: options.operationType,
         editContext: contextBefore,
         editContextAfter: () => {
-          if (!result?.ok) throw new Error('HF 범위 치환 결과가 없습니다');
+          if (!result?.ok) throw new Error('No result from the header/footer range replacement.');
           return {
             mode: 'headerFooter',
             ...target,
@@ -2770,7 +2771,7 @@ export class InputHandler {
             end.charOffset,
             replacementText,
           );
-          if (!result.ok) throw new Error('HF 범위 치환을 코어가 거부했습니다');
+          if (!result.ok) throw new Error('The core rejected the header/footer range replacement.');
           succeeded = true;
           return { ...bodyPosition };
         },
@@ -3151,7 +3152,7 @@ export class InputHandler {
     render: () => Promise<void>,
   ): Promise<void> {
     if (!this.isOperationAllowedInEditMode(desc)) {
-      throw new Error('현재 편집 모드에서는 document-agent snapshot을 실행할 수 없습니다.');
+      throw new Error('Cannot run a document-agent snapshot in the current edit mode.');
     }
     const cursorBefore = this.cursor.getPosition();
     const command = new SnapshotCommand(
@@ -3162,7 +3163,7 @@ export class InputHandler {
     );
     const newPos = this.history.execute(command, this.wasm);
     if (command.isNoOp()) {
-      throw new Error('document-agent snapshot이 mutation 없이 종료되었습니다.');
+      throw new Error('The document-agent snapshot ended without any mutation.');
     }
     this.cursor.moveTo(newPos);
     this.cursor.resetPreferredX();
@@ -3177,7 +3178,7 @@ export class InputHandler {
     } catch (renderError) {
       try {
         const restored = this.history.rollbackUncommittedSnapshot(command.type, this.wasm);
-        if (!restored) throw new Error('복구할 최신 snapshot을 찾을 수 없습니다.');
+        if (!restored) throw new Error('Could not find the latest snapshot to restore.');
         this.cursor.moveTo(restored);
         this.cursor.resetPreferredX();
         await render();
@@ -4737,7 +4738,7 @@ export class InputHandler {
       return false;
     }
 
-    void showConfirm('지우기', '[누름틀]을 지울까요?')
+    void showConfirm('Delete', 'Delete this click-here field?')
       .then((ok) => {
         if (ok) this.removeCurrentField(pos);
         this.focusTextarea();
@@ -5220,7 +5221,7 @@ export class InputHandler {
         try {
           const cellPathJson = _keyboard.pictureCellPathJson(ref);
           this.wasm.copyControl(ref.sec, ref.ppi, ref.ci, cellPathJson);
-          const text = this.wasm.getClipboardText() || '[그림]';
+          const text = this.wasm.getClipboardText() || '[Picture]';
           let html = '';
           try { html = this.wasm.exportControlHtml(ref.sec, ref.ppi, ref.ci, cellPathJson) || ''; } catch { /* 무시 */ }
           const markedHtml = _keyboard.prepareRhwpInternalClipboardHtml(this, html, text);
@@ -5245,7 +5246,7 @@ export class InputHandler {
           this.wasm.copyControl(
             ref.sec, ref.ppi, target.controlIndex, target.ownerCellPathJson,
           );
-          const text = this.wasm.getClipboardText() || '[표]';
+          const text = this.wasm.getClipboardText() || '[Table]';
           let html = '';
           try {
             html = this.wasm.exportControlHtml(
@@ -5548,7 +5549,7 @@ export class InputHandler {
         : this.wasm.getStyleAt(pos.sectionIndex, pos.paragraphIndex);
 
       // 현재 개요 수준 파싱 (개요 1~7)
-      const match = currentStyle.name.match(/^개요\s*(\d)$/);
+      const match = currentStyle.name.match(/^개요\s*(\d)$/); // hwpword-keep-korean: matches the built-in HWP outline style name
       if (!match) return; // 개요 스타일이 아니면 무시
 
       const currentLevel = parseInt(match[1], 10);
@@ -5558,7 +5559,7 @@ export class InputHandler {
       // 스타일 목록에서 대상 개요 스타일 찾기
       const styles = this.wasm.getStyleList();
       const targetStyle = styles.find(s => {
-        const m = s.name.match(/^개요\s*(\d)$/);
+        const m = s.name.match(/^개요\s*(\d)$/); // hwpword-keep-korean: matches the built-in HWP outline style name
         return m && parseInt(m[1], 10) === targetLevel;
       });
       if (!targetStyle) return;

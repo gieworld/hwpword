@@ -36,7 +36,7 @@ test('edit:format-paste 커맨드는 붙여넣기 전용 경로에 연결되어�
   const edit = source('src/command/commands/edit.ts');
 
   assert.match(edit, /id:\s*'edit:format-paste'/);
-  assert.match(edit, /label:\s*'모양 붙여넣기'/);
+  assert.match(edit, /label:\s*'Paste Format'/);
   assert.match(edit, /canExecute:\s*canExecuteFormatPaste/);
   assert.match(edit, /performFormatPaste\(\)/);
 });

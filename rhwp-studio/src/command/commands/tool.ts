@@ -5,7 +5,7 @@ export const toolCommands: CommandDef[] = [
   {
     id: 'tool:options',
     opensDialog: true,
-    label: '환경 설정',
+    label: 'Options',
     execute(services) {
       const dlg = new OptionsDialog(services.eventBus);
       dlg.show();

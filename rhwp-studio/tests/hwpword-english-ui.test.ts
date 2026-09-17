@@ -34,6 +34,16 @@ const ENGLISH_UI_SOURCES = [
   'src/ui/goto-dialog.ts',
   'src/command/print-pages.ts',
   'src/recovery/recovery-ui.ts',
+  'src/command/commands/edit.ts',
+  'src/command/commands/format.ts',
+  'src/command/commands/insert.ts',
+  'src/command/commands/page.ts',
+  'src/command/commands/table.ts',
+  'src/command/commands/tool.ts',
+  'src/command/commands/view.ts',
+  // Task 11: input-handler.ts overrides some ContextMenuItem.label values directly
+  // (context-menu.ts renders item.label ?? def.label) — those overrides must be English too.
+  'src/engine/input-handler.ts',
 ];
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힯]/;

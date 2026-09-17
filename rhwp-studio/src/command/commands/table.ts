@@ -111,7 +111,8 @@ function hasNonRectangularCellSelection(ih: ReturnType<CommandServices['getInput
 
 function isTransposeTargetOverflowError(err: unknown): boolean {
   const message = err instanceof Error ? err.message : String(err);
-  return message.includes('표 크기') && message.includes('초과');
+  // Detects the engine's own error text (Korean), not UI copy.
+  return message.includes('표 크기') && message.includes('초과'); // hwpword-keep-korean
 }
 
 function isCellInRange(cell: { row: number; col: number }, range: CellRange): boolean {
@@ -187,11 +188,11 @@ function blockCalcCommand(
           operation: (wasm) => {
             for (const job of plan.jobs) {
               const result = evaluate(wasm, job, true);
-              if (!result.ok) throw new Error(`블록 계산 쓰기 실패: ${job.formula}`);
+              if (!result.ok) throw new Error(`Failed to write the block calculation: ${job.formula}`);
             }
             return pos;
           },
-        }), '블록 계산');
+        }), 'block calculation');
       } catch (err) {
         console.warn(`[${id}] 블록 계산 실패:`, err);
       }
@@ -262,7 +263,7 @@ function applyTableInsertRowColumn(
       }
       return pos;
     },
-  }), '줄/칸 추가');
+  }), 'insert row/column');
   restoreEditorFocus(ih);
 }
 
@@ -322,12 +323,12 @@ function applyTableDeleteRowColumn(
       }
       return { ...pos, charOffset: 0, ...corrected };
     },
-  }), '줄/칸 지우기');
+  }), 'delete row/column');
   restoreEditorFocus(ih);
 }
 
 export const tableCommands: CommandDef[] = [
-  { id: 'table:create', label: '표 만들기', icon: 'icon-table',
+  { id: 'table:create', label: 'Table', icon: 'icon-table',
     opensDialog: true,
     canExecute: (ctx) => ctx.hasDocument && !ctx.inTable,
     execute(services, params) {
@@ -366,7 +367,7 @@ export const tableCommands: CommandDef[] = [
             }
             return pos;
           },
-        }), '표 만들기');
+        }), 'create table');
         // 대화상자 닫힘 후 편집 포커스 복원 — textarea 에 keydown 이 바인딩되어
         // 있어, 복원하지 않으면 직후 F5 등이 브라우저 기본동작으로 빠진다 (#1140)
         (ih2 as any).textarea?.focus();
@@ -377,7 +378,7 @@ export const tableCommands: CommandDef[] = [
   {
     id: 'table:cell-props',
     opensDialog: true,
-    label: '표/셀 속성',
+    label: 'Table Properties…',
     canExecute: (ctx) => ctx.inTable || ctx.inCellSelectionMode || ctx.inTableObjectSelection,
     execute(services) {
       const ih = services.getInputHandler();
@@ -401,7 +402,7 @@ export const tableCommands: CommandDef[] = [
   {
     id: 'table:border-each',
     opensDialog: true,
-    label: '각 셀마다 적용(E)...',
+    label: 'Borders and Shading (Each Cell)…',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -425,7 +426,7 @@ export const tableCommands: CommandDef[] = [
   {
     id: 'table:border-one',
     opensDialog: true,
-    label: '하나의 셀처럼 적용(Z)...',
+    label: 'Borders and Shading (As One Cell)…',
     canExecute: hasMultiCellSelection,
     execute(services) {
       const ih = services.getInputHandler();
@@ -449,7 +450,7 @@ export const tableCommands: CommandDef[] = [
   {
     id: 'table:insert-row-col',
     opensDialog: true,
-    label: '줄/칸 추가하기(I)...',
+    label: 'Insert Rows/Columns…',
     shortcutLabel: 'Alt+Enter',
     canExecute: inTable,
     execute(services) {
@@ -464,7 +465,7 @@ export const tableCommands: CommandDef[] = [
   {
     id: 'table:delete-row-col',
     opensDialog: true,
-    label: '줄/칸 지우기(E)...',
+    label: 'Delete Rows/Columns…',
     shortcutLabel: 'Alt+Delete',
     canExecute: inTable,
     execute(services) {
@@ -478,7 +479,7 @@ export const tableCommands: CommandDef[] = [
   },
   {
     id: 'table:insert-row-above',
-    label: '위쪽에 줄 추가하기',
+    label: 'Insert Above',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -493,12 +494,12 @@ export const tableCommands: CommandDef[] = [
           wasm.insertTableRow(pos.sectionIndex, pos.parentParaIndex!, pos.controlIndex!, cellInfo.row, false);
           return pos;
         },
-      }), '줄 추가');
+      }), 'insert row');
     },
   },
   {
     id: 'table:insert-row-below',
-    label: '아래쪽에 줄 추가하기',
+    label: 'Insert Below',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -513,12 +514,12 @@ export const tableCommands: CommandDef[] = [
           wasm.insertTableRow(pos.sectionIndex, pos.parentParaIndex!, pos.controlIndex!, cellInfo.row, true);
           return pos;
         },
-      }), '줄 추가');
+      }), 'insert row');
     },
   },
   {
     id: 'table:insert-col-left',
-    label: '왼쪽에 칸 추가하기',
+    label: 'Insert Left',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -533,12 +534,12 @@ export const tableCommands: CommandDef[] = [
           wasm.insertTableColumn(pos.sectionIndex, pos.parentParaIndex!, pos.controlIndex!, cellInfo.col, false);
           return pos;
         },
-      }), '칸 추가');
+      }), 'insert column');
     },
   },
   {
     id: 'table:insert-col-right',
-    label: '오른쪽에 칸 추가하기',
+    label: 'Insert Right',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -553,12 +554,12 @@ export const tableCommands: CommandDef[] = [
           wasm.insertTableColumn(pos.sectionIndex, pos.parentParaIndex!, pos.controlIndex!, cellInfo.col, true);
           return pos;
         },
-      }), '칸 추가');
+      }), 'insert column');
     },
   },
   {
     id: 'table:delete-row',
-    label: '줄 지우기',
+    label: 'Delete Row',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -573,12 +574,12 @@ export const tableCommands: CommandDef[] = [
           wasm.deleteTableRow(pos.sectionIndex, pos.parentParaIndex!, pos.controlIndex!, cellInfo.row);
           return pos;
         },
-      }), '줄 지우기');
+      }), 'delete row');
     },
   },
   {
     id: 'table:delete-col',
-    label: '칸 지우기',
+    label: 'Delete Column',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -593,13 +594,13 @@ export const tableCommands: CommandDef[] = [
           wasm.deleteTableColumn(pos.sectionIndex, pos.parentParaIndex!, pos.controlIndex!, cellInfo.col);
           return pos;
         },
-      }), '칸 지우기');
+      }), 'delete column');
     },
   },
   {
     id: 'table:cell-split',
     opensDialog: true,
-    label: '셀 나누기',
+    label: 'Split Cells…',
     shortcutLabel: 'S',
     canExecute: inTable,
     execute(services) {
@@ -640,7 +641,7 @@ export const tableCommands: CommandDef[] = [
             }
             return pos;
           },
-        }), '셀 나누기');
+        }), 'split cell');
         if (isMultiCell) ih2.exitCellSelectionMode?.();
         // 대화상자 닫힘 후 편집 포커스 복원 (#1140 — 표 만들기와 동일 결함)
         (ih2 as any).textarea?.focus();
@@ -650,7 +651,7 @@ export const tableCommands: CommandDef[] = [
   },
   {
     id: 'table:cell-merge',
-    label: '셀 합치기',
+    label: 'Merge Cells',
     shortcutLabel: 'M',
     canExecute: (ctx) => ctx.inCellSelectionMode,
     execute(services) {
@@ -667,13 +668,13 @@ export const tableCommands: CommandDef[] = [
           wasm.mergeTableCells(tableCtx.sec, tableCtx.ppi, tableCtx.ci, range.startRow, range.startCol, range.endRow, range.endCol);
           return ih.getCursorPosition();
         },
-      }), '셀 합치기');
+      }), 'merge cells');
       ih.exitCellSelectionMode();
     },
   },
   {
     id: 'table:transpose-copy',
-    label: '행/열 바꿈 복사',
+    label: 'Copy Transposed',
     canExecute: (ctx) => ctx.inCellSelectionMode,
     execute(services) {
       const ih = services.getInputHandler();
@@ -694,13 +695,13 @@ export const tableCommands: CommandDef[] = [
           range.endRow,
           range.endCol,
         );
-      }, '행/열 바꿈 복사');
+      }, 'transpose copy');
       restoreEditorFocus(ih);
     },
   },
   {
     id: 'table:transpose-paste',
-    label: '행/열 바꿈 붙여넣기',
+    label: 'Paste Transposed',
     canExecute: (ctx) => ctx.hasDocument && ctx.hasTableTransposeClipboard,
     execute(services) {
       const ih = services.getInputHandler();
@@ -811,13 +812,13 @@ export const tableCommands: CommandDef[] = [
 
           return pasteAsNewTable(pos.sectionIndex, pos.paragraphIndex, pos.charOffset);
         },
-      }), '행/열 바꿈 붙여넣기');
+      }), 'transpose paste');
       restoreEditorFocus(ih);
     },
   },
   {
     id: 'table:split',
-    label: '표 나누기',
+    label: 'Split Table',
     shortcutLabel: 'Ctrl+M,A',
     canExecute: (ctx) => ctx.inTable,
     execute(services) {
@@ -857,14 +858,14 @@ export const tableCommands: CommandDef[] = [
             };
           },
         });
-      }, '표 나누기');
+      }, 'split table');
     },
   },
   {
     // 한컴 용어는 '붙이기'(attach)지만 의미는 다음 표와의 행 병합이라
     // WASM API 는 mergeTableWithNext, 이벤트는 TablesMerged 를 쓴다.
     id: 'table:attach',
-    label: '표 붙이기',
+    label: 'Attach Table',
     shortcutLabel: 'Ctrl+M,Z',
     canExecute: (ctx) => ctx.inTable || ctx.inTableObjectSelection,
     execute(services) {
@@ -893,12 +894,12 @@ export const tableCommands: CommandDef[] = [
             return ih.getCursorPosition()!;
           },
         });
-      }, '표 붙이기');
+      }, 'attach table');
     },
   },
   {
     id: 'table:delete',
-    label: '표 지우기',
+    label: 'Delete Table',
     canExecute: (ctx) => ctx.inTable || ctx.inTableObjectSelection,
     execute(services) {
       const ih = services.getInputHandler();
@@ -912,7 +913,7 @@ export const tableCommands: CommandDef[] = [
             wasm.deleteTableControl(ref.sec, ref.ppi, ref.ci);
             return { sectionIndex: ref.sec, paragraphIndex: ref.ppi, charOffset: 0 };
           },
-        }), '표 지우기');
+        }), 'delete table');
         return;
       }
       const pos = ih.getCursorPosition();
@@ -924,12 +925,12 @@ export const tableCommands: CommandDef[] = [
           wasm.deleteTableControl(pos.sectionIndex, pos.parentParaIndex!, pos.controlIndex!);
           return { sectionIndex: pos.sectionIndex, paragraphIndex: pos.parentParaIndex!, charOffset: 0 };
         },
-      }), '표 지우기');
+      }), 'delete table');
     },
   },
   {
     id: 'table:caption-toggle',
-    label: '캡션 넣기',
+    label: 'Insert Caption',
     canExecute: (ctx) => ctx.inTable || ctx.inTableObjectSelection,
     execute(services) {
       const ih = services.getInputHandler();
@@ -958,7 +959,7 @@ export const tableCommands: CommandDef[] = [
             charOffset = result?.captionCharOffset ?? 3;
             return { sectionIndex: sec, paragraphIndex: ppi, charOffset: 0 };
           },
-        }), '캡션 넣기');
+        }), 'insert caption');
       } else {
         try {
           const len = services.wasm.getCellParagraphLength(sec, ppi, ci, 65534, 0);
@@ -974,7 +975,7 @@ export const tableCommands: CommandDef[] = [
   },
   {
     id: 'table:cell-height-equal',
-    label: '셀 높이를 같게',
+    label: 'Distribute Rows Evenly',
     shortcutLabel: 'H',
     canExecute: inTableOrCellSelection,
     execute(services) {
@@ -1021,7 +1022,7 @@ export const tableCommands: CommandDef[] = [
             wasm.resizeTableCells(sec, ppi, ci, updates);
             return pos;
           },
-        }), '셀 높이를 같게');
+        }), 'equalize row heights');
         restoreEditorFocus(ih);
       } catch (err) {
         console.warn('[table:cell-height-equal] 높이 균등화 실패:', err);
@@ -1030,7 +1031,7 @@ export const tableCommands: CommandDef[] = [
   },
   {
     id: 'table:cell-width-equal',
-    label: '셀 너비를 같게',
+    label: 'Distribute Columns Evenly',
     shortcutLabel: 'W',
     canExecute: inTableOrCellSelection,
     execute(services) {
@@ -1078,7 +1079,7 @@ export const tableCommands: CommandDef[] = [
             wasm.resizeTableCells(sec, ppi, ci, updates);
             return pos;
           },
-        }), '셀 너비를 같게');
+        }), 'equalize column widths');
         restoreEditorFocus(ih);
       } catch (err) {
         console.warn('[table:cell-width-equal] 너비 균등화 실패:', err);
@@ -1087,23 +1088,23 @@ export const tableCommands: CommandDef[] = [
   },
   {
     id: 'table:formula',
-    label: '계산식(F)...',
+    label: 'Formula…',
     shortcutLabel: 'Ctrl+M,F',
     canExecute: inTable,
     execute(services) { openFormulaDialog(services); },
   },
   {
     id: 'table:block-formula',
-    label: '블록 계산식',
+    label: 'Block Formula',
     canExecute: inTable,
     execute(services) { openFormulaDialog(services); },
   },
-  blockCalcCommand('table:block-sum', '블록 합계', 'SUM', 'Ctrl+Shift+S'),
-  blockCalcCommand('table:block-avg', '블록 평균', 'AVERAGE', 'Ctrl+Shift+A'),
-  blockCalcCommand('table:block-product', '블록 곱', 'PRODUCT', 'Ctrl+Shift+P'),
+  blockCalcCommand('table:block-sum', 'Block Sum', 'SUM', 'Ctrl+Shift+S'),
+  blockCalcCommand('table:block-avg', 'Block Average', 'AVERAGE', 'Ctrl+Shift+A'),
+  blockCalcCommand('table:block-product', 'Block Product', 'PRODUCT', 'Ctrl+Shift+P'),
   {
     id: 'table:thousand-sep',
-    label: '1,000 단위 구분 쉼표',
+    label: 'Thousands Separator',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -1152,7 +1153,7 @@ export const tableCommands: CommandDef[] = [
   },
   {
     id: 'table:decimal-add',
-    label: '자릿점 넣기',
+    label: 'Increase Decimal',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();
@@ -1197,7 +1198,7 @@ export const tableCommands: CommandDef[] = [
   },
   {
     id: 'table:decimal-remove',
-    label: '자릿점 빼기',
+    label: 'Decrease Decimal',
     canExecute: inTable,
     execute(services) {
       const ih = services.getInputHandler();

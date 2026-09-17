@@ -43,7 +43,7 @@ test('숨겨진 편집 입력과 글자색 입력은 접근 가능한 이름을 
   const inputHandler = source('src/engine/input-handler.ts');
 
   assert.match(html, /id="text-color-picker"[^>]*aria-label="Choose Font Color"/);
-  assert.match(inputHandler, /setAttribute\('aria-label', '문서 편집 입력'\)/);
+  assert.match(inputHandler, /setAttribute\('aria-label', 'Document edit input'\)/);
   assert.match(inputHandler, /this\.container\.closest\('main'\)/);
 });
 
