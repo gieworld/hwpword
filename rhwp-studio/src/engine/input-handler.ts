@@ -5221,7 +5221,7 @@ export class InputHandler {
         try {
           const cellPathJson = _keyboard.pictureCellPathJson(ref);
           this.wasm.copyControl(ref.sec, ref.ppi, ref.ci, cellPathJson);
-          const text = this.wasm.getClipboardText() || '[Picture]';
+          const text = this.wasm.getClipboardText() || '[그림]'; // hwpword-keep-korean: clipboard content, mirrors engine [표]/[그림] markers; input-handler-keyboard.ts and e2e/issue-2069-ole-object-selection.test.mjs pin it
           let html = '';
           try { html = this.wasm.exportControlHtml(ref.sec, ref.ppi, ref.ci, cellPathJson) || ''; } catch { /* 무시 */ }
           const markedHtml = _keyboard.prepareRhwpInternalClipboardHtml(this, html, text);
@@ -5246,7 +5246,7 @@ export class InputHandler {
           this.wasm.copyControl(
             ref.sec, ref.ppi, target.controlIndex, target.ownerCellPathJson,
           );
-          const text = this.wasm.getClipboardText() || '[Table]';
+          const text = this.wasm.getClipboardText() || '[표]'; // hwpword-keep-korean: clipboard content, mirrors engine [표]/[그림] markers; e2e/issue-4272-nested-table-object-copy.test.mjs pins it
           let html = '';
           try {
             html = this.wasm.exportControlHtml(

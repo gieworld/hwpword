@@ -538,9 +538,9 @@ export const pageCommands: CommandDef[] = [
   },
   // 다단 프리셋 — ColumnDef 컨트롤 수정 (SectionDef와 독립)
   ...[
-    { id: 'page:col-1', label: 'One', cols: 1 },
-    { id: 'page:col-2', label: 'Two', cols: 2 },
-    { id: 'page:col-3', label: 'Three', cols: 3 },
+    { id: 'page:col-1', label: 'Columns: One', cols: 1 },
+    { id: 'page:col-2', label: 'Columns: Two', cols: 2 },
+    { id: 'page:col-3', label: 'Columns: Three', cols: 3 },
   ].map((def): CommandDef => ({
     id: def.id,
     label: def.label,
@@ -567,7 +567,7 @@ export const pageCommands: CommandDef[] = [
   })),
   {
     id: 'page:col-left',
-    label: 'Left',
+    label: 'Columns: Left',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       const ih = services.getInputHandler();
@@ -588,7 +588,7 @@ export const pageCommands: CommandDef[] = [
   },
   {
     id: 'page:col-right',
-    label: 'Right',
+    label: 'Columns: Right',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       const ih = services.getInputHandler();

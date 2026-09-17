@@ -328,7 +328,7 @@ function applyTableDeleteRowColumn(
 }
 
 export const tableCommands: CommandDef[] = [
-  { id: 'table:create', label: 'Table', icon: 'icon-table',
+  { id: 'table:create', label: 'Insert Table…', icon: 'icon-table',
     opensDialog: true,
     canExecute: (ctx) => ctx.hasDocument && !ctx.inTable,
     execute(services, params) {
