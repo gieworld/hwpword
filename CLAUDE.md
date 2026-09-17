@@ -1,43 +1,44 @@
-# CLAUDE.md
+# HWP Word
 
-이 파일은 Claude Code가 저장소의 권위 문서를 찾기 위한 짧은 부트로더다. 작업 절차와 명령을 이 파일에
-중복 기록하지 않는다.
+Personal Windows desktop editor for Korean HWP/HWPX documents with an English, Word-style UI.
+It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to a release tag.
 
-## 로딩 순서
+- Design: `docs/superpowers/specs/2026-09-16-hwpword-desktop-design.md`
+- Plan: `docs/superpowers/plans/2026-09-16-hwpword-desktop-mvp.md`
+- Translation glossary: `docs/hwpword/glossary.md`
 
-1. 저장소 루트의 [`AGENTS.md`](AGENTS.md)
-2. [`mydocs/README.md`](mydocs/README.md)
-3. 작업 성격에 맞는 [`manual` 지도](mydocs/manual/README.md) 또는
-   [`tech` 지도](mydocs/tech/README.md)
-4. 각 지도가 지정한 canonical 문서
+## Layout
 
-이 파일과 canonical 문서가 다르면 canonical 문서를 따른다.
+- `rhwp-studio/`: upstream web editor (TypeScript + Vite). We only touch `index.html` (ribbon mount +
+  visible English text), `src/ui/ribbon*.ts`, `src/styles/hwpword.css`, one import in `src/style.css`,
+  `src/desktop/`, two hooks in `src/main.ts`, and English strings in the files listed by
+  `tests/hwpword-english-ui.test.ts`.
+- `desktop/`: our Electron app (main process, preload, installer, corpus check). It owns the
+  `@rhwp/core` and Electron versions.
+- `pkg/`: generated copy of `@rhwp/core` (gitignored). Refresh with `npm --prefix desktop run sync-core`.
+- Everything else is upstream and is not edited (Rust sources, docs, other apps). The checkout is sparse
+  (`git sparse-checkout list`); `mydocs/`, most of `tools/` and other rhwp apps are not on disk.
 
-## 프로젝트 개요
+## Commands (Node 22 LTS ≥ 22.18, Git Bash)
 
-rhwp는 Rust로 HWP/HWPX/HWP3 문서를 읽고 편집·렌더링하며, WebAssembly로 브라우저에서도 동작하는
-문서 엔진이다. 모든 포맷 파서는 공통 `Document` IR을 반환한다.
+- Studio tests: `npm --prefix rhwp-studio test` (failures must be listed in `docs/hwpword/windows-test-baseline.md`)
+- Desktop tests: `npm --prefix desktop test`
+- Build studio for desktop: `npm --prefix desktop run build:studio`
+- Run built app: `npm --prefix desktop start`
+- Dev loop: `npm --prefix rhwp-studio run dev` in one terminal, `npm --prefix desktop run dev` in another
+- Corpus round-trip check: `npm --prefix desktop run corpus` → `corpus/report-corpus.md`
+- Installer: `npm --prefix desktop run dist` → `desktop/dist/`
 
-## 파일 포맷별 파서 구조와 HWP3 파서 규칙
+## Rules
 
-파서 책임과 공통 IR 경계의 권위 문서는
-[`mydocs/tech/parser_architecture.md`](mydocs/tech/parser_architecture.md)다. 특히 HWP3 전용 해석은
-`src/parser/hwp3/` 안에서 끝내고 렌더러·레이아웃·문서 코어에 HWP3 전용 분기를 추가하지 않는다.
+- Never commit anything under `corpus/` (personal documents).
+- UI text is English; follow `docs/hwpword/glossary.md`. Font names and Hancom's attribution sentence stay Korean.
+- Don't translate the hidden `#menu-bar` / `#icon-toolbar` markup in `rhwp-studio/index.html`.
 
-## 작업과 검증
+## Upgrading rhwp
 
-- GitHub Actions·저장소 설정·branch protection·cache·runner 운영:
-  [`github_operations.md`](mydocs/manual/github_operations.md)
-- 문서·Git 작업: [`docs_and_git_workflow.md`](mydocs/manual/codex/docs_and_git_workflow.md)
-- PR 리뷰·merge·후속 처리: [`pr_review_workflow.md`](mydocs/manual/pr_review_workflow.md)와
-  그 [조건별 자식 가이드 선택표](mydocs/manual/pr_review/README.md)
-- 로컬 빌드·테스트·WASM: [`dev_environment_guide.md`](mydocs/manual/dev_environment_guide.md)
-- 변경 범위별 로컬 검증 게이트: [`local_validation.md`의 4.3](mydocs/manual/pr_review/local_validation.md#43-변경-범위별-기본-검증)
-  — 범위(문서/parser/renderer/studio)에 따라 필요한 게이트가 다르다
-- CLI 명령: [`cli_commands.md`](mydocs/manual/cli_commands.md)
-- 시각 검증: [`verification/README.md`](mydocs/manual/verification/README.md)
-
-## rhwp-studio UI 명칭과 CSS 접두어 규칙
-
-UI 명칭과 CSS 접두어는
-[`rhwp_studio_ui_conventions.md`](mydocs/manual/rhwp_studio_ui_conventions.md)를 따른다.
+1. `git fetch --filter=blob:none upstream refs/tags/vX.Y.Z:refs/tags/vX.Y.Z`
+2. `npm --prefix desktop run corpus` to keep a before-report, then `git merge vX.Y.Z`.
+3. On conflicts in `.claude/`, `.mcp.json`, `AGENTS.md` or `CLAUDE.md`, keep ours (`git rm` the upstream copy / `git checkout --ours CLAUDE.md`).
+4. Set `@rhwp/core` to `X.Y.Z` in `desktop/package.json`, then `npm --prefix desktop install` and `npm --prefix desktop run build:studio`.
+5. Run both test suites and the corpus check; compare the reports.
