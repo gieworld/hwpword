@@ -40,6 +40,36 @@ test('translates the real "open a non-HWP file" message end to end', () => {
   assert.equal(HANGUL.test(out), false);
 });
 
+test('an English sentence with a Korean file name passes through unchanged', () => {
+  const original = console.warn;
+  console.warn = () => {};
+  try {
+    const samples = [
+      'Could not save "연간보고서.hwp". It may be read-only or open in another program.', // hwpword-keep-korean: fixture, a Korean file name the user typed — app data, not engine text
+      'Opened the recovered copy of "보고서 Recovered.hwp". The original file is not overwritten automatically.', // hwpword-keep-korean: fixture, a Korean file name — app data, not engine text
+      "Error invoking remote method 'hwpword:read-file': Error: EBUSY: resource busy or locked, open 'D:\\문서\\보고서.hwp'", // hwpword-keep-korean: fixture, a Korean path inside an Electron/OS error
+    ];
+    for (const raw of samples) assert.equal(toEnglishMessage(raw), raw);
+  } finally {
+    console.warn = original;
+  }
+});
+
+test('a fully Korean engine message still takes the generic path even with a Latin code', () => {
+  const original = console.warn;
+  console.warn = () => {};
+  try {
+    // No two consecutive English words, so the "user data inside an English sentence" exception
+    // must not fire: this is engine text we failed to translate.
+    assert.equal(
+      toEnglishMessage('렌더링 오류: 알 수 없는 렌더러 상태'), // hwpword-keep-korean: fixture, real Rust engine text shape (src/error.rs:42)
+      'The document engine reported an error.',
+    );
+  } finally {
+    console.warn = original;
+  }
+});
+
 test('an unknown Korean message falls back to the generic sentence, no code', () => {
   const raw = '완전히 새로운 미지의 오류입니다'; // hwpword-keep-korean: fixture, deliberately unmapped Korean text
   assert.equal(toEnglishMessage(raw), 'The document engine reported an error.');

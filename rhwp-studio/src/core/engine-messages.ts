@@ -13,6 +13,13 @@ const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힣]/; // hwpword-keep-korean: Unicode range 
 /** A Rust engine error code such as `UNSUPPORTED_HWP3`, kept verbatim when we fall back. */
 const CODE_TOKEN = /[A-Z][A-Z0-9_]{2,}/;
 
+/**
+ * Two consecutive English words — the signature of an app- or OS-authored sentence rather than
+ * engine text. Engine messages are written entirely in Korean; their only Latin runs are single
+ * tokens (`HWP 3.0`, `UNSUPPORTED_HWP3`, a file name), never an English phrase.
+ */
+const ENGLISH_SENTENCE = /[A-Za-z]{3,}\s+[A-Za-z]{3,}/;
+
 type Rule = readonly [RegExp, string];
 
 /**
@@ -139,6 +146,11 @@ export function toEnglishMessage(raw: string): string {
   if (!HANGUL.test(text)) return text;
 
   console.warn('[engine-message]', raw);
+  // Hangul inside an otherwise-English sentence is the user's own data (a file, bookmark or style
+  // name interpolated into an app/OS message) — an allowed exception — so keep the message rather
+  // than discarding it. The test is on `raw`, not the partly translated `text`: the table itself
+  // emits English words ("Rendering error: 알 수 없는 …"), which would fake this signal.
+  if (ENGLISH_SENTENCE.test(raw)) return text;
   const code = raw.match(CODE_TOKEN);
   return code ? `The document engine reported an error. (${code[0]})` : 'The document engine reported an error.';
 }
