@@ -11,13 +11,17 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
 
 - `rhwp-studio/`: upstream web editor (TypeScript + Vite). We only touch `index.html` (ribbon mount +
   visible English text), `src/ui/ribbon*.ts`, `src/styles/hwpword.css`, one import in `src/style.css`,
-  `src/desktop/`, two hooks in `src/main.ts`, and English strings in the files listed by
-  `tests/hwpword-english-ui.test.ts`.
+  `src/desktop/`, and English strings in the files listed by `tests/hwpword-english-ui.test.ts`.
+  `src/main.ts` also carries our hooks: the desktop launch queue, the ribbon, the skin-onboarding guard
+  (skipped on the desktop) and the startup plan (`desktopStartupPlan` gates draft recovery and the blank
+  document). `src/command/commands/file.ts` has one logic edit: desktop save failures are rethrown instead
+  of falling back to a download.
 - `desktop/`: our Electron app (main process, preload, installer, corpus check). It owns the
   `@rhwp/core` and Electron versions.
 - `pkg/`: generated copy of `@rhwp/core` (gitignored). Refresh with `npm --prefix desktop run sync-core`.
 - Everything else is upstream and is not edited (Rust sources, docs, other apps). The checkout is sparse
   (`git sparse-checkout list`); `mydocs/`, most of `tools/` and other rhwp apps are not on disk.
+  `build-studio.mjs` copies the bundled fonts from `assets/fonts`, so that folder must stay in the sparse checkout.
 
 ## Commands (Node 22 LTS ≥ 22.18, Git Bash)
 
@@ -38,7 +42,8 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
 ## Upgrading rhwp
 
 1. `git fetch --filter=blob:none upstream refs/tags/vX.Y.Z:refs/tags/vX.Y.Z`
-2. `npm --prefix desktop run corpus` to keep a before-report, then `git merge vX.Y.Z`.
+2. `npm --prefix desktop run corpus`, then `cp corpus/report-corpus.md corpus/report-corpus.before.md` to keep
+   the before-report (the next run overwrites it), then `git merge vX.Y.Z`.
 3. On conflicts in `.claude/`, `.mcp.json`, `AGENTS.md` or `CLAUDE.md`, keep ours (`git rm` the upstream copy / `git checkout --ours CLAUDE.md`).
 4. Set `@rhwp/core` to `X.Y.Z` in `desktop/package.json`, then `npm --prefix desktop install` and `npm --prefix desktop run build:studio`.
 5. Run both test suites and the corpus check; compare the reports.

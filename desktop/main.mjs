@@ -10,7 +10,8 @@ import { createSerialWriter, LaunchFileRegistry, launchPathsFromArgv, pathKey } 
 const here = dirname(fileURLToPath(import.meta.url));
 const APP_HOST = 'hwpword';
 const APP_ORIGIN = `app://${APP_HOST}`;
-const devUrlArg = process.argv.find((arg) => arg.startsWith('--dev-url='));
+// The installed app always serves its bundled studio; --dev-url is for `npm run dev` only.
+const devUrlArg = app.isPackaged ? undefined : process.argv.find((arg) => arg.startsWith('--dev-url='));
 const DEV_URL = devUrlArg ? devUrlArg.slice('--dev-url='.length) : null;
 const DEV_ORIGIN = DEV_URL ? originOf(DEV_URL) : null;
 const STUDIO_DIST = app.isPackaged
@@ -134,7 +135,7 @@ function registerIpc() {
 app.on('web-contents-created', (_event, contents) => {
   // Print preview opens print.html in a child window; anything else leaves the app.
   contents.setWindowOpenHandler(({ url }) => {
-    if (isTrustedUrl(url) || url === 'about:blank') return { action: 'allow' };
+    if (isTrustedUrl(url)) return { action: 'allow' };
     openExternally(url);
     return { action: 'deny' };
   });
