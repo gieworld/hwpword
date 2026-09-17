@@ -171,12 +171,12 @@ export class StyleToolbarOverflowController {
     this.trigger.disabled = toolbarDisabled;
     const currentAlignment = activeCommand?.title;
     const accessibleLabel = currentAlignment
-      ? `문단 정렬 더보기, 현재 ${currentAlignment}`
-      : '문단 정렬 더보기';
+      ? `More paragraph alignment, current: ${currentAlignment}`
+      : 'More paragraph alignment';
     this.trigger.setAttribute('aria-label', accessibleLabel);
     this.trigger.title = currentAlignment
-      ? `문단 정렬 더보기 (현재 ${currentAlignment})`
-      : '문단 정렬 더보기';
+      ? `More paragraph alignment (current: ${currentAlignment})`
+      : 'More paragraph alignment';
   }
 
   dispose(): void {

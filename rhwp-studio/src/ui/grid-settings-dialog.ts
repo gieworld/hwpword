@@ -31,7 +31,7 @@ export class GridSettingsDialog extends ModalDialog {
     currentMoveStepMm: number,
     onConfirm: (settings: GridViewSettings, moveStepMm: number) => void,
   ) {
-    super('격자 설정', 430);
+    super('Grid Settings', 430);
     this.currentSettings = currentSettings;
     this.originBases = originBases;
     this.currentMoveStepMm = currentMoveStepMm;
@@ -49,43 +49,43 @@ export class GridSettingsDialog extends ModalDialog {
     this.visibleInput = document.createElement('input');
     this.visibleInput.type = 'checkbox';
     this.visibleInput.checked = this.currentSettings.visible;
-    body.appendChild(this.checkboxRow(this.visibleInput, '격자 보기'));
+    body.appendChild(this.checkboxRow(this.visibleInput, 'Show grid'));
 
-    body.appendChild(this.radioGroup<GridPattern>('격자 모양', 'grid-pattern', [
-      ['dots', '점'],
-      ['horizontal', '가로선'],
-      ['vertical', '세로선'],
-      ['both', '가로/세로선'],
+    body.appendChild(this.radioGroup<GridPattern>('Grid Pattern', 'grid-pattern', [
+      ['dots', 'Dots'],
+      ['horizontal', 'Horizontal Lines'],
+      ['vertical', 'Vertical Lines'],
+      ['both', 'Horizontal/Vertical Lines'],
     ], this.currentSettings.pattern));
 
-    body.appendChild(this.radioGroup<GridLayer>('격자 위치', 'grid-layer', [
-      ['behindText', '글 뒤'],
-      ['inFrontOfText', '글 앞'],
+    body.appendChild(this.radioGroup<GridLayer>('Grid Position', 'grid-layer', [
+      ['behindText', 'Behind Text'],
+      ['inFrontOfText', 'In Front of Text'],
     ], this.currentSettings.layer));
 
-    body.appendChild(this.radioGroup<GridSnapMode>('격자 방식', 'grid-snap-mode', [
-      ['free', '상관 없이'],
-      ['magnetic', '자석 효과'],
-      ['gridOnly', '격자에만 붙이기'],
+    body.appendChild(this.radioGroup<GridSnapMode>('Snap Method', 'grid-snap-mode', [
+      ['free', 'Free'],
+      ['magnetic', 'Magnetic'],
+      ['gridOnly', 'Snap to Grid Only'],
     ], this.currentSettings.snapMode));
 
-    const spacing = this.group('격자 간격');
+    const spacing = this.group('Grid Spacing');
     this.horizontalInput = this.numberInput(this.currentSettings.horizontalMm);
     this.horizontalInput.name = 'grid-horz';
     this.verticalInput = this.numberInput(this.currentSettings.verticalMm);
     this.verticalInput.name = 'grid-vert';
     spacing.append(
-      this.numberRow('가로', this.horizontalInput),
-      this.numberRow('세로', this.verticalInput),
+      this.numberRow('Horizontal', this.horizontalInput),
+      this.numberRow('Vertical', this.verticalInput),
     );
     body.appendChild(spacing);
 
     body.appendChild(this.originGroup());
 
-    const move = this.group('표/개체 이동');
+    const move = this.group('Table/Object Movement');
     this.moveStepInput = this.numberInput(this.currentMoveStepMm);
     this.moveStepInput.name = 'move-step';
-    move.appendChild(this.numberRow('이동 간격', this.moveStepInput));
+    move.appendChild(this.numberRow('Move step', this.moveStepInput));
     body.appendChild(move);
 
     return body;
@@ -149,13 +149,13 @@ export class GridSettingsDialog extends ModalDialog {
   }
 
   private originGroup(): HTMLElement {
-    const fieldset = this.group('격자 기준 위치');
+    const fieldset = this.group('Grid Origin');
     const row = document.createElement('div');
     row.style.cssText = 'display:flex;flex-wrap:wrap;gap:10px 14px;margin-bottom:8px;color:var(--color-text);';
 
     for (const [value, labelText] of [
-      ['page', '쪽'],
-      ['paper', '종이'],
+      ['page', 'Page'],
+      ['paper', 'Paper'],
     ] as [GridOrigin, string][]) {
       const label = document.createElement('label');
       label.style.cssText = 'display:flex;align-items:center;gap:5px;font-size:13px;color:var(--color-text);';
@@ -175,8 +175,8 @@ export class GridSettingsDialog extends ModalDialog {
     this.offsetYInput.name = 'grid-offset-y';
     fieldset.append(
       row,
-      this.numberRow('가로', this.offsetXInput),
-      this.numberRow('세로', this.offsetYInput),
+      this.numberRow('Horizontal', this.offsetXInput),
+      this.numberRow('Vertical', this.offsetYInput),
     );
     return fieldset;
   }

@@ -33,7 +33,7 @@ const FIXTURES = Object.freeze([
 
 async function dismissFontDialog(page) {
   await page.evaluate(() => {
-    const labels = new Set(['그대로 보기', '대체 글꼴로 보기']);
+    const labels = new Set(['Keep As Is', 'View with Substitute Fonts']);
     const button = Array.from(document.querySelectorAll('button')).find((candidate) =>
       labels.has(candidate.textContent?.trim())
       && getComputedStyle(candidate).display !== 'none'

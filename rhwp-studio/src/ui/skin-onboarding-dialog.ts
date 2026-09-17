@@ -21,27 +21,27 @@ interface SkinChoice {
 const SKIN_CHOICES: readonly SkinChoice[] = [
   {
     skin: 'oldschool',
-    name: '올드스쿨',
-    description: '한글 97 시절의 고전 데스크톱 감성',
+    name: 'Old School',
+    description: 'The classic desktop feel of the Hangul 97 era',
     swatch: ['#c0c0c0', '#000080', '#808080'],
   },
   {
     skin: 'default',
-    name: '클래식',
-    description: '기존 rhwp-studio 기본 모습',
+    name: 'Classic',
+    description: 'The original rhwp-studio default look',
     swatch: ['#f0f0f0', '#6182d6', '#e0e0e0'],
   },
   {
     skin: 'flat',
-    name: '모던',
-    description: '화이트 크롬과 블루 액센트의 플랫 스킨',
+    name: 'Modern',
+    description: 'A flat skin with white chrome and blue accents',
     swatch: ['#ffffff', '#2b7de9', '#eef0f4'],
   },
 ];
 
 class SkinOnboardingDialog extends ModalDialog {
   constructor() {
-    super('화면 스킨 선택', 460);
+    super('Choose a Skin', 460);
   }
 
   protected createBody(): HTMLElement {
@@ -51,13 +51,13 @@ class SkinOnboardingDialog extends ModalDialog {
     const intro = document.createElement('p');
     intro.className = 'skin-onboarding-intro';
     intro.textContent =
-      '마음에 드는 화면 스킨을 골라 시작하세요. 언제든 보기 > 테마에서 바꿀 수 있습니다.';
+      'Choose the skin you like to get started. You can change it anytime from View > Theme.';
     body.appendChild(intro);
 
     const cards = document.createElement('div');
     cards.className = 'skin-onboarding-cards';
     cards.setAttribute('role', 'radiogroup');
-    cards.setAttribute('aria-label', '화면 스킨');
+    cards.setAttribute('aria-label', 'Screen skin');
 
     const currentSkin = userSettings.getThemeSettings().skin;
     for (const choice of SKIN_CHOICES) {
@@ -129,7 +129,7 @@ class SkinOnboardingDialog extends ModalDialog {
   override show(): void {
     super.show();
     const okBtn = this.dialog.querySelector<HTMLButtonElement>('.dialog-btn-primary');
-    if (okBtn) okBtn.textContent = '시작하기';
+    if (okBtn) okBtn.textContent = 'Get Started';
     // 선택은 카드가 담당하므로 취소 버튼은 숨긴다 (닫기 = 현재 스킨 유지).
     const cancelBtn = this.dialog.querySelector<HTMLButtonElement>(
       '.dialog-footer .dialog-btn:not(.dialog-btn-primary)',

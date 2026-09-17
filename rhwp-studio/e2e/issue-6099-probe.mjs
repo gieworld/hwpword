@@ -10,7 +10,7 @@ try {
   await loadApp(page);
   await page.evaluate(() => {
     for (const btn of document.querySelectorAll('button')) {
-      if (btn.textContent && btn.textContent.includes('시작하기')) { btn.click(); return; }
+      if (btn.textContent && btn.textContent.includes('Get Started')) { btn.click(); return; }
     }
   });
   await loadHwpFile(page, name);

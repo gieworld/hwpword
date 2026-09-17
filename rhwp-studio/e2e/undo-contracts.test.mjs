@@ -43,7 +43,7 @@ async function dismissSkinOnboarding(page) {
     const card = document.querySelector('.skin-onboarding-card');
     if (card) card.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
     const start = [...document.querySelectorAll('button.dialog-btn-primary')]
-      .find(button => button.offsetParent !== null && button.textContent?.trim() === '시작하기');
+      .find(button => button.offsetParent !== null && button.textContent?.trim() === 'Get Started');
     if (start) {
       start.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
       start.click();

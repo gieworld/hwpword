@@ -13,17 +13,17 @@ function source(path: string): string {
 test('로컬 글꼴 감지 모달은 사용자에게 대체 글꼴 표현을 사용한다', () => {
   const modal = source('src/ui/local-fonts-modal.ts');
 
-  assert.match(modal, /대체 글꼴로 보기/);
-  assert.match(modal, /대체 글꼴 사용/);
-  assert.doesNotMatch(modal, /웹 대체로 보기/);
-  assert.doesNotMatch(modal, /웹 대체 사용/);
+  assert.match(modal, /View with Substitute Fonts/);
+  assert.match(modal, /Using substitute font/);
+  assert.doesNotMatch(modal, /View with Web Substitute/);
+  assert.doesNotMatch(modal, /Using web substitute/);
 });
 
 test('외부 웹폰트 비활성 상태는 로컬 글꼴 감지 모달에 표시된다', () => {
   const modal = source('src/ui/local-fonts-modal.ts');
 
-  assert.match(modal, /외부 웹폰트 사용 안 함: 켜짐/);
-  assert.match(modal, /외부 CDN 폰트를 요청하지 않고/);
+  assert.match(modal, /External web fonts disabled: on/);
+  assert.match(modal, /instead of requesting external CDN fonts/);
 });
 
 test('문서 열기는 로컬 글꼴 감지 모달을 자동으로 띄우지 않는다', () => {

@@ -33,7 +33,7 @@ async function openZoomDialog(page) {
 async function selectCustomZoom(page, rawValue) {
   await page.click('input[name="zoom-choice"][value="custom"]');
   await page.evaluate((value) => {
-    const input = document.querySelector('input[aria-label="사용자 정의 배율"]');
+    const input = document.querySelector('input[aria-label="Custom zoom percentage"]');
     input.value = value;
     input.dispatchEvent(new Event('input', { bubbles: true }));
     input.focus();
@@ -108,7 +108,7 @@ async function assertInvalidSubmission(page, rawValue, label, expectedZoom) {
   await confirmZoomDialog(page);
   await delay(page);
   const state = await page.evaluate(() => {
-    const input = document.querySelector('input[aria-label="사용자 정의 배율"]');
+    const input = document.querySelector('input[aria-label="Custom zoom percentage"]');
     const error = document.getElementById('zoom-dialog-custom-error');
     const probe = window.__issue6109Probe;
     return {
@@ -162,7 +162,7 @@ runTest('Issue #6109 사용자 배율·보기 설정 transaction', async ({ page
   for (const mode of ['light', 'dark']) {
     const colors = await page.evaluate((themeMode) => {
       window.__theme.setThemeMode(themeMode);
-      const input = document.querySelector('input[aria-label="사용자 정의 배율"]');
+      const input = document.querySelector('input[aria-label="Custom zoom percentage"]');
       const error = document.getElementById('zoom-dialog-custom-error');
       const probe = document.createElement('span');
       probe.style.color = 'var(--ui-danger-strong)';
@@ -184,7 +184,7 @@ runTest('Issue #6109 사용자 배율·보기 설정 transaction', async ({ page
   setTestCase('TC2 교정 후 Enter 원자 적용');
   await selectCustomZoom(page, '137');
   const corrected = await page.evaluate(() => {
-    const input = document.querySelector('input[aria-label="사용자 정의 배율"]');
+    const input = document.querySelector('input[aria-label="Custom zoom percentage"]');
     const error = document.getElementById('zoom-dialog-custom-error');
     return {
       ariaInvalid: input?.getAttribute('aria-invalid'),
@@ -197,7 +197,7 @@ runTest('Issue #6109 사용자 배율·보기 설정 transaction', async ({ page
     '유효한 값으로 교정하면 오류와 ARIA invalid 상태를 해제함',
   );
   await page.click('input[name="page-arrangement"][value="double"]');
-  await page.click('input[aria-label="마우스 휠을 사용하여 좌우로 스크롤하기"]');
+  await page.click('input[aria-label="Scroll left and right using the mouse wheel"]');
   await page.keyboard.press('Enter');
   await page.waitForSelector('.zoom-dialog', { hidden: true });
   await delay(page, 150);

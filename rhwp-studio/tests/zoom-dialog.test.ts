@@ -41,23 +41,23 @@ test('사용자 정의 배율은 한컴 계약인 10~500%로 제한된다', () =
 test('사용자 정의 배율 제출은 잘못된 값을 보정하지 않고 오류로 돌려준다', () => {
   assert.deepEqual(
     validateCustomZoomPercent(''),
-    { valid: false, message: '사용자 정의 배율을 입력하세요.' },
+    { valid: false, message: 'Enter a custom zoom percentage.' },
   );
   assert.deepEqual(
     validateCustomZoomPercent('not-a-number'),
-    { valid: false, message: '사용자 정의 배율은 숫자로 입력하세요.' },
+    { valid: false, message: 'Enter the custom zoom percentage as a number.' },
   );
   assert.deepEqual(
     validateCustomZoomPercent('10.5'),
-    { valid: false, message: '사용자 정의 배율은 정수로 입력하세요.' },
+    { valid: false, message: 'Enter the custom zoom percentage as a whole number.' },
   );
   assert.deepEqual(
     validateCustomZoomPercent('9'),
-    { valid: false, message: '10~500% 사이의 배율을 입력하세요.' },
+    { valid: false, message: 'Enter a zoom percentage between 10% and 500%.' },
   );
   assert.deepEqual(
     validateCustomZoomPercent('501'),
-    { valid: false, message: '10~500% 사이의 배율을 입력하세요.' },
+    { valid: false, message: 'Enter a zoom percentage between 10% and 500%.' },
   );
 });
 

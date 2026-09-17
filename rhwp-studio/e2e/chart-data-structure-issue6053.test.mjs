@@ -144,7 +144,7 @@ runTest('#6053 차트 구조 편집 — 우클릭 행 추가·undo·무흔적·E
   if (barMenu.length !== 6) throw new Error(`메뉴 항목이 6종이 아니다 — ${barMenu.length}`);
   await screenshot(page, '6053-2-context-menu');
 
-  await clickMenuItem(page, '아래에 행 추가');
+  await clickMenuItem(page, 'Insert Row Below');
   const gridRows = await page.evaluate(() =>
     document.querySelectorAll('.chart-data-grid tbody tr').length);
   if (gridRows !== before.rows + 1) throw new Error(`그리드 행이 안 늘었다 — ${gridRows}`);
@@ -208,10 +208,10 @@ runTest('#6053 차트 구조 편집 — 우클릭 행 추가·undo·무흔적·E
   await rightClickCell(page, 0, 0);
   await pause(page, 300);
   const pieMenu = await menuItems(page);
-  const pieAdd = pieMenu.find((i) => i.label === '오른쪽에 계열 추가');
+  const pieAdd = pieMenu.find((i) => i.label === 'Insert Series to the Right');
   if (!pieAdd) throw new Error('원형 메뉴에 계열 추가가 없다');
   if (pieAdd.disabled) throw new Error('원형에서 계열 추가가 막혔다 — #6037 이 가드를 없앴다');
-  if (!pieAdd.title.includes('원형')) throw new Error(`원형 안내가 없다 — title="${pieAdd.title}"`);
+  if (!pieAdd.title.includes('pie chart')) throw new Error(`원형 안내가 없다 — title="${pieAdd.title}"`);
   console.log(`원형 계열 추가: 활성 + 안내 "${pieAdd.title}"`);
   await screenshot(page, '6053-5-pie-note');
   await page.keyboard.press('Escape');
@@ -230,11 +230,11 @@ runTest('#6053 차트 구조 편집 — 우클릭 행 추가·undo·무흔적·E
   await rightClickCell(page, 0, 0); // 첫 계열
   await pause(page, 300);
   const firstMenu = await menuItems(page);
-  for (const label of ['계열 삭제', '왼쪽에 계열 추가']) {
+  for (const label of ['Delete Series', 'Insert Series to the Left']) {
     const item = firstMenu.find((i) => i.label === label);
     if (!item?.disabled) throw new Error(`첫 계열의 "${label}" 가 비활성이 아니다`);
   }
-  const midInsert = firstMenu.find((i) => i.label === '오른쪽에 계열 추가');
+  const midInsert = firstMenu.find((i) => i.label === 'Insert Series to the Right');
   if (midInsert?.disabled) throw new Error('중간 삽입까지 막혔다 — 양끝이 유지되면 정상이다');
   console.log('주식형 첫 계열: 삭제·바깥 삽입 비활성, 중간 삽입 활성');
   await screenshot(page, '6053-6-stock-disabled');
@@ -244,7 +244,7 @@ runTest('#6053 차트 구조 편집 — 우클릭 행 추가·undo·무흔적·E
   await rightClickCell(page, 0, stock.series - 1); // 끝 계열
   await pause(page, 300);
   const lastMenu = await menuItems(page);
-  for (const label of ['계열 삭제', '오른쪽에 계열 추가']) {
+  for (const label of ['Delete Series', 'Insert Series to the Right']) {
     const item = lastMenu.find((i) => i.label === label);
     if (!item?.disabled) throw new Error(`끝 계열의 "${label}" 가 비활성이 아니다`);
   }

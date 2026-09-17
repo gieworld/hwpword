@@ -19,26 +19,26 @@ interface ShapeGroup {
 
 const GROUPS: ShapeGroup[] = [
   {
-    title: '그리기 개체',
+    title: 'Drawing Objects',
     columns: 5,
     items: [
-      { type: 'line',      label: '직선',   icon: '╲' },
-      { type: 'rectangle', label: '사각형', icon: '▭' },
-      { type: 'ellipse',   label: '타원',   icon: '⬭' },
-      { type: 'polygon',   label: '다각형', icon: '△' },
-      { type: 'arc',       label: '호',     icon: '⌒' },
+      { type: 'line',      label: 'Line',      icon: '╲' },
+      { type: 'rectangle', label: 'Rectangle', icon: '▭' },
+      { type: 'ellipse',   label: 'Ellipse',   icon: '⬭' },
+      { type: 'polygon',   label: 'Polygon',   icon: '△' },
+      { type: 'arc',       label: 'Arc',       icon: '⌒' },
     ],
   },
   {
-    title: '연결선',
+    title: 'Connectors',
     columns: 3,
     items: [
-      { type: 'connector-straight',       label: '직선',         icon: '─' },
-      { type: 'connector-straight-arrow', label: '직선 화살표', icon: '→' },
-      { type: 'connector-stroke',         label: '꺾인',         icon: '⌐' },
-      { type: 'connector-stroke-arrow',   label: '꺾인 화살표', icon: '⮎' },
-      { type: 'connector-arc',            label: '곡선',         icon: '∼' },
-      { type: 'connector-arc-arrow',      label: '곡선 화살표', icon: '↝' },
+      { type: 'connector-straight',       label: 'Straight',       icon: '─' },
+      { type: 'connector-straight-arrow', label: 'Straight Arrow', icon: '→' },
+      { type: 'connector-stroke',         label: 'Elbow',          icon: '⌐' },
+      { type: 'connector-stroke-arrow',   label: 'Elbow Arrow',    icon: '⮎' },
+      { type: 'connector-arc',            label: 'Curved',         icon: '∼' },
+      { type: 'connector-arc-arrow',      label: 'Curved Arrow',   icon: '↝' },
     ],
   },
 ];

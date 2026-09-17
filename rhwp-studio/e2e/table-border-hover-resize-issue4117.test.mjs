@@ -15,7 +15,7 @@ await runTest('셀 선택 없이 표 경계 hover→리사이즈 드래그 (#411
   await clickEditArea(page);
   await page.evaluate(() => new Promise(r => setTimeout(r, 400)));
   await page.evaluate(() => {
-    const btn = [...document.querySelectorAll('button')].find(b => b.textContent?.includes('시작하기'));
+    const btn = [...document.querySelectorAll('button')].find(b => b.textContent?.includes('Get Started'));
     btn?.click();
   });
   await page.evaluate(() => new Promise(r => setTimeout(r, 300)));

@@ -54,12 +54,12 @@ interface NumberingPreset {
 
 const PRESETS: NumberingPreset[] = [
   {
-    label: '(없음)',
+    label: '(None)',
     levelFormats: ['', '', '', '', '', '', ''],
     numberFormats: [0, 0, 0, 0, 0, 0, 0],
   },
   {
-    label: '1. 가. 1) 가) (1) (가) ①',
+    label: '1. 가. 1) 가) (1) (가) ①', // hwpword-keep-korean: actual numbering glyph preview (mixes Korean alphabetic ordinals), not descriptive UI text
     levelFormats: ['^1.', '^2.', '^3)', '^4)', '(^5)', '(^6)', '^7'],
     numberFormats: [NUM_FMT.DIGIT, NUM_FMT.HANGUL_MIXED, NUM_FMT.DIGIT, NUM_FMT.HANGUL_MIXED, NUM_FMT.DIGIT, NUM_FMT.HANGUL_MIXED, NUM_FMT.CIRCLE_DIGIT],
   },
@@ -74,17 +74,17 @@ const PRESETS: NumberingPreset[] = [
     numberFormats: [NUM_FMT.ROMAN_UPPER, NUM_FMT.ALPHA_UPPER, NUM_FMT.DIGIT, NUM_FMT.ALPHA_LOWER, NUM_FMT.DIGIT, NUM_FMT.ALPHA_LOWER, NUM_FMT.CIRCLE_DIGIT],
   },
   {
-    label: '제1장 제1절 1. 가. 1) 가) (1)',
-    levelFormats: ['제^1장', '제^2절', '^3.', '^4.', '^5)', '^6)', '(^7)'],
+    label: '제1장 제1절 1. 가. 1) 가) (1)', // hwpword-keep-korean: actual numbering glyph preview (Korean "Chapter"/"Section" prefix + alphabetic ordinals) — same words are inserted into the document verbatim
+    levelFormats: ['제^1장', '제^2절', '^3.', '^4.', '^5)', '^6)', '(^7)'], // hwpword-keep-korean: numbering format template sent to the WASM engine (createNumbering)
     numberFormats: [NUM_FMT.DIGIT, NUM_FMT.DIGIT, NUM_FMT.DIGIT, NUM_FMT.HANGUL_MIXED, NUM_FMT.DIGIT, NUM_FMT.HANGUL_MIXED, NUM_FMT.DIGIT],
   },
   {
-    label: '一 二 三 (한자)',
+    label: '一 二 三 (Hanja)',
     levelFormats: ['^1', '^2', '^3', '^4', '^5', '^6', '^7'],
     numberFormats: [NUM_FMT.HANJA, NUM_FMT.HANJA, NUM_FMT.HANJA, NUM_FMT.HANJA, NUM_FMT.HANJA, NUM_FMT.HANJA, NUM_FMT.HANJA],
   },
   {
-    label: '① ② ③ (원문자)',
+    label: '① ② ③ (Circled Character)',
     levelFormats: ['^1', '^2', '^3', '^4', '^5', '^6', '^7'],
     numberFormats: [NUM_FMT.CIRCLE_DIGIT, NUM_FMT.CIRCLE_DIGIT, NUM_FMT.CIRCLE_DIGIT, NUM_FMT.CIRCLE_DIGIT, NUM_FMT.CIRCLE_DIGIT, NUM_FMT.CIRCLE_DIGIT, NUM_FMT.CIRCLE_DIGIT],
   },
@@ -104,11 +104,11 @@ function formatNumber(num: number, fmt: number): string {
     case NUM_FMT.ALPHA_LOWER: return num >= 1 && num <= 26 ? String.fromCharCode(96 + num) : String(num);
     case NUM_FMT.HANGUL_SYLLABLE:
     case NUM_FMT.HANGUL_MIXED: {
-      const hangul = '가나다라마바사아자차카타파하';
+      const hangul = '가나다라마바사아자차카타파하'; // hwpword-keep-korean: actual numbering glyph sequence (Korean alphabetic ordinals), not descriptive UI text
       return num >= 1 && num <= 14 ? hangul[num - 1] : String(num);
     }
     case NUM_FMT.HANGUL_JAMO: {
-      const jamo = 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ';
+      const jamo = 'ㄱㄴㄷㄹㅁㅂㅅㅇㅈㅊㅋㅌㅍㅎ'; // hwpword-keep-korean: actual numbering glyph sequence (Korean consonant ordinals), not descriptive UI text
       return num >= 1 && num <= 14 ? jamo[num - 1] : String(num);
     }
     case NUM_FMT.HANJA: {
@@ -142,7 +142,7 @@ function generatePreview(preset: NumberingPreset, startNumber: number): string {
     const numStr = formatNumber(startNumber, preset.numberFormats[level]);
     // ^(level+1)을 numStr로 치환
     const marker = fmt.replace(`^${level + 1}`, numStr);
-    lines.push(`${indent}수준 ${level + 1}: ${marker}`);
+    lines.push(`${indent}Level ${level + 1}: ${marker}`);
   }
   return lines.join('\n');
 }
@@ -177,7 +177,7 @@ export class NumberingDialog extends ModalDialog {
     private wasm: WasmBridge,
     private eventBus: EventBus,
   ) {
-    super('문단 번호/글머리표', 480);
+    super('Bullets and Numbering', 480);
   }
 
   protected createBody(): HTMLElement {
@@ -189,11 +189,11 @@ export class NumberingDialog extends ModalDialog {
     tabBar.className = 'nd-tab-bar';
     const tabNumber = document.createElement('button');
     tabNumber.className = 'nd-tab active';
-    tabNumber.textContent = '문단 번호';
+    tabNumber.textContent = 'Numbering';
     tabNumber.addEventListener('click', () => this.switchTab('number'));
     const tabBullet = document.createElement('button');
     tabBullet.className = 'nd-tab';
-    tabBullet.textContent = '글머리표';
+    tabBullet.textContent = 'Bullets';
     tabBullet.addEventListener('click', () => this.switchTab('bullet'));
     tabBar.appendChild(tabNumber);
     tabBar.appendChild(tabBullet);
@@ -241,7 +241,7 @@ export class NumberingDialog extends ModalDialog {
     // (없음)
     const noneCell = document.createElement('div');
     noneCell.className = 'nd-bullet-cell';
-    noneCell.textContent = '(없음)';
+    noneCell.textContent = '(None)';
     noneCell.addEventListener('click', () => {
       grid.querySelectorAll('.nd-bullet-cell').forEach(c => c.classList.remove('selected'));
       noneCell.classList.add('selected');
@@ -280,7 +280,7 @@ export class NumberingDialog extends ModalDialog {
     fmtSection.className = 'dialog-section';
     const fmtTitle = document.createElement('div');
     fmtTitle.className = 'dialog-section-title';
-    fmtTitle.textContent = '번호 형식';
+    fmtTitle.textContent = 'Number Format';
     fmtSection.appendChild(fmtTitle);
 
     const radioGroup = document.createElement('div');
@@ -316,15 +316,15 @@ export class NumberingDialog extends ModalDialog {
     restartSection.className = 'dialog-section';
     const restartTitle = document.createElement('div');
     restartTitle.className = 'dialog-section-title';
-    restartTitle.textContent = '시작 번호 방식';
+    restartTitle.textContent = 'Start Numbering';
     restartSection.appendChild(restartTitle);
 
     const restartRadioGroup = document.createElement('div');
     restartRadioGroup.className = 'nd-restart-group';
     const restartModes = [
-      { value: '0', label: '앞 번호 목록에 이어(C)', checked: this.restartMode === 0 },
-      { value: '1', label: '이전 번호 목록에 이어(P)', checked: this.restartMode === 1 },
-      { value: '2', label: '새 번호 목록 시작(G)', checked: this.restartMode === 2 },
+      { value: '0', label: 'Continue from the previous paragraph', checked: this.restartMode === 0 },
+      { value: '1', label: 'Continue from the previous list', checked: this.restartMode === 1 },
+      { value: '2', label: 'Start a new list', checked: this.restartMode === 2 },
     ];
     for (const mode of restartModes) {
       const lbl = document.createElement('label');
@@ -356,7 +356,7 @@ export class NumberingDialog extends ModalDialog {
     startSection.className = 'nd-start-section';
     const startLabel = document.createElement('label');
     startLabel.className = 'dialog-label';
-    startLabel.textContent = '시작 번호';
+    startLabel.textContent = 'Start number';
     const startInput = document.createElement('input');
     startInput.type = 'number';
     startInput.className = 'dialog-input';
@@ -381,7 +381,7 @@ export class NumberingDialog extends ModalDialog {
     previewSection.className = 'nd-preview-section';
     const previewTitle = document.createElement('div');
     previewTitle.className = 'dialog-section-title';
-    previewTitle.textContent = '미리보기';
+    previewTitle.textContent = 'Preview';
     this.previewEl = document.createElement('pre');
     this.previewEl.className = 'nd-preview';
     previewSection.appendChild(previewTitle);

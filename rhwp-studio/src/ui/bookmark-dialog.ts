@@ -83,7 +83,7 @@ export class BookmarkDialog {
     // 타이틀
     const titleBar = document.createElement('div');
     titleBar.className = 'dialog-title';
-    titleBar.textContent = '책갈피';
+    titleBar.textContent = 'Bookmark';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'dialog-close';
     closeBtn.textContent = '\u00D7';
@@ -101,7 +101,7 @@ export class BookmarkDialog {
     nameRow.className = 'bm-row';
     const nameLabel = document.createElement('label');
     nameLabel.className = 'bm-label';
-    nameLabel.textContent = '책갈피 이름(N):';
+    nameLabel.textContent = 'Bookmark name:';
     this.nameInput = document.createElement('input');
     this.nameInput.type = 'text';
     this.nameInput.className = 'bm-name-input';
@@ -121,17 +121,17 @@ export class BookmarkDialog {
     listCol.className = 'bm-list-col';
     const listLabel = document.createElement('div');
     listLabel.className = 'bm-label';
-    listLabel.textContent = '책갈피 목록(L):';
+    listLabel.textContent = 'Bookmark list:';
     listCol.appendChild(listLabel);
 
     // 목록 헤더
     const listHeader = document.createElement('div');
     listHeader.className = 'bm-list-header';
     const hName = document.createElement('span');
-    hName.textContent = '이름';
+    hName.textContent = 'Name';
     hName.className = 'bm-list-hcol';
     const hType = document.createElement('span');
-    hType.textContent = '종류';
+    hType.textContent = 'Type';
     hType.className = 'bm-list-hcol bm-list-hcol-type';
     listHeader.appendChild(hName);
     listHeader.appendChild(hType);
@@ -152,10 +152,10 @@ export class BookmarkDialog {
     // 버튼 컬럼
     const btnCol = document.createElement('div');
     btnCol.className = 'bm-btn-col';
-    const addBtn = this.createButton('넣기(D)', () => this.doAdd());
+    const addBtn = this.createButton('Add', () => this.doAdd());
     addBtn.classList.add('dialog-btn-primary');
-    const cancelBtn = this.createButton('취소', () => this.hide());
-    const moveBtn = this.createButton('이동(M)', () => this.doMove());
+    const cancelBtn = this.createButton('Cancel', () => this.hide());
+    const moveBtn = this.createButton('Move', () => this.doMove());
     btnCol.appendChild(addBtn);
     btnCol.appendChild(cancelBtn);
     btnCol.appendChild(moveBtn);
@@ -168,12 +168,12 @@ export class BookmarkDialog {
     iconRow.className = 'bm-icon-row';
     const renameBtn = document.createElement('button');
     renameBtn.className = 'bm-icon-btn';
-    renameBtn.title = '책갈피 이름 바꾸기';
+    renameBtn.title = 'Rename bookmark';
     renameBtn.textContent = '✏';
     renameBtn.addEventListener('click', () => this.doRename());
     const deleteBtn = document.createElement('button');
     deleteBtn.className = 'bm-icon-btn';
-    deleteBtn.title = '삭제';
+    deleteBtn.title = 'Delete';
     deleteBtn.textContent = '✕';
     deleteBtn.addEventListener('click', () => this.doDelete());
     iconRow.appendChild(renameBtn);
@@ -185,7 +185,7 @@ export class BookmarkDialog {
     sortRow.className = 'bm-sort-row';
     const sortLabel = document.createElement('span');
     sortLabel.className = 'bm-label';
-    sortLabel.textContent = '책갈피 정렬 기준';
+    sortLabel.textContent = 'Sort bookmarks by';
     sortRow.appendChild(sortLabel);
 
     const radioName = document.createElement('label');
@@ -194,7 +194,7 @@ export class BookmarkDialog {
     rName.type = 'radio'; rName.name = 'bm-sort'; rName.value = 'name';
     rName.addEventListener('change', () => { this.sortMode = 'name'; this.refreshList(); });
     radioName.appendChild(rName);
-    radioName.appendChild(document.createTextNode(' 이름(A)'));
+    radioName.appendChild(document.createTextNode(' Name'));
 
     const radioPos = document.createElement('label');
     radioPos.className = 'bm-radio';
@@ -202,7 +202,7 @@ export class BookmarkDialog {
     rPos.type = 'radio'; rPos.name = 'bm-sort'; rPos.value = 'position'; rPos.checked = true;
     rPos.addEventListener('change', () => { this.sortMode = 'position'; this.refreshList(); });
     radioPos.appendChild(rPos);
-    radioPos.appendChild(document.createTextNode(' 위치(P)'));
+    radioPos.appendChild(document.createTextNode(' Position'));
 
     sortRow.appendChild(radioName);
     sortRow.appendChild(radioPos);
@@ -235,7 +235,7 @@ export class BookmarkDialog {
     if (this.bookmarks.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'bm-empty';
-      empty.textContent = '최근에 등록한 [책갈피]가 없습니다.\n사용자가 편집 문서에 책갈피를 삽입하면 [책갈피 목록]에 등록됩니다.';
+      empty.textContent = 'No bookmarks have been added yet.\nBookmarks you insert into the document appear in the bookmark list.';
       this.listEl.appendChild(empty);
       return;
     }
@@ -246,10 +246,10 @@ export class BookmarkDialog {
       row.className = 'bm-item';
       const nameSpan = document.createElement('span');
       nameSpan.className = 'bm-item-name';
-      nameSpan.textContent = bm.name || '(이름 없음)';
+      nameSpan.textContent = bm.name || '(No name)';
       const typeSpan = document.createElement('span');
       typeSpan.className = 'bm-item-type';
-      typeSpan.textContent = '위치';
+      typeSpan.textContent = 'Position';
       row.appendChild(nameSpan);
       row.appendChild(typeSpan);
       row.addEventListener('click', () => this.selectItem(i));
@@ -275,7 +275,7 @@ export class BookmarkDialog {
     if (!ih) return;
     // 기존 선택 텍스트나 커서 주변 텍스트를 기본 이름으로 제안
     const count = this.bookmarks.length + 1;
-    this.nameInput.value = `책갈피${count}`;
+    this.nameInput.value = `Bookmark${count}`;
   }
 
   // ── 동작 ──
@@ -283,12 +283,12 @@ export class BookmarkDialog {
   private doAdd(): void {
     const name = this.nameInput.value.trim();
     if (!name) {
-      this.statusLabel.textContent = '책갈피 이름을 입력하세요.';
+      this.statusLabel.textContent = 'Enter a bookmark name.';
       this.statusLabel.style.color = '#c00';
       return;
     }
     if (name.length > MAX_BOOKMARK_NAME_LEN) {
-      this.statusLabel.textContent = `책갈피 이름은 ${MAX_BOOKMARK_NAME_LEN}자를 넘을 수 없습니다.`;
+      this.statusLabel.textContent = `Bookmark name cannot exceed ${MAX_BOOKMARK_NAME_LEN} characters.`;
       this.statusLabel.style.color = '#c00';
       return;
     }
@@ -315,7 +315,7 @@ export class BookmarkDialog {
       this.hide();
     } else {
       this.statusLabel.style.color = '#c00';
-      this.statusLabel.textContent = errMsg ? toEnglishMessage(errMsg) : '책갈피 추가 실패';
+      this.statusLabel.textContent = errMsg ? toEnglishMessage(errMsg) : 'Failed to add bookmark.';
     }
   }
 
@@ -343,7 +343,7 @@ export class BookmarkDialog {
     if (this.selectedIdx < 0 || this.selectedIdx >= this.bookmarks.length) return;
     const bm = this.bookmarks[this.selectedIdx];
 
-    if (!confirm(`선택한 책갈피 '${bm.name}'를 지울까요?`)) return;
+    if (!confirm(`Delete the selected bookmark '${bm.name}'?`)) return;
 
     const ih = this.services.getInputHandler();
     if (!ih) return;
@@ -366,10 +366,10 @@ export class BookmarkDialog {
   private doRename(): void {
     if (this.selectedIdx < 0 || this.selectedIdx >= this.bookmarks.length) return;
     const bm = this.bookmarks[this.selectedIdx];
-    const newName = prompt('새 책갈피 이름:', bm.name);
+    const newName = prompt('New bookmark name:', bm.name);
     if (!newName || newName.trim() === '' || newName === bm.name) return;
     if (newName.trim().length > MAX_BOOKMARK_NAME_LEN) {
-      alert(`책갈피 이름은 ${MAX_BOOKMARK_NAME_LEN}자를 넘을 수 없습니다.`);
+      alert(`Bookmark name cannot exceed ${MAX_BOOKMARK_NAME_LEN} characters.`);
       return;
     }
 
@@ -392,7 +392,7 @@ export class BookmarkDialog {
       this.refreshList();
     } else {
       this.statusLabel.style.color = '#c00';
-      this.statusLabel.textContent = errMsg ? toEnglishMessage(errMsg) : '이름 변경 실패';
+      this.statusLabel.textContent = errMsg ? toEnglishMessage(errMsg) : 'Failed to rename bookmark.';
     }
   }
 }

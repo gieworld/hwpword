@@ -16,10 +16,10 @@ export interface LocalFontsModalOptions {
 }
 
 const STATUS_LABEL: Record<DocumentFontStatusItem['status'], string> = {
-  available: '사용 가능',
-  'needs-local-check': '로컬 확인 필요',
-  'web-substitute': '대체 글꼴 사용',
-  missing: '누락',
+  available: 'Available',
+  'needs-local-check': 'Needs local check',
+  'web-substitute': 'Using substitute font',
+  missing: 'Missing',
 };
 
 export class LocalFontsModal {
@@ -56,7 +56,7 @@ export class LocalFontsModal {
 
     const title = document.createElement('div');
     title.className = 'dialog-title';
-    title.textContent = '로컬 글꼴 감지';
+    title.textContent = 'Detect Local Fonts';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'dialog-close';
     closeBtn.textContent = '\u00D7';
@@ -73,8 +73,8 @@ export class LocalFontsModal {
     const desc = document.createElement('p');
     desc.style.margin = '0 0 12px 0';
     desc.textContent = this.report.detectionMethod === 'font-presence-probe'
-      ? '현재 문서에 rhwp 기본 지원 글꼴이 아닌 글꼴이 있습니다. 원본에 가깝게 표시하기 위해, 이 문서에 필요한 글꼴이 이 기기에 설치되어 있는지 확인합니다.'
-      : '현재 문서에 rhwp 기본 지원 글꼴이 아닌 글꼴이 있습니다. 로컬 글꼴 목록을 확인하고, 목록에서 빠진 현재 문서 후보만 추가 확인하려면 감지를 허용해 주세요.';
+      ? "This document contains fonts that are not built into rhwp. To display it as close to the original as possible, we'll check whether the fonts this document needs are installed on this device."
+      : "This document contains fonts that are not built into rhwp. Allow detection to check your local font list, and additionally verify any of this document's candidates missing from that list.";
     body.appendChild(desc);
 
     const privacy = document.createElement('p');
@@ -82,8 +82,8 @@ export class LocalFontsModal {
     privacy.style.fontSize = '13px';
     privacy.style.color = 'var(--color-text-secondary)';
     privacy.textContent = this.report.detectionMethod === 'font-presence-probe'
-      ? '이 브라우저에서는 설치된 모든 글꼴 목록을 가져오지 않고, 현재 문서에 필요한 글꼴만 확인합니다. 확인 결과는 이 브라우저/확장 로컬 저장소에만 보관되며 서버로 전송하지 않습니다. 감지를 건너뛰면 대체 글꼴로 계속 표시합니다.'
-      : 'Chrome/Edge의 로컬 글꼴 목록은 일부 설치 face를 누락할 수 있어 현재 문서의 미해소 후보만 추가 확인합니다. 결과는 이 브라우저/확장 로컬 저장소에만 보관되며 서버로 전송하지 않습니다. 감지를 건너뛰면 대체 글꼴로 계속 표시합니다.';
+      ? "This browser does not retrieve the full list of installed fonts — it only checks the fonts this document needs. The results are stored only in this browser's/extension's local storage and are never sent to a server. If you skip detection, the document continues to display with substitute fonts."
+      : "Chrome/Edge's local font list can miss some installed faces, so only this document's unresolved candidates are additionally checked. The results are stored only in this browser's/extension's local storage and are never sent to a server. If you skip detection, the document continues to display with substitute fonts.";
     body.appendChild(privacy);
 
     if (this.options.disableExternalWebFonts) {
@@ -94,7 +94,7 @@ export class LocalFontsModal {
       offlineNotice.style.borderRadius = '4px';
       offlineNotice.style.fontSize = '13px';
       offlineNotice.style.color = 'var(--color-text-secondary)';
-      offlineNotice.textContent = '외부 웹폰트 사용 안 함: 켜짐. 대체 글꼴은 외부 CDN 폰트를 요청하지 않고 번들/시스템 글꼴 기준으로 표시됩니다.';
+      offlineNotice.textContent = 'External web fonts disabled: on. Substitute fonts are shown using bundled/system fonts instead of requesting external CDN fonts.';
       body.appendChild(offlineNotice);
     }
 
@@ -104,15 +104,15 @@ export class LocalFontsModal {
     summary.style.fontSize = '13px';
     summary.style.color = 'var(--color-text-secondary)';
     const rows: Array<[string, number]> = [
-      ['사용 가능', this.report.summary.available],
-      ['로컬 확인 필요', this.report.summary.needsLocalCheck],
-      ['대체 글꼴 사용', this.report.summary.webSubstitute],
-      ['누락', this.report.summary.missing],
+      ['Available', this.report.summary.available],
+      ['Needs local check', this.report.summary.needsLocalCheck],
+      ['Using substitute font', this.report.summary.webSubstitute],
+      ['Missing', this.report.summary.missing],
     ];
     for (const [label, count] of rows) {
       if (count === 0) continue;
       const li = document.createElement('li');
-      li.textContent = `${label}: ${count}개`;
+      li.textContent = `${label}: ${count}`;
       summary.appendChild(li);
     }
     body.appendChild(summary);
@@ -120,7 +120,7 @@ export class LocalFontsModal {
     const details = document.createElement('details');
     details.style.marginTop = '8px';
     const summaryEl = document.createElement('summary');
-    summaryEl.textContent = '문서 글꼴 상태 보기';
+    summaryEl.textContent = 'View document font status';
     summaryEl.style.cursor = 'pointer';
     summaryEl.style.fontSize = '13px';
     summaryEl.style.color = 'var(--ui-link)';
@@ -147,7 +147,7 @@ export class LocalFontsModal {
       const more = document.createElement('div');
       more.style.color = 'var(--color-text-hint)';
       more.style.marginTop = '4px';
-      more.textContent = `... 외 ${this.report.fonts.length - maxShow}개`;
+      more.textContent = `... and ${this.report.fonts.length - maxShow} more`;
       detailList.appendChild(more);
     }
     details.appendChild(detailList);
@@ -160,12 +160,12 @@ export class LocalFontsModal {
 
     const detectBtn = document.createElement('button');
     detectBtn.className = 'dialog-btn dialog-btn-primary';
-    detectBtn.textContent = '로컬 글꼴 감지 (권장)';
+    detectBtn.textContent = 'Detect Local Fonts (Recommended)';
     detectBtn.addEventListener('click', () => this.resolve('detect'));
 
     const webBtn = document.createElement('button');
     webBtn.className = 'dialog-btn';
-    webBtn.textContent = '대체 글꼴로 보기';
+    webBtn.textContent = 'View with Substitute Fonts';
     webBtn.addEventListener('click', () => this.resolve('web-substitute'));
 
     footer.appendChild(detectBtn);

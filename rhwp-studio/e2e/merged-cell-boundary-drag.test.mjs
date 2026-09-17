@@ -19,7 +19,7 @@ await runTest('병합 셀 경계 드래그 — 하위 행 선택에서도 경계
 
   // 첫 실행 화면 스킨 다이얼로그가 캔버스를 가리면 닫는다
   await page.evaluate(() => {
-    const btn = [...document.querySelectorAll('button')].find(b => b.textContent?.includes('시작하기'));
+    const btn = [...document.querySelectorAll('button')].find(b => b.textContent?.includes('Get Started'));
     btn?.click();
   });
   await page.evaluate(() => new Promise(r => setTimeout(r, 300)));

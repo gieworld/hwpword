@@ -100,7 +100,7 @@ function expectedReportedMethod(format, passwordProtected = false) {
 async function dismissSkinOnboarding(page) {
   await page.evaluate(() => {
     const start = [...document.querySelectorAll('button.dialog-btn-primary')]
-      .find((button) => button.textContent?.trim() === '시작하기' && button.offsetParent !== null);
+      .find((button) => button.textContent?.trim() === 'Get Started' && button.offsetParent !== null);
     start?.click();
   });
 }

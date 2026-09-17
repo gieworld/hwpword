@@ -30,7 +30,7 @@ async function dispatchDrop(page, fileName, content, type) {
 async function dropDialogVisible(page) {
   return await page.evaluate(() => {
     const dialog = document.querySelector('.modal-overlay .dialog-wrap');
-    return Boolean(dialog?.textContent?.includes('드래그한 로컬 파일을 엽니다'));
+    return Boolean(dialog?.textContent?.includes('This opens the local file you dragged in'));
   });
 }
 
@@ -70,7 +70,7 @@ runTest('드래그&드롭 확인 대화상자 경계', async ({ page }) => {
   await screenshot(page, 'drop-image-confirm-dialog');
 
   setTestCase('TC-3: [취소] 시 대화상자가 닫히고 삽입되지 않는다');
-  await clickDropDialogButton(page, '취소');
+  await clickDropDialogButton(page, 'Cancel');
   await page.waitForFunction(() => !document.querySelector('.modal-overlay'), { timeout: 3000 });
   assert(
     !(await page.evaluate(() => Boolean(document.querySelector('.modal-overlay')))),

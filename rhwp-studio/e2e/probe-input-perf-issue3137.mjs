@@ -278,7 +278,7 @@ async function delay(page, ms) {
 
 async function clickBlockingModalChoice(page) {
   return page.evaluate(() => {
-    const allowed = new Set(['그대로 보기', '대체 글꼴로 보기']);
+    const allowed = new Set(['Keep As Is', 'View with Substitute Fonts']);
     const buttons = Array.from(document.querySelectorAll('button'));
     const button = buttons.find((candidate) => {
       const label = candidate.textContent?.trim() ?? '';

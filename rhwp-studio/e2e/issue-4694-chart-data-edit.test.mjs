@@ -94,7 +94,7 @@ runTest('#4694 차트 데이터 편집 — 메뉴·더블클릭·편집·undo·�
   await pause(page, 500);
   const menuHasItem = await page.evaluate(() =>
     [...document.querySelectorAll('*')].some(el =>
-      el.childElementCount === 0 && (el.textContent || '').includes('차트 데이터 편집')));
+      el.childElementCount === 0 && (el.textContent || '').includes('Edit Chart Data')));
   if (!menuHasItem) throw new Error('컨텍스트 메뉴에 "차트 데이터 편집..." 항목이 없다');
   console.log('컨텍스트 메뉴 항목: 노출');
   await screenshot(page, '4694-1-context-menu');

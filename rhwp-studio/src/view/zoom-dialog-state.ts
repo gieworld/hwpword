@@ -44,20 +44,20 @@ export type CustomZoomValidationResult =
 export function validateCustomZoomPercent(rawValue: string): CustomZoomValidationResult {
   const value = rawValue.trim();
   if (value === '') {
-    return { valid: false, message: '사용자 정의 배율을 입력하세요.' };
+    return { valid: false, message: 'Enter a custom zoom percentage.' };
   }
 
   const percent = Number(value);
   if (!Number.isFinite(percent)) {
-    return { valid: false, message: '사용자 정의 배율은 숫자로 입력하세요.' };
+    return { valid: false, message: 'Enter the custom zoom percentage as a number.' };
   }
   if (!Number.isInteger(percent)) {
-    return { valid: false, message: '사용자 정의 배율은 정수로 입력하세요.' };
+    return { valid: false, message: 'Enter the custom zoom percentage as a whole number.' };
   }
   if (percent < MIN_CUSTOM_ZOOM_PERCENT || percent > MAX_CUSTOM_ZOOM_PERCENT) {
     return {
       valid: false,
-      message: `${MIN_CUSTOM_ZOOM_PERCENT}~${MAX_CUSTOM_ZOOM_PERCENT}% 사이의 배율을 입력하세요.`,
+      message: `Enter a zoom percentage between ${MIN_CUSTOM_ZOOM_PERCENT}% and ${MAX_CUSTOM_ZOOM_PERCENT}%.`,
     };
   }
   return { valid: true, percent };

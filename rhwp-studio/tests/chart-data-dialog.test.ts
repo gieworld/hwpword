@@ -107,9 +107,9 @@ test('사전 비활성은 봉투에서 유도되는 것만 — 캔들 양끝·�
 
 test('계열명 대체 문구는 표시 전용이다 — 모델에 들어가면 가짜 이름이 저장된다', () => {
   const body = functionBodyFrom(dialog, 'private renderGrid(');
-  // `계열 N` 은 c:tx 가 없는 계열의 표시용 텍스트다. 그 가지에는 입력이 없어야 한다.
+  // `Series N` 은 c:tx 가 없는 계열의 표시용 텍스트다. 그 가지에는 입력이 없어야 한다.
   const from = body.indexOf('s.name === null');
   const locked = body.slice(from, body.indexOf('} else {', from));
-  assert.match(locked, /textContent = `계열 \$\{si \+ 1\}`/);
+  assert.match(locked, /textContent = `Series \$\{si \+ 1\}`/);
   assert.doesNotMatch(locked, /setSeriesName/, '이름 칸이 없는 계열은 입력을 열지 않는다');
 });

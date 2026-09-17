@@ -25,13 +25,13 @@ runTest('Issue #2809 위·아래 Split 문단 속성 차이 회귀', async ({ pa
 
   await page.waitForFunction(
     () => Array.from(document.querySelectorAll('button')).some(
-      (candidate) => candidate.textContent?.includes('대체 글꼴로 보기'),
+      (candidate) => candidate.textContent?.includes('View with Substitute Fonts'),
     ),
     { timeout: 5000 },
   ).catch(() => {});
   const dismissedFontDialog = await page.evaluate(() => {
     const button = Array.from(document.querySelectorAll('button')).find(
-      (candidate) => candidate.textContent?.includes('대체 글꼴로 보기'),
+      (candidate) => candidate.textContent?.includes('View with Substitute Fonts'),
     );
     if (!(button instanceof HTMLButtonElement)) return false;
     button.click();

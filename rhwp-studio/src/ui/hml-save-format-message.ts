@@ -3,6 +3,7 @@ import {
   resolveHmlSaveCapability,
   type HmlSaveBlocker,
 } from '../core/hml-save-capability.ts';
+import { toEnglishMessage } from '../core/engine-messages.ts';
 
 const MAX_BLOCKER_PATHS = 3;
 
@@ -17,18 +18,18 @@ export function buildHmlSaveFormatMessage(
 ): string {
   const capability = resolveHmlSaveCapability(metadata, exporterAvailable);
   if (capability.hmlEnabled) {
-    return 'HML로 의미를 보존해 저장할 수 있지만 원본 바이트와 동일하지는 않습니다.\n저장할 형식을 선택하세요.';
+    return 'It can be saved back to HML preserving meaning, but not identical to the original bytes.\nChoose a format to save as.';
   }
 
   const lines = [
-    `${capability.diagnostic ?? 'HML 저장을 사용할 수 없습니다.'}\nHWP 또는 HWPX로 저장할 수 있습니다.`,
+    `${capability.diagnostic ?? 'Saving as HML is not available.'}\nYou can save as HWP or HWPX.`,
   ];
   const blockers = normalizeHmlSaveState(metadata)?.saveBlockers ?? [];
   for (const blocker of blockers.slice(0, MAX_BLOCKER_PATHS)) {
-    lines.push(`${blocker.xmlPath}: ${blocker.message}`);
+    lines.push(`${blocker.xmlPath}: ${toEnglishMessage(blocker.message)}`);
   }
   if (blockers.length > MAX_BLOCKER_PATHS) {
-    lines.push(`그 외 ${blockers.length - MAX_BLOCKER_PATHS}건`);
+    lines.push(`${blockers.length - MAX_BLOCKER_PATHS} more`);
   }
   return lines.join('\n');
 }

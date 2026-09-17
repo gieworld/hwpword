@@ -56,7 +56,7 @@ export class CellSplitDialog {
     // 타이틀 바
     const titleBar = document.createElement('div');
     titleBar.className = 'dialog-title';
-    titleBar.textContent = '셀 나누기';
+    titleBar.textContent = 'Split Cells';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'dialog-close';
     closeBtn.textContent = '\u00D7';
@@ -86,7 +86,7 @@ export class CellSplitDialog {
 
     const splitTitle = document.createElement('div');
     splitTitle.className = 'dialog-section-title';
-    splitTitle.textContent = '줄/칸 나누기';
+    splitTitle.textContent = 'Split Rows/Columns';
     splitSection.appendChild(splitTitle);
 
     // 줄 수
@@ -98,7 +98,7 @@ export class CellSplitDialog {
     const rowLabel = document.createElement('label');
     rowLabel.htmlFor = 'csd-row-check';
     rowLabel.className = 'dialog-label';
-    rowLabel.textContent = '줄 수(R):';
+    rowLabel.textContent = 'Number of rows:';
     rowLabel.style.textAlign = 'left';
     this.rowInput = document.createElement('input');
     this.rowInput.type = 'number';
@@ -126,7 +126,7 @@ export class CellSplitDialog {
     const colLabel = document.createElement('label');
     colLabel.htmlFor = 'csd-col-check';
     colLabel.className = 'dialog-label';
-    colLabel.textContent = '칸 수(C):';
+    colLabel.textContent = 'Number of columns:';
     colLabel.style.textAlign = 'left';
     this.colInput = document.createElement('input');
     this.colInput.type = 'number';
@@ -152,7 +152,7 @@ export class CellSplitDialog {
 
     const optTitle = document.createElement('div');
     optTitle.className = 'dialog-section-title';
-    optTitle.textContent = '선택 사항';
+    optTitle.textContent = 'Options';
     optSection.appendChild(optTitle);
 
     // 줄 높이를 같게 나누기
@@ -163,7 +163,7 @@ export class CellSplitDialog {
     this.equalHeightCheck.id = 'csd-eq-check';
     const eqLabel = document.createElement('label');
     eqLabel.htmlFor = 'csd-eq-check';
-    eqLabel.textContent = '줄 높이를 같게 나누기(H)';
+    eqLabel.textContent = 'Split rows evenly';
     eqRow.appendChild(this.equalHeightCheck);
     eqRow.appendChild(eqLabel);
     optSection.appendChild(eqRow);
@@ -177,7 +177,7 @@ export class CellSplitDialog {
     this.mergeFirstCheck.disabled = !this.isMerged;
     const mfLabel = document.createElement('label');
     mfLabel.htmlFor = 'csd-mf-check';
-    mfLabel.textContent = '셀을 합친 후 나누기(M)';
+    mfLabel.textContent = 'Split after merging cells';
     if (!this.isMerged) {
       mfLabel.style.color = '#999';
     }
@@ -190,13 +190,13 @@ export class CellSplitDialog {
     // --- 우측: 버튼 ---
     const applyBtn = document.createElement('button');
     applyBtn.className = 'dialog-btn dialog-btn-primary';
-    applyBtn.textContent = '나누기(D)';
+    applyBtn.textContent = 'OK';
     applyBtn.style.minWidth = '80px';
     applyBtn.addEventListener('click', () => this.doApply());
 
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'dialog-btn';
-    cancelBtn.textContent = '취소';
+    cancelBtn.textContent = 'Cancel';
     cancelBtn.style.minWidth = '80px';
     cancelBtn.addEventListener('click', () => this.hide());
 

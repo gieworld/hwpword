@@ -203,7 +203,7 @@ runTest('쪽/폭 맞춤 저장과 복원', async ({ page }) => {
   await openZoomDialog(page);
   await page.click('input[name="page-arrangement"][value="multiple"]');
   await page.evaluate(() => {
-    for (const ariaLabel of ['여러 쪽 가로 쪽 수', '여러 쪽 세로 쪽 수']) {
+    for (const ariaLabel of ['Number of pages across', 'Number of pages down']) {
       const input = document.querySelector(`input[aria-label="${ariaLabel}"]`);
       input.value = '2';
       input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -213,9 +213,9 @@ runTest('쪽/폭 맞춤 저장과 복원', async ({ page }) => {
   const multipleControls = await page.evaluate(() => ({
     allZoomChoicesDisabled: [...document.querySelectorAll('input[name="zoom-choice"]')]
       .every((input) => input.disabled),
-    customDisabled: document.querySelector('input[aria-label="사용자 정의 배율"]')?.disabled,
-    columnsEnabled: !document.querySelector('input[aria-label="여러 쪽 가로 쪽 수"]')?.disabled,
-    rowsEnabled: !document.querySelector('input[aria-label="여러 쪽 세로 쪽 수"]')?.disabled,
+    customDisabled: document.querySelector('input[aria-label="Custom zoom percentage"]')?.disabled,
+    columnsEnabled: !document.querySelector('input[aria-label="Number of pages across"]')?.disabled,
+    rowsEnabled: !document.querySelector('input[aria-label="Number of pages down"]')?.disabled,
   }));
   await screenshot(page, 'issue-6108-multiple-disabled-ratios');
   assert(multipleControls.allZoomChoicesDisabled && multipleControls.customDisabled,

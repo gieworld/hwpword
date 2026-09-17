@@ -14,7 +14,7 @@ class HmlSaveFormatDialog extends ModalDialog {
     metadata: HmlOpenMetadata | null,
     exporterAvailable: boolean,
   ) {
-    super('HML 문서 저장', 440);
+    super('Save HML Document', 440);
     const capability = resolveHmlSaveCapability(metadata, exporterAvailable);
     this.hmlEnabled = capability.hmlEnabled;
     this.message = buildHmlSaveFormatMessage(metadata, exporterAvailable);
@@ -72,13 +72,13 @@ class HmlSaveFormatDialog extends ModalDialog {
       };
 
       if (this.hmlEnabled) {
-        if (primaryButton) primaryButton.textContent = 'HML로 저장';
-        addFormatButton('HWP로 저장', 'hwp');
+        if (primaryButton) primaryButton.textContent = 'Save as HML';
+        addFormatButton('Save as HWP', 'hwp');
       } else {
-        if (primaryButton) primaryButton.textContent = 'HWP로 저장';
-        addFormatButton('HML로 저장 (저장 불가)', null, true);
+        if (primaryButton) primaryButton.textContent = 'Save as HWP';
+        addFormatButton('Save as HML (unavailable)', null, true);
       }
-      addFormatButton('HWPX로 저장', 'hwpx');
+      addFormatButton('Save as HWPX', 'hwpx');
     });
   }
 }

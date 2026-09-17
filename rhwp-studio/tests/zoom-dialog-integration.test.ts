@@ -20,9 +20,9 @@ test('보기 메뉴와 상태 표시줄 통합 배율 버튼은 같은 확대/�
 
 test('대화상자는 한컴 비율·쪽 모양 선택을 제공하고 저장소 디자인 토큰 CSS를 쓴다', () => {
   for (const label of [
-    '폭 맞춤', '쪽 맞춤', '사용자 정의',
-    '자동', '한 쪽', '두 쪽', '맞쪽', '여러 쪽',
-    '세로 방향', '가로 방향', '마우스 휠을 사용하여 좌우로 스크롤하기',
+    'Page Width', 'One Page', 'Custom',
+    'Auto', 'Single Page', 'Two Pages', 'Facing Pages', 'Multiple Pages',
+    'Vertical', 'Horizontal', 'Scroll left and right using the mouse wheel',
   ]) {
     assert.ok(dialog.includes(label), `${label} 선택지가 있어야 한다`);
   }

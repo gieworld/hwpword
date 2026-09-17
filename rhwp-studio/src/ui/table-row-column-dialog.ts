@@ -55,14 +55,14 @@ export class TableInsertRowColumnDialog extends ModalDialog {
   private readonly radioName = `table-insert-row-column-${Math.random().toString(36).slice(2)}`;
 
   constructor(defaultMode: TableInsertRowColumnMode = 'row-above') {
-    super('줄/칸 추가하기', 360);
+    super('Insert Rows/Columns', 360);
     this.mode = defaultMode;
   }
 
   show(): void {
     super.show();
     const confirmBtn = this.dialog.querySelector('.dialog-btn-primary') as HTMLButtonElement | null;
-    if (confirmBtn) confirmBtn.textContent = '추가';
+    if (confirmBtn) confirmBtn.textContent = 'OK';
     this.countInput.focus();
     this.countInput.select();
   }
@@ -75,7 +75,7 @@ export class TableInsertRowColumnDialog extends ModalDialog {
 
     const title = document.createElement('div');
     title.className = 'dialog-section-title';
-    title.textContent = '추가';
+    title.textContent = 'Insert';
     addSection.appendChild(title);
 
     const radioGroup = document.createElement('div');
@@ -86,10 +86,10 @@ export class TableInsertRowColumnDialog extends ModalDialog {
     const setMode = (value: string) => {
       this.mode = value as TableInsertRowColumnMode;
     };
-    radioGroup.appendChild(createRadio(this.radioName, 'row-above', '위쪽에 줄 추가하기', this.mode === 'row-above', setMode));
-    radioGroup.appendChild(createRadio(this.radioName, 'row-below', '아래쪽에 줄 추가하기', this.mode === 'row-below', setMode));
-    radioGroup.appendChild(createRadio(this.radioName, 'col-left', '왼쪽에 칸 추가하기', this.mode === 'col-left', setMode));
-    radioGroup.appendChild(createRadio(this.radioName, 'col-right', '오른쪽에 칸 추가하기', this.mode === 'col-right', setMode));
+    radioGroup.appendChild(createRadio(this.radioName, 'row-above', 'Insert row above', this.mode === 'row-above', setMode));
+    radioGroup.appendChild(createRadio(this.radioName, 'row-below', 'Insert row below', this.mode === 'row-below', setMode));
+    radioGroup.appendChild(createRadio(this.radioName, 'col-left', 'Insert column to the left', this.mode === 'col-left', setMode));
+    radioGroup.appendChild(createRadio(this.radioName, 'col-right', 'Insert column to the right', this.mode === 'col-right', setMode));
     addSection.appendChild(radioGroup);
 
     const countRow = document.createElement('div');
@@ -98,7 +98,7 @@ export class TableInsertRowColumnDialog extends ModalDialog {
 
     const countLabel = document.createElement('label');
     countLabel.className = 'dialog-label';
-    countLabel.textContent = '줄/칸 수:';
+    countLabel.textContent = 'Number of rows/columns:';
     countLabel.style.width = '78px';
 
     this.countInput = document.createElement('input');
@@ -121,7 +121,7 @@ export class TableInsertRowColumnDialog extends ModalDialog {
 
     const hint = document.createElement('span');
     hint.className = 'dialog-unit';
-    hint.textContent = `최대 ${MAX_INSERT_COUNT}`;
+    hint.textContent = `Max ${MAX_INSERT_COUNT}`;
 
     countRow.appendChild(countLabel);
     countRow.appendChild(this.countInput);
@@ -147,14 +147,14 @@ export class TableDeleteRowColumnDialog extends ModalDialog {
   private readonly radioName = `table-delete-row-column-${Math.random().toString(36).slice(2)}`;
 
   constructor(defaultMode: TableDeleteRowColumnMode = 'row') {
-    super('줄/칸 지우기', 320);
+    super('Delete Rows/Columns', 320);
     this.mode = defaultMode;
   }
 
   show(): void {
     super.show();
     const confirmBtn = this.dialog.querySelector('.dialog-btn-primary') as HTMLButtonElement | null;
-    if (confirmBtn) confirmBtn.textContent = '지우기';
+    if (confirmBtn) confirmBtn.textContent = 'OK';
   }
 
   protected createBody(): HTMLElement {
@@ -165,7 +165,7 @@ export class TableDeleteRowColumnDialog extends ModalDialog {
 
     const title = document.createElement('div');
     title.className = 'dialog-section-title';
-    title.textContent = '지우기';
+    title.textContent = 'Delete';
     delSection.appendChild(title);
 
     const radioGroup = document.createElement('div');
@@ -175,8 +175,8 @@ export class TableDeleteRowColumnDialog extends ModalDialog {
     const setMode = (value: string) => {
       this.mode = value as TableDeleteRowColumnMode;
     };
-    radioGroup.appendChild(createRadio(this.radioName, 'row', '줄', this.mode === 'row', setMode));
-    radioGroup.appendChild(createRadio(this.radioName, 'col', '칸', this.mode === 'col', setMode));
+    radioGroup.appendChild(createRadio(this.radioName, 'row', 'Row', this.mode === 'row', setMode));
+    radioGroup.appendChild(createRadio(this.radioName, 'col', 'Column', this.mode === 'col', setMode));
     delSection.appendChild(radioGroup);
 
     body.appendChild(delSection);

@@ -20,11 +20,12 @@ test('HML 저장 가능 문서는 재저장 가능 안내와 warning path를 함
   });
 
   assert.match(message, /HML 2\.91/);
-  assert.match(message, /의미를 보존해 저장/);
-  assert.match(message, /바이트/);
-  assert.doesNotMatch(message, /HML로는 저장할 수 없습니다/);
+  assert.match(message, /preserving meaning/);
+  assert.match(message, /bytes/);
+  assert.doesNotMatch(message, /cannot be saved as HML/);
   assert.match(message, /\/HWPML\/TAIL\/SCRIPTCODE/);
-  assert.match(message, /1건/);
+  assert.match(message, /Skipped unsupported HML element: SCRIPTCODE/);
+  assert.match(message, /There are 1 unsupported/);
 });
 
 test('HML 저장 불가 문서는 저장 차단 안내와 HWP/HWPX 대안을 표시한다', () => {
@@ -44,6 +45,6 @@ test('HML 저장 불가 문서는 저장 차단 안내와 HWP/HWPX 대안을 표
   });
 
   assert.match(message, /HML 2\.91/);
-  assert.match(message, /HML로는 저장할 수 없습니다/);
-  assert.match(message, /HWP 또는 HWPX/);
+  assert.match(message, /cannot be saved as HML/);
+  assert.match(message, /HWP or HWPX/);
 });

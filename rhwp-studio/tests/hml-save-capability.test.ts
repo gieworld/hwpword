@@ -111,8 +111,8 @@ test('canonical HML save state는 source와 blocker 종류에 관계없이 exact
 
 test('HML 저장 비활성 사유는 capability와 metadata 문제를 구분한다', () => {
   assert.match(resolveHmlSaveCapability({ hmlSavable: true, saveBlockers: [] }, false).diagnostic ?? '', /WASM/);
-  assert.match(resolveHmlSaveCapability(null, true).diagnostic ?? '', /저장 정보를 확인/);
-  assert.match(resolveHmlSaveCapability({ hmlSavable: false, saveBlockers: [] }, true).diagnostic ?? '', /보존할 수 없는/);
+  assert.match(resolveHmlSaveCapability(null, true).diagnostic ?? '', /Could not determine/);
+  assert.match(resolveHmlSaveCapability({ hmlSavable: false, saveBlockers: [] }, true).diagnostic ?? '', /cannot be preserved/);
 });
 
 test('metadata 또는 exporter 조회가 던져도 HML 저장은 진단 정보와 함께 fail-closed된다', () => {

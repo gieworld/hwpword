@@ -15,7 +15,7 @@ await runTest('가로 병합 행 경계 드래그 — 걸친 모든 열이 보�
   await clickEditArea(page);
   await page.evaluate(() => new Promise(r => setTimeout(r, 400)));
   await page.evaluate(() => {
-    const btn = [...document.querySelectorAll('button')].find(b => b.textContent?.includes('시작하기'));
+    const btn = [...document.querySelectorAll('button')].find(b => b.textContent?.includes('Get Started'));
     btn?.click();
   });
   await page.evaluate(() => new Promise(r => setTimeout(r, 300)));

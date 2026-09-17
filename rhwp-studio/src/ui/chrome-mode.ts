@@ -74,11 +74,11 @@ export function isEmbedSwallowedFileShortcut(e: EmbedShortcutKeyEventLike): bool
   if (!(e.ctrlKey || e.metaKey) || e.altKey) return false;
   const key = e.key.toLowerCase();
   // Ctrl+S 저장, Ctrl+Shift+S 다른 이름으로 저장
-  if (key === 's' || key === 'ㄴ') return true;
+  if (key === 's' || key === 'ㄴ') return true; // hwpword-keep-korean: Korean IME jamo sent for the physical S key
   // Ctrl+P 인쇄, Ctrl+Shift+P 크롬 시스템 인쇄 대화상자 — 후자의 문서 로드 후
   // 매핑(table:block-product)은 InputHandler가 어차피 preventDefault하므로
   // 전역 흡수가 그 경로를 해치지 않는다.
-  return key === 'p' || key === 'ㅔ';
+  return key === 'p' || key === 'ㅔ'; // hwpword-keep-korean: Korean IME jamo sent for the physical P key
 }
 
 export function resolveChromeMode(search = ''): ChromeMode {

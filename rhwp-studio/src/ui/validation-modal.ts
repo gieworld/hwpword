@@ -64,7 +64,7 @@ export class ValidationModal {
     // 타이틀
     const title = document.createElement('div');
     title.className = 'dialog-title';
-    title.textContent = 'HWPX 비표준 감지';
+    title.textContent = 'Nonstandard HWPX Detected';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'dialog-close';
     closeBtn.textContent = '\u00D7';
@@ -81,7 +81,7 @@ export class ValidationModal {
 
     const desc = document.createElement('p');
     desc.style.margin = '0 0 12px 0';
-    desc.textContent = `이 문서는 HWPX 명세를 일부 준수하지 않는 값을 포함합니다 (경고 ${this.report.count}건). 렌더링 품질을 위해 자동 보정을 권장합니다.`;
+    desc.textContent = `This document contains values that do not fully conform to the HWPX specification (${this.report.count} warning(s)). Automatic correction is recommended for rendering quality.`;
     body.appendChild(desc);
 
     // 경고 요약
@@ -92,7 +92,7 @@ export class ValidationModal {
     summary.style.color = 'var(--color-text-secondary)';
     for (const [kind, cnt] of Object.entries(this.report.summary)) {
       const li = document.createElement('li');
-      li.textContent = `${kind}: ${cnt}건`;
+      li.textContent = `${kind}: ${cnt}`;
       summary.appendChild(li);
     }
     body.appendChild(summary);
@@ -101,7 +101,7 @@ export class ValidationModal {
     const details = document.createElement('details');
     details.style.marginTop = '8px';
     const summaryEl = document.createElement('summary');
-    summaryEl.textContent = '상세 보기';
+    summaryEl.textContent = 'View details';
     summaryEl.style.cursor = 'pointer';
     summaryEl.style.fontSize = '13px';
     summaryEl.style.color = 'var(--ui-link)';
@@ -123,7 +123,7 @@ export class ValidationModal {
     for (const w of shown) {
       const line = document.createElement('div');
       const cellStr = w.cell
-        ? ` [셀 ctrl=${w.cell.ctrl} row=${w.cell.row} col=${w.cell.col} para=${w.cell.innerPara}]`
+        ? ` [cell ctrl=${w.cell.ctrl} row=${w.cell.row} col=${w.cell.col} para=${w.cell.innerPara}]`
         : '';
       line.textContent = `section=${w.section} para=${w.paragraph} ${w.kind}${cellStr}`;
       detailList.appendChild(line);
@@ -132,7 +132,7 @@ export class ValidationModal {
       const more = document.createElement('div');
       more.style.color = 'var(--color-text-hint)';
       more.style.marginTop = '4px';
-      more.textContent = `... 외 ${this.report.warnings.length - maxShow}건`;
+      more.textContent = `... and ${this.report.warnings.length - maxShow} more`;
       detailList.appendChild(more);
     }
     details.appendChild(detailList);
@@ -146,12 +146,12 @@ export class ValidationModal {
 
     const autoFixBtn = document.createElement('button');
     autoFixBtn.className = 'dialog-btn dialog-btn-primary';
-    autoFixBtn.textContent = '자동 보정 (권장)';
+    autoFixBtn.textContent = 'Auto-fix (Recommended)';
     autoFixBtn.addEventListener('click', () => this.resolve('auto-fix'));
 
     const asIsBtn = document.createElement('button');
     asIsBtn.className = 'dialog-btn';
-    asIsBtn.textContent = '그대로 보기';
+    asIsBtn.textContent = 'Keep As Is';
     asIsBtn.addEventListener('click', () => this.resolve('as-is'));
 
     footer.appendChild(autoFixBtn);

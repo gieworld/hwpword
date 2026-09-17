@@ -51,7 +51,7 @@ runTest('PR #2219 HML equation canvas edit/undo/export/reload', async ({ page })
       for (let attempt = 0; attempt < 600 && !settled; attempt += 1) {
         const fallback = Array.from(
           editor.element.contentDocument?.querySelectorAll('button') ?? [],
-        ).find((button) => button.textContent?.includes('대체 글꼴로 보기'));
+        ).find((button) => button.textContent?.includes('View with Substitute Fonts'));
         fallback?.click();
         await new Promise((delay) => setTimeout(delay, 100));
       }

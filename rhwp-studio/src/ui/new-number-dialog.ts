@@ -10,7 +10,7 @@ export class NewNumberDialog extends ModalDialog {
   private numInput!: HTMLInputElement;
 
   constructor(wasm: any, eventBus: EventBus, pos: { sec: number; para: number; offset: number }, private services?: CommandServices) {
-    super('새 번호로 시작', 300);
+    super('Restart Page Numbers', 300);
     this.wasm = wasm;
     this.eventBus = eventBus;
     this.cursorPos = pos;
@@ -26,7 +26,7 @@ export class NewNumberDialog extends ModalDialog {
     row.style.gap = '8px';
 
     const label = document.createElement('label');
-    label.textContent = '시작 번호:';
+    label.textContent = 'Start number:';
     label.style.whiteSpace = 'nowrap';
 
     this.numInput = document.createElement('input');

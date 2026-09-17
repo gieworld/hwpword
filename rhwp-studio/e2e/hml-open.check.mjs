@@ -84,16 +84,16 @@ runTest('HML open, semantic HML save, reopen, and HWP regression', async ({ page
     '#rhwp-toast-container',
     (element) => element.textContent ?? '',
   );
-  assert(warningText.includes('HML 2.91 문서를 열었습니다'), `import warning shown (${warningText})`);
+  assert(warningText.includes('Opened an HML 2.91 document'), `import warning shown (${warningText})`);
   assert(
-    warningText.includes('의미를 보존해 저장') && warningText.includes('원본 바이트와 동일하지는 않습니다'),
+    warningText.includes('preserving meaning') && warningText.includes('not identical to the original bytes'),
     'import warning explains semantic save without byte identity',
   );
   await screenshot(page, 'hml-open-warning');
 
   await page.evaluate(() => {
     const buttons = [...document.querySelectorAll('#rhwp-toast-container button')];
-    const confirm = buttons.find((button) => button.textContent?.trim() === '확인');
+    const confirm = buttons.find((button) => button.textContent?.trim() === 'OK');
     confirm?.click();
   });
 
@@ -126,13 +126,13 @@ runTest('HML open, semantic HML save, reopen, and HWP regression', async ({ page
   await page.keyboard.up('Control');
   await page.waitForFunction(
     () => [...document.querySelectorAll('.dialog-title')]
-      .some((element) => element.textContent?.includes('HML 문서 저장')),
+      .some((element) => element.textContent?.includes('Save HML Document')),
     { timeout: 10000 },
   );
 
   const saveDialog = await page.evaluate(() => {
     const overlay = [...document.querySelectorAll('.modal-overlay')]
-      .find((element) => element.querySelector('.dialog-title')?.textContent?.includes('HML 문서 저장'));
+      .find((element) => element.querySelector('.dialog-title')?.textContent?.includes('Save HML Document'));
     const buttons = [...(overlay?.querySelectorAll('button') ?? [])]
       .map((button) => button.textContent?.trim() ?? '');
     return {
@@ -142,10 +142,10 @@ runTest('HML open, semantic HML save, reopen, and HWP regression', async ({ page
     };
   });
 
-  assert(saveDialog.text.includes('의미를 보존해 저장'), 'dialog explains semantic HML save');
-  assert(saveDialog.buttons.includes('HML로 저장'), 'HML is the primary save option');
-  assert(saveDialog.buttons.includes('HWP로 저장'), 'HWP Save As option is present');
-  assert(saveDialog.buttons.includes('HWPX로 저장'), 'HWPX Save As option is present');
+  assert(saveDialog.text.includes('preserving meaning'), 'dialog explains semantic HML save');
+  assert(saveDialog.buttons.includes('Save as HML'), 'HML is the primary save option');
+  assert(saveDialog.buttons.includes('Save as HWP'), 'HWP Save As option is present');
+  assert(saveDialog.buttons.includes('Save as HWPX'), 'HWPX Save As option is present');
   assert(saveDialog.probe.pickerCalls === 0, 'save picker is not opened before format selection');
   assert(saveDialog.probe.writes === 0, 'no file write occurs before format selection');
   assert(sha256(HML_FIXTURE) === sourceHashBefore, 'uploaded HML fixture remains byte-for-byte unchanged');
@@ -153,9 +153,9 @@ runTest('HML open, semantic HML save, reopen, and HWP regression', async ({ page
 
   await page.evaluate(() => {
     const overlay = [...document.querySelectorAll('.modal-overlay')]
-      .find((element) => element.querySelector('.dialog-title')?.textContent?.includes('HML 문서 저장'));
+      .find((element) => element.querySelector('.dialog-title')?.textContent?.includes('Save HML Document'));
     const saveHml = [...(overlay?.querySelectorAll('button') ?? [])]
-      .find((button) => button.textContent?.trim() === 'HML로 저장');
+      .find((button) => button.textContent?.trim() === 'Save as HML');
     saveHml?.click();
   });
   await page.waitForFunction(() => window.__hmlSaveProbe?.blob !== null, { timeout: 10000 });

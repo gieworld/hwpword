@@ -103,13 +103,13 @@ export function resolveHmlSaveCapability(
 ): HmlSaveCapability {
   const saveState = normalizeHmlSaveState(metadata);
   if (!saveState) {
-    return { hmlEnabled: false, diagnostic: 'HML 저장 정보를 확인할 수 없습니다.' };
+    return { hmlEnabled: false, diagnostic: 'Could not determine HML save information.' };
   }
   if (!saveState.hmlSavable) {
-    return { hmlEnabled: false, diagnostic: '보존할 수 없는 요소가 있어 HML 저장이 차단되었습니다.' };
+    return { hmlEnabled: false, diagnostic: 'Saving as HML is blocked because it contains elements that cannot be preserved.' };
   }
   if (!exporterAvailable) {
-    return { hmlEnabled: false, diagnostic: '현재 WASM 빌드는 HML 저장을 지원하지 않습니다.' };
+    return { hmlEnabled: false, diagnostic: 'This WASM build does not support saving as HML.' };
   }
   return { hmlEnabled: true, diagnostic: null };
 }
