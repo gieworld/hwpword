@@ -5,4 +5,5 @@ contextBridge.exposeInMainWorld('hwpwordDesktop', {
   getLaunchFiles: () => ipcRenderer.invoke('hwpword:get-launch-files'),
   readFile: (token) => ipcRenderer.invoke('hwpword:read-file', token),
   writeFile: (token, bytes) => ipcRenderer.invoke('hwpword:write-file', token, bytes),
+  isOnlyWindow: () => ipcRenderer.invoke('hwpword:is-only-window'),
 });

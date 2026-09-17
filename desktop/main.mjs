@@ -124,6 +124,11 @@ function registerIpc() {
     if (!(bytes instanceof Uint8Array)) throw new Error('Expected document bytes');
     await saveFile(path, bytes);
   });
+  // Autosave drafts are shared by all windows; only a lone window may offer to recover them.
+  ipcMain.handle('hwpword:is-only-window', (event) => {
+    ownerOf(event);
+    return BrowserWindow.getAllWindows().length === 1;
+  });
 }
 
 app.on('web-contents-created', (_event, contents) => {
@@ -141,6 +146,9 @@ app.on('web-contents-created', (_event, contents) => {
 });
 
 Menu.setApplicationMenu(null);
+
+// Dev runs keep their own drafts and single-instance lock instead of sharing the installed app's.
+if (!app.isPackaged) app.setPath('userData', `${app.getPath('userData')}-dev`);
 
 if (!app.requestSingleInstanceLock()) {
   app.quit();

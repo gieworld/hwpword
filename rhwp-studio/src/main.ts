@@ -101,7 +101,7 @@ import { CENTER_ZOOM_ANCHOR } from '@/view/zoom-anchor';
 import { withBusyCursor } from '@/view/busy-cursor';
 import { formatPageIndicator } from '@/view/page-indicator';
 import { installEmbedRuntime } from '@/embed/runtime';
-import { installDesktopLaunchQueue, isHwpWordDesktop, type DesktopWindowLike } from '@/desktop/desktop-launch-queue';
+import { desktopStartupPlan, installDesktopLaunchQueue, isHwpWordDesktop, type DesktopWindowLike } from '@/desktop/desktop-launch-queue';
 import type { EmbedRendererRuntimeRequestV1 } from '@/embed/rpc-router';
 import { enrichFontDecisionTrace } from '@/core/font-decision-trace';
 import { DocumentAgentController } from '@/document-agent/controller';
@@ -778,11 +778,13 @@ async function initialize(): Promise<void> {
     // 시작 진입점은 순서를 지켜야 한다 — ?url= 로드와 자동저장 복구가 문서를 열 기회를
     // 먼저 갖고, 아무도 열지 않았을 때만 빈 문서를 연다.
     void (async () => {
+      // HWP Word desktop: a window launched with a file skips recovery and the blank document, and only a lone window offers recovery.
+      const plan = await desktopStartupPlan(window as unknown as DesktopWindowLike);
       await loadFromUrlParam();
       // embed 프로파일: 자동저장 복구 다이얼로그의 드래프트 복원도 호스트가 감지할 수
       // 없는 문서 교체 경로이므로 띄우지 않는다 (드래프트 기록 자체는 유지).
-      if (chromeMode !== 'embed') await offerAutosaveRecoveryIfIdle();
-      await openBlankDocumentIfIdle();
+      if (chromeMode !== 'embed' && plan.offerRecovery) await offerAutosaveRecoveryIfIdle();
+      if (!plan.hasLaunchFiles) await openBlankDocumentIfIdle();
     })();
     // embed 프로파일: PWA launch queue로 문서를 넘겨받는 진입도 문서 교체 경로이므로
     // 설치하지 않는다.

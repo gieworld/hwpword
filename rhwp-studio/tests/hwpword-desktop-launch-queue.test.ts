@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import {
   createDesktopLaunchQueue,
+  desktopStartupPlan,
   installDesktopLaunchQueue,
   isHwpWordDesktop,
   type DesktopFileBridge,
@@ -11,7 +12,7 @@ import { handlePwaLaunchFiles, type OpenDocumentBytesPayload } from '../src/comm
 import { saveDocumentToFileSystem, type FileSystemFileHandleLike } from '../src/command/file-system-access.ts';
 import { functionBodyFrom, codeOnly } from './support/source-guard.ts';
 
-function fakeBridge(files: Record<string, { name: string; bytes: Uint8Array<ArrayBuffer> }>) {
+function fakeBridge(files: Record<string, { name: string; bytes: Uint8Array<ArrayBuffer> }>, onlyWindow = true) {
   const writes: Array<{ token: string; bytes: number[] }> = [];
   const bridge: DesktopFileBridge = {
     async getLaunchFiles() {
@@ -22,6 +23,9 @@ function fakeBridge(files: Record<string, { name: string; bytes: Uint8Array<Arra
     },
     async writeFile(token, bytes) {
       writes.push({ token, bytes: [...bytes] });
+    },
+    async isOnlyWindow() {
+      return onlyWindow;
     },
   };
   return { bridge, writes };
@@ -101,6 +105,7 @@ test('a failed write rejects with a readable message and keeps the cause', async
     async getLaunchFiles() { return [{ token: 't1', name: 'form.hwp' }]; },
     async readFile() { return new Uint8Array(); },
     async writeFile() { throw cause; },
+    async isOnlyWindow() { return true; },
   };
   const [handle] = await launchedHandles(bridge);
   const writable = await handle.createWritable();
@@ -121,4 +126,32 @@ test('desktop saves report write failures instead of falling back to a download'
   const fileTs = codeOnly(readFileSync(new URL('../src/command/commands/file.ts', import.meta.url), 'utf8'));
   const body = functionBodyFrom(fileTs, 'async function tryFileSystemSave');
   assert.match(body, /if \(isUserCancelError\(error\)\) return 'cancelled';\s*if \(isHwpWordDesktop\(\)\) throw error;/);
+});
+
+test('startup plan outside HWP Word offers recovery as upstream does', async () => {
+  assert.deepEqual(await desktopStartupPlan({}), { hasLaunchFiles: false, offerRecovery: true });
+});
+
+test('a window launched with a file neither offers recovery nor opens a blank document', async () => {
+  const bridge = fakeBridge({ t1: { name: 'form.hwp', bytes: new Uint8Array() } }).bridge;
+  assert.deepEqual(await desktopStartupPlan({ hwpwordDesktop: bridge }), { hasLaunchFiles: true, offerRecovery: false });
+});
+
+test('only the sole window without a launched file offers recovery', async () => {
+  assert.deepEqual(
+    await desktopStartupPlan({ hwpwordDesktop: fakeBridge({}, true).bridge }),
+    { hasLaunchFiles: false, offerRecovery: true },
+  );
+  assert.deepEqual(
+    await desktopStartupPlan({ hwpwordDesktop: fakeBridge({}, false).bridge }),
+    { hasLaunchFiles: false, offerRecovery: false },
+  );
+});
+
+test('studio startup follows the desktop startup plan', () => {
+  const mainTs = codeOnly(readFileSync(new URL('../src/main.ts', import.meta.url), 'utf8'));
+  assert.match(
+    mainTs,
+    /const plan = await desktopStartupPlan\(window as unknown as DesktopWindowLike\);\s*await loadFromUrlParam\(\);\s*if \(chromeMode !== 'embed' && plan\.offerRecovery\) await offerAutosaveRecoveryIfIdle\(\);\s*if \(!plan\.hasLaunchFiles\) await openBlankDocumentIfIdle\(\);/,
+  );
 });

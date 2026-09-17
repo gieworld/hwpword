@@ -9,6 +9,8 @@ export interface DesktopFileBridge {
   getLaunchFiles(): Promise<Array<{ token: string; name: string }>>;
   readFile(token: string): Promise<Uint8Array<ArrayBuffer>>;
   writeFile(token: string, bytes: Uint8Array): Promise<void>;
+  /** True when no other HWP Word window is open. */
+  isOnlyWindow(): Promise<boolean>;
 }
 
 export interface DesktopWindowLike {
@@ -18,6 +20,17 @@ export interface DesktopWindowLike {
 /** True inside the HWP Word Electron app, where the preload exposes `window.hwpwordDesktop`. */
 export function isHwpWordDesktop(win: DesktopWindowLike = globalThis as DesktopWindowLike): boolean {
   return win.hwpwordDesktop !== undefined;
+}
+
+/**
+ * What the studio should do at startup. Autosave drafts are shared by every window, so only a lone window that was not
+ * launched with a file offers recovery; a window with a launched file must not open a blank document while it loads.
+ */
+export async function desktopStartupPlan(win: DesktopWindowLike): Promise<{ hasLaunchFiles: boolean; offerRecovery: boolean }> {
+  const bridge = win.hwpwordDesktop;
+  if (!bridge) return { hasLaunchFiles: false, offerRecovery: true };
+  const hasLaunchFiles = (await bridge.getLaunchFiles()).length > 0;
+  return { hasLaunchFiles, offerRecovery: !hasLaunchFiles && await bridge.isOnlyWindow() };
 }
 
 function createDesktopFileHandle(bridge: DesktopFileBridge, token: string, name: string): FileSystemFileHandleLike {
