@@ -33,3 +33,11 @@ export function originOf(url) {
     return null;
   }
 }
+
+// Save As (File System Access), local font detection, and copy/paste. Everything else is denied, even for the app itself.
+const ALLOWED_PERMISSIONS = new Set(['fileSystem', 'local-fonts', 'clipboard-read', 'clipboard-sanitized-write']);
+
+/** Whether the studio may use an Electron permission type (`session.setPermissionRequestHandler` / `setPermissionCheckHandler`). */
+export function isAllowedPermission(permission) {
+  return ALLOWED_PERMISSIONS.has(permission);
+}

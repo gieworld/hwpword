@@ -4,7 +4,7 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, net, protocol, session, shel
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { originOf, resolveAppPath } from './lib/app-path.mjs';
+import { isAllowedPermission, originOf, resolveAppPath } from './lib/app-path.mjs';
 import { createSerialWriter, LaunchFileRegistry, launchPathsFromArgv, pathKey } from './lib/launch-files.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -36,10 +36,12 @@ function openExternally(url) {
 }
 
 function hardenSession(ses) {
-  ses.setPermissionRequestHandler((webContents, _permission, callback, details) => {
-    callback(isTrustedUrl(details.requestingUrl || webContents.getURL()));
+  ses.setPermissionRequestHandler((webContents, permission, callback, details) => {
+    callback(isAllowedPermission(permission) && isTrustedUrl(details.requestingUrl || webContents.getURL()));
   });
-  ses.setPermissionCheckHandler((_webContents, _permission, requestingOrigin) => isTrustedUrl(`${requestingOrigin}/`));
+  ses.setPermissionCheckHandler((_webContents, permission, requestingOrigin) => {
+    return isAllowedPermission(permission) && isTrustedUrl(`${requestingOrigin}/`);
+  });
 }
 
 function createWindow(launchPaths = []) {

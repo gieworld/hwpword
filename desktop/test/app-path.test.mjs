@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { join, resolve } from 'node:path';
-import { originOf, resolveAppPath } from '../lib/app-path.mjs';
+import { isAllowedPermission, originOf, resolveAppPath } from '../lib/app-path.mjs';
 
 const root = resolve('studio-dist-fixture');
 
@@ -36,4 +36,13 @@ test('originOf reduces URLs to scheme://host, including custom schemes', () => {
 
 test('originOf sees through userinfo that fools a string prefix check', () => {
   assert.equal(originOf('http://127.0.0.1:7700@evil.com/'), 'http://evil.com');
+});
+
+test('only the permissions the studio uses are allowed', () => {
+  for (const permission of ['fileSystem', 'local-fonts', 'clipboard-read', 'clipboard-sanitized-write']) {
+    assert.equal(isAllowedPermission(permission), true, permission);
+  }
+  for (const permission of ['media', 'geolocation', 'notifications', 'openExternal', 'background-sync', 'web-app-installation', 'unknown', '']) {
+    assert.equal(isAllowedPermission(permission), false, permission);
+  }
 });
