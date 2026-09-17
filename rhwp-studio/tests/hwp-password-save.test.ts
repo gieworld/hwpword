@@ -50,7 +50,7 @@ test('다른 이름·HWP·HWPX 저장은 공통 대화상자에서 암호 설정
 test('저장 대화상자는 HWP/HWPX에서만 암호 설정 action을 반환한다', () => {
   assert.match(saveAsDialogSource, /export interface SaveAsDialogResult/, '파일명과 암호 설정 선택을 함께 반환해야 합니다');
   assert.match(saveAsDialogSource, /configurePassword: boolean/, '암호 설정 여부가 명시되어야 합니다');
-  assert.match(codeOnly(saveAsDialogSource), /passwordButton\.textContent = 'Set Password\.\.\.'/, '대화상자에 암호 설정 button이 있어야 합니다');
+  assert.match(codeOnly(saveAsDialogSource), /passwordButton\.textContent = 'Set Password…'/, '대화상자에 암호 설정 button이 있어야 합니다');
   assert.match(saveAsDialogSource, /options\.allowPassword === true/, '호출자가 암호 설정 노출 여부를 제어해야 합니다');
 });
 
