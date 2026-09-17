@@ -1,0 +1,29 @@
+appId: local.hwpword.desktop
+productName: HWP Word
+copyright: "HWP Word personal build on rhwp (MIT, Copyright (c) 2025-2026 Edward Kim)"
+directories:
+  output: dist
+files:
+  - main.mjs
+  - preload.cjs
+  - lib/**
+  - package.json
+extraResources:
+  - from: ../rhwp-studio/dist
+    to: studio
+win:
+  target: nsis
+  icon: ../rhwp-studio/public/icons/icon-512.png
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+fileAssociations:
+  - ext: hwp
+    name: HWP Document
+    description: Hangul Word Processor document
+    role: Editor
+  - ext: hwpx
+    name: HWPX Document
+    description: Hangul Word Processor XML document
+    role: Editor

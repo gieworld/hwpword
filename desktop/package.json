@@ -12,10 +12,12 @@
     "sync-core": "node scripts/sync-core.mjs",
     "build:studio": "node scripts/sync-core.mjs && node scripts/build-studio.mjs",
     "start": "electron .",
-    "dev": "electron . --dev-url=http://127.0.0.1:7700"
+    "dev": "electron . --dev-url=http://127.0.0.1:7700",
+    "dist": "npm run build:studio && electron-builder --win nsis"
   },
   "devDependencies": {
     "@rhwp/core": "0.8.6",
-    "electron": "44.4.1"
+    "electron": "44.4.1",
+    "electron-builder": "26.15.3"
   }
 }
