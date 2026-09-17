@@ -39,10 +39,10 @@ test('originOf sees through userinfo that fools a string prefix check', () => {
 });
 
 test('only the permissions the studio uses are allowed', () => {
-  for (const permission of ['fileSystem', 'local-fonts', 'clipboard-read', 'clipboard-sanitized-write']) {
+  for (const permission of ['fileSystem', 'local-fonts', 'clipboard-sanitized-write']) {
     assert.equal(isAllowedPermission(permission), true, permission);
   }
-  for (const permission of ['media', 'geolocation', 'notifications', 'openExternal', 'background-sync', 'web-app-installation', 'unknown', '']) {
+  for (const permission of ['clipboard-read', 'media', 'geolocation', 'notifications', 'openExternal', 'background-sync', 'web-app-installation', 'unknown', '']) {
     assert.equal(isAllowedPermission(permission), false, permission);
   }
 });

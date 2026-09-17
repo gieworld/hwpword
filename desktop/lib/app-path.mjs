@@ -34,8 +34,10 @@ export function originOf(url) {
   }
 }
 
-// Save As (File System Access), local font detection, and copy/paste. Everything else is denied, even for the app itself.
-const ALLOWED_PERMISSIONS = new Set(['fileSystem', 'local-fonts', 'clipboard-read', 'clipboard-sanitized-write']);
+// Save As (File System Access), local font detection, and picture/table copy (navigator.clipboard.write). Text copy and
+// paste use DOM clipboard events and need no permission; the studio never reads the clipboard API. Everything else is
+// denied, even for the app itself.
+const ALLOWED_PERMISSIONS = new Set(['fileSystem', 'local-fonts', 'clipboard-sanitized-write']);
 
 /** Whether the studio may use an Electron permission type (`session.setPermissionRequestHandler` / `setPermissionCheckHandler`). */
 export function isAllowedPermission(permission) {
