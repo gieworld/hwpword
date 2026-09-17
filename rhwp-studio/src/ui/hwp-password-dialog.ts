@@ -6,7 +6,7 @@ class HwpPasswordDialog extends ModalDialog {
   private inputEnterHandler: ((event: KeyboardEvent) => void) | null = null;
 
   constructor(private readonly fileName: string, private readonly errorMessage?: string) {
-    super('문서 암호', 420);
+    super('Document Password', 420);
   }
 
   protected createBody(): HTMLElement {
@@ -14,12 +14,12 @@ class HwpPasswordDialog extends ModalDialog {
     body.style.cssText = 'padding:16px 20px;line-height:1.6;';
 
     const message = document.createElement('p');
-    message.textContent = `"${this.fileName || '선택한 문서'}"을(를) 열려면 암호를 입력하세요.`;
+    message.textContent = `Enter the password to open "${this.fileName || 'the selected document'}".`;
     body.appendChild(message);
 
     const label = document.createElement('label');
     label.htmlFor = 'hwp-password-input';
-    label.textContent = '문서 암호';
+    label.textContent = 'Document Password';
     body.appendChild(label);
 
     this.input = document.createElement('input');
@@ -34,7 +34,7 @@ class HwpPasswordDialog extends ModalDialog {
 
     const help = document.createElement('p');
     help.id = 'hwp-password-help';
-    help.textContent = '입력한 암호는 이 문서를 여는 동안에만 사용하며 저장하지 않습니다.';
+    help.textContent = 'The password you enter is used only to open this document and is not saved.';
     body.appendChild(help);
 
     if (this.errorMessage) {
@@ -74,7 +74,7 @@ class HwpPasswordDialog extends ModalDialog {
       super.show();
       this.dialog.setAttribute('role', 'dialog');
       this.dialog.setAttribute('aria-modal', 'true');
-      this.dialog.setAttribute('aria-label', '문서 암호 입력');
+      this.dialog.setAttribute('aria-label', 'Enter Document Password');
       // ModalDialog가 document capture 단계에서 편집 영역 밖으로 키 이벤트가 새는 것을
       // 막는다. 같은 capture 대상에 후속 등록해 Enter를 직접 처리하면 입력값을 실제로
       // 받을 수 있고, 편집기 단축키에는 전달되지 않는다.
@@ -103,7 +103,7 @@ class HwpSavePasswordDialog extends ModalDialog {
   private inputEnterHandler: ((event: KeyboardEvent) => void) | null = null;
 
   constructor(private readonly fileName: string) {
-    super('문서 암호 설정', 420);
+    super('Set Document Password', 420);
   }
 
   protected createBody(): HTMLElement {
@@ -111,12 +111,12 @@ class HwpSavePasswordDialog extends ModalDialog {
     body.style.cssText = 'padding:16px 20px;line-height:1.6;';
 
     const message = document.createElement('p');
-    message.textContent = `"${this.fileName || '저장할 문서'}"에 적용할 새 암호를 입력하세요.`;
+    message.textContent = `Enter a new password to apply to "${this.fileName || 'the document to save'}".`;
     body.appendChild(message);
 
-    this.passwordInput = this.createPasswordInput('hwp-save-password-input', '새 암호');
+    this.passwordInput = this.createPasswordInput('hwp-save-password-input', 'New Password');
     body.appendChild(this.passwordInput.closest('label')!);
-    this.confirmationInput = this.createPasswordInput('hwp-save-password-confirmation', '암호 확인');
+    this.confirmationInput = this.createPasswordInput('hwp-save-password-confirmation', 'Confirm Password');
     body.appendChild(this.confirmationInput.closest('label')!);
 
     this.error = document.createElement('p');
@@ -125,7 +125,7 @@ class HwpSavePasswordDialog extends ModalDialog {
     body.appendChild(this.error);
 
     const help = document.createElement('p');
-    help.textContent = '암호는 한글 또는 영문 5자 이상으로 입력해야 합니다. 암호를 잊으면 문서를 열 수 없습니다.';
+    help.textContent = 'The password must be at least 5 characters (Hangul or Latin). If you forget it, the document cannot be opened.';
     body.appendChild(help);
     return body;
   }
@@ -148,12 +148,12 @@ class HwpSavePasswordDialog extends ModalDialog {
   protected onConfirm(): boolean {
     const password = this.passwordInput.value;
     if (password.length < 5) {
-      this.showError('암호는 5자 이상으로 입력하세요.');
+      this.showError('Enter a password of at least 5 characters.');
       this.passwordInput.focus();
       return false;
     }
     if (password !== this.confirmationInput.value) {
-      this.showError('새 암호와 암호 확인이 일치하지 않습니다.');
+      this.showError('The new password and confirmation do not match.');
       this.confirmationInput.focus();
       return false;
     }
@@ -189,7 +189,7 @@ class HwpSavePasswordDialog extends ModalDialog {
       super.show();
       this.dialog.setAttribute('role', 'dialog');
       this.dialog.setAttribute('aria-modal', 'true');
-      this.dialog.setAttribute('aria-label', '문서 저장 암호 설정');
+      this.dialog.setAttribute('aria-label', 'Set Save Password');
       this.inputEnterHandler = (event) => {
         if ((event.target === this.passwordInput || event.target === this.confirmationInput) && event.key === 'Enter') {
           event.preventDefault();

@@ -42,7 +42,7 @@ test('암호 입력은 단일 시도에만 쓰고, 취소와 오입력은 영속
   assert.match(passwordPath, /wasm\.loadDocumentWithPassword\(data, password, fileName\)/, 'WASM 암호 열기 API를 사용한다');
   assert.match(passwordPath, /password = '';/, '시도 뒤 지역 암호 참조를 비운다');
   assert.doesNotMatch(passwordPath, /localStorage|sessionStorage|addRecentDoc|autosave|documentDigest|console\./, '암호값을 영속/로그 경로로 보내지 않는다');
-  assert.match(passwordPath, /암호가 일치하지 않거나 문서가 손상되었습니다\. 다시 입력하세요\./, '오입력/암호문 손상은 재입력 상태로 설명한다');
+  assert.match(passwordPath, /The password is incorrect or the document is corrupted\. Try again\./, '오입력/암호문 손상은 재입력 상태로 설명한다');
 });
 
 test('WasmBridge는 다음 문서를 모두 준비한 뒤에만 기존 문서를 교체한다', () => {

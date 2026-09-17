@@ -65,7 +65,7 @@ export const HWP_DOCUMENT_ACCEPT: Record<string, string[]> = {
 };
 
 const HWP_OPEN_PICKER_TYPES: FilePickerType[] = [{
-  description: 'HWP/HWPX/HML 문서',
+  description: 'HWP/HWPX/HML Document',
   accept: HWP_DOCUMENT_ACCEPT,
 }];
 
@@ -104,12 +104,12 @@ async function assertValidSaveHandle(
     const isOriginal = handle === originalHandle
       || await handle.isSameEntry?.(originalHandle) === true;
     if (isOriginal) {
-      throw new Error('HML 원본 파일은 저장 대상으로 선택할 수 없습니다.');
+      throw new Error('You cannot choose the original HML file as the save target.');
     }
   }
 
   if (!handle.name.toLowerCase().endsWith(expectedExtension)) {
-    throw new Error(`${expectedExtension} 확장자를 가진 파일을 선택해야 합니다.`);
+    throw new Error(`You must choose a file with the ${expectedExtension} extension.`);
   }
 }
 

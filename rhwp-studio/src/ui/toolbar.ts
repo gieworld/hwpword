@@ -16,11 +16,11 @@ interface FontMenuEntry {
 const BASE_FONTS = ['함초롬바탕', '함초롬돋움', '맑은 고딕', '나눔고딕', '바탕', '돋움', '궁서'];
 
 const FONT_MENU_CATEGORIES: ReadonlyArray<{ id: FontMenuCategory; label: string }> = [
-  { id: 'all', label: '모든 글꼴' },
-  { id: 'current', label: '현재 글꼴' },
-  { id: 'document', label: '문서 글꼴' },
-  { id: 'fontSets', label: '대표 글꼴' },
-  { id: 'system', label: '시스템 글꼴' },
+  { id: 'all', label: 'All Fonts' },
+  { id: 'current', label: 'Current Font' },
+  { id: 'document', label: 'Document Fonts' },
+  { id: 'fontSets', label: 'Font Sets' },
+  { id: 'system', label: 'System Fonts' },
 ];
 
 /** 서식 도구 모음 (style-bar) 컨트롤러 */
@@ -376,7 +376,7 @@ export class Toolbar {
     const actRow = document.createElement('div');
     actRow.className = 'sb-hl-palette-actions';
     const btnNone = document.createElement('button');
-    btnNone.textContent = '색 없음';
+    btnNone.textContent = 'No Color';
     btnNone.addEventListener('mousedown', (e) => {
       e.preventDefault();
       this.highlightColor = '#ffffff';
@@ -385,7 +385,7 @@ export class Toolbar {
       this.highlightDropdown.classList.remove('open');
     });
     const btnOther = document.createElement('button');
-    btnOther.textContent = '다른 색...';
+    btnOther.textContent = 'Other Color...';
     const hiddenPicker = document.createElement('input');
     hiddenPicker.type = 'color';
     hiddenPicker.value = this.highlightColor;
@@ -703,10 +703,10 @@ export class Toolbar {
     if (fontSets.length === 0) return;
 
     // 기존 optgroup 제거 (재호출 대비)
-    this.fontName.querySelectorAll('optgroup[label="대표 글꼴"]').forEach(g => g.remove());
+    this.fontName.querySelectorAll('optgroup[label="Font Sets"]').forEach(g => g.remove());
 
     const group = document.createElement('optgroup');
-    group.label = '대표 글꼴';
+    group.label = 'Font Sets';
 
     for (const fs of fontSets) {
       const opt = document.createElement('option');
@@ -754,7 +754,7 @@ export class Toolbar {
     const menu = document.createElement('div');
     menu.className = 'font-picker-menu';
     menu.setAttribute('role', 'dialog');
-    menu.setAttribute('aria-label', '글꼴 목록');
+    menu.setAttribute('aria-label', 'Font List');
 
     const categories = document.createElement('div');
     categories.className = 'font-picker-categories';
@@ -836,7 +836,7 @@ export class Toolbar {
     if (entries.length === 0) {
       const empty = document.createElement('div');
       empty.className = 'font-picker-empty';
-      empty.textContent = '표시할 글꼴이 없습니다.';
+      empty.textContent = 'No fonts to display.';
       fragment.appendChild(empty);
     } else {
       for (const entry of entries) {

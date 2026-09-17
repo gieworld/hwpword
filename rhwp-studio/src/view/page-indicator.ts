@@ -30,7 +30,7 @@ export function currentPageLabel(input: PageIndicatorInput): number {
     : input.pageIndex + 1;
 }
 
-/** 상태 표시줄 문자열 (`1 / 33 쪽`) */
+/** 상태 표시줄 문자열 (`Page 1 of 33`) */
 export function formatPageIndicator(input: PageIndicatorInput): string {
-  return `${currentPageLabel(input)} / ${input.totalPages} 쪽`;
+  return `Page ${currentPageLabel(input)} of ${input.totalPages}`;
 }

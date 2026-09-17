@@ -528,29 +528,29 @@
         <div class="sb-field-grid">
           <!-- 스타일 -->
           <span class="sb-field">
-            <label class="sb-field-label" for="style-name">스타일</label>
-            <select id="style-name" class="sb-combo" title="스타일">
-              <option value="0">바탕글</option>
+            <label class="sb-field-label" for="style-name">Style</label>
+            <select id="style-name" class="sb-combo" title="Style">
+              <option value="0">Normal</option>
             </select>
           </span>
           <!-- 글꼴 언어 카테고리 -->
           <span class="sb-field">
-            <label class="sb-field-label" for="font-lang">언어</label>
-            <select id="font-lang" class="sb-combo sb-font-lang" title="글꼴 적용 언어">
-              <option value="all">대표</option>
-              <option value="0">한글</option>
-              <option value="1">영문</option>
-              <option value="2">한자</option>
-              <option value="3">일어</option>
-              <option value="4">외국어</option>
-              <option value="5">기호</option>
-              <option value="6">사용자</option>
+            <label class="sb-field-label" for="font-lang">Script</label>
+            <select id="font-lang" class="sb-combo sb-font-lang" title="Font Script">
+              <option value="all">All</option>
+              <option value="0">Hangul</option>
+              <option value="1">Latin</option>
+              <option value="2">Hanja</option>
+              <option value="3">Japanese</option>
+              <option value="4">Other</option>
+              <option value="5">Symbol</option>
+              <option value="6">User</option>
             </select>
           </span>
           <!-- 글꼴 -->
           <span class="sb-field">
-            <label class="sb-field-label" for="font-name">글꼴</label>
-            <select id="font-name" class="sb-combo sb-font" title="글꼴">
+            <label class="sb-field-label" for="font-name">Font</label>
+            <select id="font-name" class="sb-combo sb-font" title="Font">
               <option value="함초롬바탕">함초롬바탕</option>
               <option value="함초롬돋움">함초롬돋움</option>
               <option value="맑은 고딕">맑은 고딕</option>
@@ -562,21 +562,21 @@
           </span>
           <!-- 글자 크기 -->
           <span class="sb-field">
-            <label class="sb-field-label" for="font-size">크기</label>
+            <label class="sb-field-label" for="font-size">Size</label>
             <span class="sb-size-group">
-              <input id="font-size" type="text" class="sb-size" title="글자 크기 (pt)" value="10.0" />
+              <input id="font-size" type="text" class="sb-size" title="Font Size (pt)" value="10.0" />
               <span class="sb-size-unit">pt</span>
               <span class="sb-size-arrows">
-                <button id="btn-size-up" class="sb-arrow" title="크기 크게">▲</button>
-                <button id="btn-size-down" class="sb-arrow" title="크기 작게">▼</button>
+                <button id="btn-size-up" class="sb-arrow" title="Increase Size">▲</button>
+                <button id="btn-size-down" class="sb-arrow" title="Decrease Size">▼</button>
               </span>
             </span>
           </span>
           <!-- 줄 간격 -->
           <span class="sb-field">
-            <label class="sb-field-label" for="linespacing-select">줄 간격</label>
+            <label class="sb-field-label" for="linespacing-select">Line Spacing</label>
             <span class="sb-ls-group" id="linespacing-group">
-              <select id="linespacing-select" class="sb-ls-select" title="줄 간격">
+              <select id="linespacing-select" class="sb-ls-select" title="Line Spacing">
                 <option value="100">100 %</option>
                 <option value="130">130 %</option>
                 <option value="160" selected>160 %</option>
@@ -585,13 +585,13 @@
                 <option value="300">300 %</option>
               </select>
               <span class="sb-ls-arrows">
-                <button id="btn-ls-up" class="sb-arrow" title="줄 간격 증가 (+5%)">▲</button>
-                <button id="btn-ls-down" class="sb-arrow" title="줄 간격 감소 (-5%)">▼</button>
+                <button id="btn-ls-up" class="sb-arrow" title="Increase Line Spacing (+5%)">▲</button>
+                <button id="btn-ls-down" class="sb-arrow" title="Decrease Line Spacing (-5%)">▼</button>
               </span>
             </span>
           </span>
         </div>
-        <span class="sb-ribbon-label">글꼴 및 간격</span>
+        <span class="sb-ribbon-label">Font and Spacing</span>
       </div>
 
       <div class="sb-command-track">
@@ -599,65 +599,65 @@
           <div class="sb-ribbon-group sb-character-ribbon-group">
             <div class="sb-command-group sb-character-group">
               <!-- 글자 서식 -->
-              <button id="btn-bold" class="sb-btn" title="굵게 (Ctrl+B)"><span class="sb-ga sb-bold">가</span></button>
-              <button id="btn-italic" class="sb-btn" title="기울임 (Ctrl+I)"><span class="sb-ga sb-italic">가</span></button>
-              <button id="btn-underline" class="sb-btn" title="밑줄 (Ctrl+U)"><span class="sb-ga sb-underline">간</span></button>
-              <button id="btn-strike" class="sb-btn" title="취소선"><span class="sb-ga sb-strike">가</span></button>
+              <button id="btn-bold" class="sb-btn" title="Bold (Ctrl+B)"><span class="sb-ga sb-bold">A</span></button>
+              <button id="btn-italic" class="sb-btn" title="Italic (Ctrl+I)"><span class="sb-ga sb-italic">A</span></button>
+              <button id="btn-underline" class="sb-btn" title="Underline (Ctrl+U)"><span class="sb-ga sb-underline">A</span></button>
+              <button id="btn-strike" class="sb-btn" title="Strikethrough"><span class="sb-ga sb-strike">A</span></button>
               <div class="sb-dropdown" id="charfx-dropdown">
-                <button class="sb-btn sb-has-arrow" id="btn-charfx" title="글자 효과">
-                  <span class="sb-ga sb-effect-icon" id="charfx-icon">가</span><span class="sb-dd">▾</span>
+                <button class="sb-btn sb-has-arrow" id="btn-charfx" title="Character Effects">
+                  <span class="sb-ga sb-effect-icon" id="charfx-icon">A</span><span class="sb-dd">▾</span>
                 </button>
                 <div class="sb-dropdown-menu" id="charfx-menu">
-                  <button class="sb-dropdown-item" data-format="emboss"><span class="sb-ga sb-emboss">가</span>양각</button>
-                  <button class="sb-dropdown-item" data-format="engrave"><span class="sb-ga sb-engrave">가</span>음각</button>
-                  <button class="sb-dropdown-item" data-format="outline"><span class="sb-ga sb-outline">가</span>외곽선</button>
-                  <button class="sb-dropdown-item" data-format="superscript"><span class="sb-ga sb-sup">가</span>위 첨자</button>
-                  <button class="sb-dropdown-item" data-format="subscript"><span class="sb-ga sb-sub">가</span>아래 첨자</button>
+                  <button class="sb-dropdown-item" data-format="emboss"><span class="sb-ga sb-emboss">A</span>Emboss</button>
+                  <button class="sb-dropdown-item" data-format="engrave"><span class="sb-ga sb-engrave">A</span>Engrave</button>
+                  <button class="sb-dropdown-item" data-format="outline"><span class="sb-ga sb-outline">A</span>Outline</button>
+                  <button class="sb-dropdown-item" data-format="superscript"><span class="sb-ga sb-sup">A</span>Superscript</button>
+                  <button class="sb-dropdown-item" data-format="subscript"><span class="sb-ga sb-sub">A</span>Subscript</button>
                   </div>
                 </div>
             </div>
-            <span class="sb-ribbon-label">글자 모양</span>
+              <span class="sb-ribbon-label">Character</span>
           </div>
           <div class="sb-ribbon-group sb-color-ribbon-group">
             <div class="sb-command-group sb-color-group">
               <!-- 글자색 -->
               <span class="sb-color-wrap">
-                <button id="btn-text-color" class="sb-btn sb-has-arrow" title="글자 색">
-                  <span class="sb-color-visual"><span class="sb-ga">가</span><span id="color-bar"></span></span>
+                <button id="btn-text-color" class="sb-btn sb-has-arrow" title="Font Color">
+                  <span class="sb-color-visual"><span class="sb-ga">A</span><span id="color-bar"></span></span>
                   <span class="sb-dd">▾</span>
                 </button>
-                <input id="text-color-picker" type="color" value="#000000" aria-label="글자 색 선택" />
+                <input id="text-color-picker" type="color" value="#000000" aria-label="Choose Font Color" />
               </span>
               <!-- 형광펜 -->
               <span id="highlight-dropdown" class="sb-dropdown">
-                <button id="btn-highlight" class="sb-btn sb-has-arrow" title="형광펜">
+                <button id="btn-highlight" class="sb-btn sb-has-arrow" title="Highlight">
                   <span class="sb-highlight-visual"><span class="sb-highlight-icon">✏</span><span id="highlight-bar"></span></span>
                   <span class="sb-dd">▾</span>
                 </button>
                 <div id="highlight-palette" class="sb-hl-palette"></div>
               </span>
             </div>
-            <span class="sb-ribbon-label">색</span>
+            <span class="sb-ribbon-label">Color</span>
           </div>
         </div>
 
         <div class="sb-overflow-host">
-          <button type="button" id="btn-style-overflow" class="sb-btn sb-has-arrow" aria-controls="style-overflow-panel" aria-expanded="false" aria-label="문단 정렬 더보기" title="문단 정렬 더보기">
+          <button type="button" id="btn-style-overflow" class="sb-btn sb-has-arrow" aria-controls="style-overflow-panel" aria-expanded="false" aria-label="More Paragraph Alignment Options" title="More Paragraph Alignment Options">
             <span id="style-overflow-current-icon" class="sb-align sb-al-left sb-overflow-current-icon" aria-hidden="true"></span><span class="sb-dd" aria-hidden="true">▾</span>
           </button>
-          <div id="style-overflow-panel" class="sb-overflow-panel" role="group" aria-label="문단 정렬">
+          <div id="style-overflow-panel" class="sb-overflow-panel" role="group" aria-label="Paragraph Alignment">
             <div class="sb-command-band sb-paragraph-band">
               <div class="sb-ribbon-group sb-paragraph-ribbon-group">
                 <div class="sb-command-group sb-align-group">
                   <!-- 문단 정렬 -->
-                  <button id="btn-align-left" class="sb-btn" title="왼쪽 정렬"><span class="sb-align sb-al-left"></span></button>
-                  <button id="btn-align-center" class="sb-btn" title="가운데 정렬"><span class="sb-align sb-al-center"></span></button>
-                  <button id="btn-align-right" class="sb-btn" title="오른쪽 정렬"><span class="sb-align sb-al-right"></span></button>
-                  <button id="btn-align-justify" class="sb-btn" title="양쪽 정렬"><span class="sb-align sb-al-justify"></span></button>
-                  <button id="btn-align-distribute" class="sb-btn" title="배분 정렬"><span class="sb-align sb-al-distribute"></span></button>
-                  <button id="btn-align-split" class="sb-btn" title="나눔 정렬"><span class="sb-align sb-al-split"></span></button>
+                  <button id="btn-align-left" class="sb-btn" title="Align Left"><span class="sb-align sb-al-left"></span></button>
+                  <button id="btn-align-center" class="sb-btn" title="Center"><span class="sb-align sb-al-center"></span></button>
+                  <button id="btn-align-right" class="sb-btn" title="Align Right"><span class="sb-align sb-al-right"></span></button>
+                  <button id="btn-align-justify" class="sb-btn" title="Justify"><span class="sb-align sb-al-justify"></span></button>
+                  <button id="btn-align-distribute" class="sb-btn" title="Distributed"><span class="sb-align sb-al-distribute"></span></button>
+                  <button id="btn-align-split" class="sb-btn" title="Split"><span class="sb-align sb-al-split"></span></button>
                 </div>
-                <span class="sb-ribbon-label">문단</span>
+                <span class="sb-ribbon-label">Paragraph</span>
               </div>
             </div>
           </div>
@@ -667,35 +667,35 @@
     </header>
 
     <!-- 에디터 영역 (눈금자 포함) -->
-    <main id="editor-area" aria-label="문서 편집 영역">
+    <main id="editor-area" aria-label="Document Editing Area">
       <div id="ruler-corner"></div>
       <canvas id="h-ruler"></canvas>
       <canvas id="v-ruler"></canvas>
-      <div id="scroll-container" role="region" aria-label="문서 페이지" tabindex="0">
+      <div id="scroll-container" role="region" aria-label="Document Page" tabindex="0">
         <div id="scroll-content"></div>
       </div>
     </main>
 
     <!-- 하단 상태 바 -->
     <footer id="status-bar">
-      <button id="sb-page" class="stb-item stb-page-button" type="button" title="찾아가기 (Option+G)">1 / 1 쪽</button>
+      <button id="sb-page" class="stb-item stb-page-button" type="button" title="Go To (Option+G)">Page 1 of 1</button>
       <span class="stb-divider"></span>
-      <span id="sb-section" class="stb-item">구역: 1 / 1</span>
+      <span id="sb-section" class="stb-item">Section: 1 / 1</span>
       <span class="stb-divider"></span>
-      <span id="sb-mode" class="stb-item">삽입</span>
+      <span id="sb-mode" class="stb-item">Insert</span>
       <span id="sb-cell-selection" class="stb-item stb-cell-selection" role="status" aria-live="polite" hidden></span>
       <span id="sb-field" class="stb-item" style="display:none"></span>
       <span id="sb-message" class="stb-message"></span>
       <span class="stb-right">
-        <button id="sb-zoom-fit-width" class="stb-icon-btn" title="폭 맞춤"><span class="tb-sprite icon-zoom-fit-width"></span></button>
-        <button id="sb-zoom-fit" class="stb-icon-btn" title="쪽 맞춤"><span class="tb-sprite icon-zoom-fit"></span></button>
-        <button id="sb-zoom-out" class="stb-icon-btn" title="축소"><span class="tb-sprite icon-zoom-out"></span></button>
+        <button id="sb-zoom-fit-width" class="stb-icon-btn" title="Page Width"><span class="tb-sprite icon-zoom-fit-width"></span></button>
+        <button id="sb-zoom-fit" class="stb-icon-btn" title="One Page"><span class="tb-sprite icon-zoom-fit"></span></button>
+        <button id="sb-zoom-out" class="stb-icon-btn" title="Zoom Out"><span class="tb-sprite icon-zoom-out"></span></button>
         <span class="stb-zoom-range-wrap">
-          <input id="sb-zoom-range" class="stb-zoom-range" type="range" min="0" max="1000" step="1" value="500" aria-label="화면 확대/축소 배율" aria-valuetext="100%">
+          <input id="sb-zoom-range" class="stb-zoom-range" type="range" min="0" max="1000" step="1" value="500" aria-label="Zoom Level" aria-valuetext="100%">
           <span class="stb-zoom-neutral-mark" aria-hidden="true"></span>
         </span>
-        <button id="sb-zoom-in" class="stb-icon-btn" title="확대"><span class="tb-sprite icon-zoom-in"></span></button>
-        <button id="sb-zoom-display" class="stb-zoom-display" type="button" title="화면 확대/축소 설정">
+        <button id="sb-zoom-in" class="stb-icon-btn" title="Zoom In"><span class="tb-sprite icon-zoom-in"></span></button>
+        <button id="sb-zoom-display" class="stb-zoom-display" type="button" title="Zoom Settings">
           <svg class="stb-zoom-menu-icon" viewBox="0 0 18 18" aria-hidden="true" focusable="false">
             <circle cx="6.5" cy="6.5" r="4.5"></circle>
             <path d="M9.75 9.75 15.25 15.25"></path>

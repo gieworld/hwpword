@@ -17,7 +17,7 @@ test('편집기 셸은 제목과 header, main, footer landmark를 제공한다',
   assert.match(html, /<header id="studio-header">/);
   assert.match(html, /<h1 class="visually-hidden">rhwp-studio 문서 편집기<\/h1>/);
   assert.match(html, /<nav id="menu-bar" aria-label="주 메뉴">/);
-  assert.match(html, /<main id="editor-area" aria-label="문서 편집 영역">/);
+  assert.match(html, /<main id="editor-area" aria-label="Document Editing Area">/);
   assert.match(html, /<footer id="status-bar">/);
 });
 
@@ -25,11 +25,11 @@ test('서식 도구 모음의 폼 컨트롤은 연결된 보이는 label을 제�
   const html = source('index.html');
 
   for (const [id, label] of [
-    ['style-name', '스타일'],
-    ['font-lang', '언어'],
-    ['font-name', '글꼴'],
-    ['font-size', '크기'],
-    ['linespacing-select', '줄 간격'],
+    ['style-name', 'Style'],
+    ['font-lang', 'Script'],
+    ['font-name', 'Font'],
+    ['font-size', 'Size'],
+    ['linespacing-select', 'Line Spacing'],
   ]) {
     assert.match(
       html,
@@ -42,7 +42,7 @@ test('숨겨진 편집 입력과 글자색 입력은 접근 가능한 이름을 
   const html = source('index.html');
   const inputHandler = source('src/engine/input-handler.ts');
 
-  assert.match(html, /id="text-color-picker"[^>]*aria-label="글자 색 선택"/);
+  assert.match(html, /id="text-color-picker"[^>]*aria-label="Choose Font Color"/);
   assert.match(inputHandler, /setAttribute\('aria-label', '문서 편집 입력'\)/);
   assert.match(inputHandler, /this\.container\.closest\('main'\)/);
 });
@@ -53,7 +53,7 @@ test('문서 렌더링 이미지와 스크롤 영역은 보조 기술 및 키보
 
   assert.match(
     html,
-    /<div id="scroll-container" role="region" aria-label="문서 페이지" tabindex="0">/,
+    /<div id="scroll-container" role="region" aria-label="Document Page" tabindex="0">/,
   );
   assert.match(codeOnly(pageRenderer), /const element = new Image\(\);\s*element\.alt = '';/);
 });

@@ -121,7 +121,7 @@ function flushDeferredPaginationBeforeExplicitOutput(
   if (!inputHandler) return;
   inputHandler.flushDeferredPaginationIfNeeded(reason);
   if (inputHandler.hasDeferredPaginationPending()) {
-    throw new Error(`출력 전 페이지네이션을 완료하지 못했습니다 (${reason})`);
+    throw new Error(`Could not finish pagination before output (${reason})`);
   }
 }
 
@@ -163,12 +163,12 @@ function createSavePayload(
 function showExportContentLoss(report: ContentLossReport): void {
   const message = buildContentLossNotice(report);
   if (!message) return;
-  showToast({ message, durationMs: 0, confirmLabel: '확인' });
+  showToast({ message, durationMs: 0, confirmLabel: 'OK' });
 }
 
 function requirePasswordSaveFormat(format: SaveFormat): Exclude<SaveFormat, 'hml'> {
   if (format === 'hml') {
-    throw new Error('암호 설정 저장은 HWP 또는 HWPX 형식에서만 지원합니다.');
+    throw new Error('Saving with a password is only supported for HWP or HWPX format.');
   }
   return format;
 }
@@ -242,7 +242,7 @@ function exportHtmlBasedFile(services: CommandServices, format: HtmlExportFormat
     downloadBlob(new Blob([file.content], { type: file.mimeType }), file.fileName);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    alert(`${label} 내보내기에 실패했습니다:\n${message}`);
+    alert(`Failed to export ${label}:\n${message}`);
   }
 }
 
@@ -291,8 +291,8 @@ async function promptSaveAsOptions(
 
   if (protectedDoc && format === 'hml') {
     const confirmed = await showConfirm(
-      '보호 해제',
-      'HML 형식은 문서 암호를 지원하지 않습니다. 암호 없이 저장하면 보호가 해제됩니다. 계속할까요?',
+      'Remove Protection',
+      'HML format does not support document passwords. Saving without a password removes protection. Continue?',
     );
     if (!confirmed) return null;
     return { fileName: selection.fileName, password: null };
@@ -373,7 +373,7 @@ async function saveAsFormat(services: CommandServices, format: SaveFormat): Prom
 function reportSaveError(scope: string, error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`[${scope}] 저장 실패:`, message);
-  alert(`파일 저장에 실패했습니다:\n${message}`);
+  alert(`Could not save the file:\n${message}`);
 }
 
 export type SaveCurrentDocumentResult = 'saved' | 'cancelled' | 'failed' | 'unsupported';
@@ -481,7 +481,7 @@ export async function confirmSaveBeforeReplacingDocument(
     fileName: services.wasm.fileName,
     canSave: allowLocalSave, // full: HWPX 직접 저장 활성화로 모든 출처 저장 가능
     ...(allowLocalSave ? {} : {
-      saveUnavailableReason: '저장은 호스트 애플리케이션이 담당합니다.',
+      saveUnavailableReason: 'Saving is handled by the host application.',
     }),
   });
 
@@ -510,7 +510,7 @@ function setupPrintDocument(
   viewport.content = 'width=device-width, initial-scale=1.0';
   doc.head.append(meta, viewport);
   doc.title = previewWindow
-    ? `${fileName} — 인쇄 미리보기`
+    ? `${fileName} — Print Preview`
     : pdfPrintTitle(fileName);
   appendPrintStyle(doc, printPages);
 
@@ -533,24 +533,24 @@ function appendPrintPreviewBar(
   const bar = doc.createElement('div');
   bar.className = 'print-preview-bar';
   bar.setAttribute('role', 'toolbar');
-  bar.setAttribute('aria-label', '인쇄 미리보기 도구');
+  bar.setAttribute('aria-label', 'Print preview toolbar');
 
   const printButton = doc.createElement('button');
   printButton.id = 'print-btn';
   printButton.type = 'button';
   printButton.className = 'print-preview-primary';
-  printButton.textContent = '인쇄';
+  printButton.textContent = 'Print';
   printButton.addEventListener('click', () => printWindow.print());
 
   const closeButton = doc.createElement('button');
   closeButton.id = 'close-btn';
   closeButton.type = 'button';
-  closeButton.textContent = '닫기';
+  closeButton.textContent = 'Close';
   closeButton.addEventListener('click', () => printWindow.close());
 
   const title = doc.createElement('span');
   title.className = 'print-preview-title';
-  title.textContent = `${fileName} — ${pageCount}쪽`;
+  title.textContent = `${fileName} — ${pageCount} pages`;
 
   bar.append(printButton, closeButton, title);
   doc.body.appendChild(bar);
@@ -597,7 +597,7 @@ let printJobActive = false;
 
 function beginPrintJob(): boolean {
   if (printJobActive) {
-    showToast({ message: '인쇄 문서를 준비하고 있습니다.', durationMs: 2500 });
+    showToast({ message: 'Preparing the print document.', durationMs: 2500 });
     return false;
   }
   printJobActive = true;
@@ -654,7 +654,7 @@ async function runPdfPrint(services: CommandServices): Promise<void> {
     await waitForHostPaint();
 
     console.info(
-      `[file:print-to-pdf] 브라우저 인쇄 호출 `
+      `[file:print-to-pdf] Calling browser print `
       + `(surface=iframe, pages=${pageCount}, profile=print)`,
     );
     // Chromium/Edge는 iframe을 인쇄해도 최상위 문서 제목을 PDF 기본 파일명으로
@@ -666,11 +666,11 @@ async function runPdfPrint(services: CommandServices): Promise<void> {
     restoreStatus = false;
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[file:print-to-pdf]', msg);
-    if (statusEl) statusEl.textContent = `PDF 준비 실패: ${msg}`;
+    if (statusEl) statusEl.textContent = `PDF preparation failed: ${msg}`;
     if (dialogVisible && dialog) {
       dialog.showError(msg);
     } else {
-      showToast({ message: `PDF 준비에 실패했습니다: ${msg}`, durationMs: 5000 });
+      showToast({ message: `Failed to prepare the PDF: ${msg}`, durationMs: 5000 });
     }
   } finally {
     if (originalDocumentTitle !== null) {
@@ -718,18 +718,18 @@ async function runPrintPreview(services: CommandServices): Promise<void> {
     keepPreviewOpen = true;
 
     console.info(
-      `[file:print] 인쇄 미리보기 준비 완료 `
+      `[file:print] Print preview ready `
       + `(surface=window, pages=${pageCount}, profile=print)`,
     );
   } catch (err) {
     restoreStatus = false;
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[file:print]', msg);
-    if (statusEl) statusEl.textContent = `인쇄 미리보기 실패: ${msg}`;
+    if (statusEl) statusEl.textContent = `Print preview failed: ${msg}`;
     if (err instanceof PrintPreviewBlockedError) {
-      alert('인쇄 미리보기 팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+      alert('The print preview popup was blocked. Allow popups and try again.');
     } else {
-      showToast({ message: `인쇄 미리보기에 실패했습니다: ${msg}`, durationMs: 5000 });
+      showToast({ message: `Print preview failed: ${msg}`, durationMs: 5000 });
     }
   } finally {
     if (!keepPreviewOpen) surface?.close();
@@ -741,7 +741,7 @@ async function runPrintPreview(services: CommandServices): Promise<void> {
 export const fileCommands: CommandDef[] = [
   {
     id: 'file:new-doc',
-    label: '새로 만들기',
+    label: 'New',
     icon: 'icon-new-doc',
     shortcutLabel: 'Alt+N',
     canExecute: () => true,
@@ -751,7 +751,7 @@ export const fileCommands: CommandDef[] = [
   },
   {
     id: 'file:open',
-    label: '열기',
+    label: 'Open',
     execute: openFileViaPicker,
   },
   {
@@ -760,14 +760,14 @@ export const fileCommands: CommandDef[] = [
     // 파일 이동/삭제(getFile 실패)는 항목 제거 + 안내. 결과 규칙은
     // recent-open.ts(openRecentEntry) — 테스트 가능한 순수 로직으로 분리.
     id: 'file:open-recent',
-    label: '최근 문서 열기',
+    label: 'Open Recent Document',
     async execute(services, params) {
       const id = typeof params?.id === 'string' ? params.id : undefined;
       if (!id) return;
       const recents = await listRecentDocs();
       const entry = recents.find((r) => r.id === id);
       if (!entry) {
-        showToast({ message: '최근 문서 정보를 찾을 수 없습니다.', durationMs: 2500 });
+        showToast({ message: 'Could not find the recent document info.', durationMs: 2500 });
         return;
       }
 
@@ -785,16 +785,16 @@ export const fileCommands: CommandDef[] = [
   {
     // 최근 문서 목록 전체 삭제.
     id: 'file:clear-recent',
-    label: '최근 문서 목록 지우기',
+    label: 'Clear Recent Documents',
     async execute() {
-      if (!confirm('최근 문서 목록을 모두 지우시겠습니까?')) return;
+      if (!confirm('Clear the entire recent documents list?')) return;
       await clearRecentDocs();
-      showToast({ message: '최근 문서 목록을 지웠습니다.', durationMs: 2200 });
+      showToast({ message: 'Cleared the recent documents list.', durationMs: 2200 });
     },
   },
   {
     id: 'file:save',
-    label: '저장',
+    label: 'Save',
     icon: 'icon-save',
     shortcutLabel: 'Ctrl+S',
     canExecute: (ctx) => ctx.hasDocument,
@@ -806,7 +806,7 @@ export const fileCommands: CommandDef[] = [
     // [Task #833] 다른 이름으로 저장 — currentFileHandle 무시 + 항상 picker.
     // 출처 포맷 유지(HWPX→HWPX, HWP→HWP).
     id: 'file:save-as',
-    label: '다른 이름으로 저장',
+    label: 'Save As',
     shortcutLabel: 'Ctrl+Shift+S',
     canExecute: (ctx) => ctx.hasDocument,
     async execute(services) {
@@ -817,7 +817,7 @@ export const fileCommands: CommandDef[] = [
   {
     // [#1613] HWP 형식으로 저장 — 출처 무관 HWP 출력.
     id: 'file:save-as-hwp',
-    label: 'HWP 형식으로 저장',
+    label: 'Save as HWP',
     canExecute: (ctx) => ctx.hasDocument,
     async execute(services) {
       await saveAsFormat(services, 'hwp');
@@ -826,7 +826,7 @@ export const fileCommands: CommandDef[] = [
   {
     // [#1613] HWPX 형식으로 저장 — 출처 무관 HWPX 출력.
     id: 'file:save-as-hwpx',
-    label: 'HWPX 형식으로 저장',
+    label: 'Save as HWPX',
     canExecute: (ctx) => ctx.hasDocument,
     async execute(services) {
       await saveAsFormat(services, 'hwpx');
@@ -835,7 +835,7 @@ export const fileCommands: CommandDef[] = [
   {
     id: 'file:page-setup',
     opensDialog: true,
-    label: '편집 용지',
+    label: 'Page Setup',
     icon: 'icon-page-setup',
     shortcutLabel: 'F7',
     canExecute: (ctx) => ctx.hasDocument,
@@ -846,7 +846,7 @@ export const fileCommands: CommandDef[] = [
   },
   {
     id: 'file:print-to-pdf',
-    label: 'PDF로 저장…',
+    label: 'Save as PDF…',
     canExecute: (ctx) => ctx.hasDocument,
     async execute(services) {
       await runPdfPrint(services);
@@ -855,7 +855,7 @@ export const fileCommands: CommandDef[] = [
   {
     // 문서 전체를 selection HTML 조립 기반의 단일 HTML 파일로 내보낸다.
     id: 'file:export-html',
-    label: 'HTML로 내보내기',
+    label: 'Export as HTML',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       exportHtmlBasedFile(services, 'html');
@@ -864,7 +864,7 @@ export const fileCommands: CommandDef[] = [
   {
     // Word 가 여는 HTML 기반 .doc 문서로 내보낸다 (OOXML 아님).
     id: 'file:export-doc',
-    label: 'Word 문서(.doc)로 내보내기',
+    label: 'Export as Word Document (.doc)',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       exportHtmlBasedFile(services, 'doc');
@@ -872,7 +872,7 @@ export const fileCommands: CommandDef[] = [
   },
   {
     id: 'file:print',
-    label: '인쇄',
+    label: 'Print',
     icon: 'icon-print',
     shortcutLabel: 'Ctrl+P',
     canExecute: (ctx) => ctx.hasDocument,
@@ -883,7 +883,7 @@ export const fileCommands: CommandDef[] = [
   {
     id: 'file:about',
     opensDialog: true,
-    label: '제품 정보',
+    label: 'About HWP Word',
     icon: 'icon-help',
     execute() {
       new AboutDialog().show();

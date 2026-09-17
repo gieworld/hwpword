@@ -22,11 +22,11 @@ test('글꼴 메뉴는 문서 글꼴을 기본으로 열고 시스템 글꼴은 
 });
 
 test('한컴형 글꼴 메뉴는 범주 목록과 기존 글꼴 적용 이벤트를 함께 사용한다', () => {
-  assert.match(source, /label: '모든 글꼴'/);
-  assert.match(source, /label: '현재 글꼴'/);
-  assert.match(source, /label: '문서 글꼴'/);
-  assert.match(source, /label: '대표 글꼴'/);
-  assert.match(source, /label: '시스템 글꼴'/);
+  assert.match(source, /label: 'All Fonts'/);
+  assert.match(source, /label: 'Current Font'/);
+  assert.match(source, /label: 'Document Fonts'/);
+  assert.match(source, /label: 'Font Sets'/);
+  assert.match(source, /label: 'System Fonts'/);
   assert.match(codeOnly(source), /menu\.className = 'font-picker-menu'/);
   assert.match(source, /this\.fontName\.dispatchEvent\(new Event\('change', \{ bubbles: true \}\)\)/);
 });

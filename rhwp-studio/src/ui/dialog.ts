@@ -60,7 +60,7 @@ export abstract class ModalDialog {
 
     const confirmBtn = document.createElement('button');
     confirmBtn.className = 'dialog-btn dialog-btn-primary';
-    confirmBtn.textContent = '확인';
+    confirmBtn.textContent = 'OK';
     confirmBtn.addEventListener('click', () => {
       const shouldClose = this.onConfirm();
       if (shouldClose !== false) this.hide();
@@ -68,7 +68,7 @@ export abstract class ModalDialog {
 
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'dialog-btn';
-    cancelBtn.textContent = '취소';
+    cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', () => this.hide());
 
     footer.appendChild(confirmBtn);

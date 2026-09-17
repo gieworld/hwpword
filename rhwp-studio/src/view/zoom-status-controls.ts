@@ -77,7 +77,7 @@ export function zoomSliderPositionToPercent(
 
 /** 상태바 native tooltip용 플랫폼 단축키 문구. */
 export function zoomPercentShortcutTitle(
-  action: '확대' | '축소',
+  action: 'Zoom In' | 'Zoom Out',
   shortcut: 'Ctrl++' | 'Ctrl+-',
   platform: PlatformKind,
 ): string {

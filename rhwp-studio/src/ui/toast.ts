@@ -123,7 +123,7 @@ export function showToast(options: ToastOptions): void {
   } else {
     const closeBtn = document.createElement('button');
     closeBtn.type = 'button';
-    closeBtn.setAttribute('aria-label', '닫기');
+    closeBtn.setAttribute('aria-label', 'Close');
     closeBtn.textContent = '×';
     closeBtn.style.background = 'transparent';
     closeBtn.style.color = '#94a3b8';

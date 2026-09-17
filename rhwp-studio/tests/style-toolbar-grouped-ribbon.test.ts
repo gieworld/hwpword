@@ -35,7 +35,7 @@ test('style toolbar uses ordered field and command groups', () => {
 test('style toolbar shows its default before a document is loaded', () => {
   assert.match(
     html,
-    /<select id="style-name"[^>]*>\s*<option value="0">바탕글<\/option>\s*<\/select>/,
+    /<select id="style-name"[^>]*>\s*<option value="0">Normal<\/option>\s*<\/select>/,
   );
 });
 
@@ -45,7 +45,7 @@ test('formatting surface preserves ribbon hierarchy while captions stay visually
   assert.match(html, /class="sb-ribbon-group sb-color-ribbon-group"/);
   assert.match(html, /class="sb-ribbon-group sb-paragraph-ribbon-group"/);
 
-  for (const label of ['글꼴 및 간격', '글자 모양', '색', '문단']) {
+  for (const label of ['Font and Spacing', 'Character', 'Color', 'Paragraph']) {
     assert.match(html, new RegExp(`<span class="sb-ribbon-label">${label}<\\/span>`));
   }
 
@@ -70,7 +70,7 @@ test('paragraph commands keep one DOM authority across inline and overflow layou
   assert.doesNotMatch(buttonMarkup('btn-style-overflow'), /⋯/);
   assert.match(
     html,
-    /id="style-overflow-panel"[^>]*role="group"[^>]*aria-label="문단 정렬"/,
+    /id="style-overflow-panel"[^>]*role="group"[^>]*aria-label="Paragraph Alignment"/,
   );
   for (const id of [
     'btn-align-left',

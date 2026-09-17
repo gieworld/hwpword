@@ -28,7 +28,7 @@ export class PdfPrintDialog extends ModalDialog {
     private readonly pageCount: number,
     private readonly showGuidance = true,
   ) {
-    super('PDF로 저장', 460);
+    super('Save as PDF', 460);
   }
 
   protected createBody(): HTMLElement {
@@ -39,24 +39,24 @@ export class PdfPrintDialog extends ModalDialog {
     const summary = document.createElement('p');
     summary.className = 'dialog-pdf-summary';
     summary.textContent =
-      'rhwp는 브라우저의 인쇄 기능을 사용해 검색 가능한 PDF를 만듭니다.';
+      "HWP Word uses your browser's print feature to create a searchable PDF.";
 
     const guidance = document.createElement('div');
     guidance.className = 'dialog-pdf-guidance';
 
     const guidanceTitle = document.createElement('strong');
-    guidanceTitle.textContent = '저장 방법';
+    guidanceTitle.textContent = 'How to Save';
 
     const guidanceText = document.createElement('span');
     guidanceText.textContent =
-      `${PDF_PRINT_GUIDANCE} 브라우저에 따라 이 항목은 ‘프린터’로 표시될 수 있습니다.`;
+      `${PDF_PRINT_GUIDANCE} Depending on your browser, this option may appear as "Printer".`;
 
     guidance.append(guidanceTitle, guidanceText);
 
     const stateNote = document.createElement('p');
     stateNote.className = 'dialog-pdf-note';
     stateNote.textContent =
-      '현재 문서의 파일명, 저장 위치와 편집 상태는 변경되지 않습니다.';
+      "The current document's file name, save location, and edit state are not changed.";
 
     const preference = document.createElement('div');
     preference.className = 'dialog-pdf-preference';
@@ -68,7 +68,7 @@ export class PdfPrintDialog extends ModalDialog {
 
     const preferenceLabel = document.createElement('label');
     preferenceLabel.htmlFor = 'pdf-print-hide-guidance';
-    preferenceLabel.textContent = '다음부터 이 안내를 표시하지 않기';
+    preferenceLabel.textContent = "Don't show this guidance again";
 
     preference.append(this.hideFutureGuidanceCheck, preferenceLabel);
 
@@ -117,7 +117,7 @@ export class PdfPrintDialog extends ModalDialog {
     this.updateProgress(0);
 
     if (this.confirmButton) {
-      this.confirmButton.textContent = '준비 중…';
+      this.confirmButton.textContent = 'Preparing…';
       this.confirmButton.disabled = true;
     }
     if (this.cancelButton) this.cancelButton.disabled = true;
@@ -147,7 +147,7 @@ export class PdfPrintDialog extends ModalDialog {
       super.show();
       this.dialog.setAttribute('role', 'dialog');
       this.dialog.setAttribute('aria-modal', 'true');
-      this.dialog.setAttribute('aria-label', 'PDF로 저장');
+      this.dialog.setAttribute('aria-label', 'Save as PDF');
 
       this.confirmButton = this.dialog.querySelector('.dialog-btn-primary');
       this.cancelButton = this.dialog.querySelector(
@@ -155,7 +155,7 @@ export class PdfPrintDialog extends ModalDialog {
       );
       this.closeButton = this.dialog.querySelector('.dialog-close');
 
-      if (this.confirmButton) this.confirmButton.textContent = '인쇄 창 열기';
+      if (this.confirmButton) this.confirmButton.textContent = 'Open Print Dialog';
       if (!this.showGuidance) this.beginPreparing();
     });
   }
@@ -181,11 +181,11 @@ export class PdfPrintDialog extends ModalDialog {
     if (progress) progress.hidden = true;
 
     this.errorMessage.hidden = false;
-    this.errorMessage.textContent = `PDF 준비에 실패했습니다.\n${message}`;
+    this.errorMessage.textContent = `Failed to prepare the PDF.\n${message}`;
 
     if (this.confirmButton) this.confirmButton.hidden = true;
     if (this.cancelButton) {
-      this.cancelButton.textContent = '닫기';
+      this.cancelButton.textContent = 'Close';
       this.cancelButton.disabled = false;
       this.cancelButton.focus();
     }
