@@ -182,13 +182,13 @@ export class StyleEditDialog extends ModalDialog {
     const btnPara = document.createElement('button');
     btnPara.type = 'button';
     btnPara.className = 'se-shape-btn';
-    btnPara.textContent = 'Paragraph(T)...';
+    btnPara.textContent = 'Paragraph...';
     btnPara.addEventListener('click', () => this.openParaDialog());
 
     const btnChar = document.createElement('button');
     btnChar.type = 'button';
     btnChar.className = 'se-shape-btn';
-    btnChar.textContent = 'Character(L)...';
+    btnChar.textContent = 'Character...';
     btnChar.addEventListener('click', () => this.openCharDialog());
 
     shapeBtns.appendChild(btnPara);
@@ -361,7 +361,7 @@ export class StyleEditDialog extends ModalDialog {
     // 확인 버튼 텍스트를 모드에 맞게 변경
     const confirmBtn = this.dialog.querySelector('.dialog-btn-primary');
     if (confirmBtn) {
-      confirmBtn.textContent = this.addMode ? 'Add(D)' : 'Settings(D)';
+      confirmBtn.textContent = this.addMode ? 'Add' : 'OK';
     }
   }
 
