@@ -774,8 +774,8 @@ runTest('#4121 HF 선택 반복 페이지 scroll-in 투영', async ({ page }) =>
     `짝수 꼬리말도 구역 첫 페이지에서 대표 편집한다 (${JSON.stringify(representativeEditing)})`,
   );
   assert(
-    representativeEditing.label.includes('꼬리말 · 짝수 쪽 편집 중')
-      && representativeEditing.badge === '꼬리말(짝수 쪽)'
+    representativeEditing.label.includes('Footer · Editing Even pages')
+      && representativeEditing.badge === 'Footer(Even pages)'
       && representativeEditing.hasPreviewCanvas
       && representativeEditing.hasStrongRegion,
     `대표 편집 타겟과 영역을 텍스트·강조로 표시한다 (${JSON.stringify(representativeEditing)})`,
@@ -852,7 +852,7 @@ runTest('#4121 HF 선택 반복 페이지 scroll-in 투영', async ({ page }) =>
     afterParitySwitch.mode === 'footer'
       && afterParitySwitch.applyTo === 2
       && afterParitySwitch.page === afterParitySwitch.previewPage
-      && afterParitySwitch.label.includes('홀수 쪽 편집 중')
+      && afterParitySwitch.label.includes('Editing Odd pages')
       && afterParitySwitch.selection === null,
     `다른 홀짝 정의 클릭이 교차 선택 없이 target을 전환한다 (${JSON.stringify(afterParitySwitch)})`,
   );

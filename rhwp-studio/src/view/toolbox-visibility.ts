@@ -72,7 +72,7 @@ export function applyToolboxVisibility(dom: ToolboxDom, visibility: ToolboxVisib
       item.classList.toggle('active', visible);
       if (item.getAttribute('aria-controls') === target.elementId) {
         const action = visible ? 'Collapse' : 'Expand';
-        const label = `${target.name} ${action}`;
+        const label = `${action} ${target.name}`;
         item.setAttribute('aria-expanded', String(visible));
         item.setAttribute('aria-label', label);
         item.setAttribute('title', target.shortcut ? `${label} (${target.shortcut})` : label);

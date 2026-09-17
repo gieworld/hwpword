@@ -539,7 +539,7 @@ requireSnippet(
 );
 requireSnippet(
   canvaskitSource,
-  /prepareBundledFonts\([\s\S]*?MAX_BUNDLED_FONT_BYTES[\s\S]*?bundledTypefaceAliases\.set[\s\S]*?CanvasKit font family가 준비되지 않았습니다/,
+  /prepareBundledFonts\([\s\S]*?MAX_BUNDLED_FONT_BYTES[\s\S]*?bundledTypefaceAliases\.set[\s\S]*?CanvasKit font family is not prepared/,
   'CanvasKit should bound bundled font parsing and reject unprepared explicit families',
 );
 requireSnippet(
@@ -549,7 +549,7 @@ requireSnippet(
 );
 requireSnippet(
   canvaskitSource,
-  /requiresShapingManager[\s\S]*?OLD_HANGUL_FONT_FAMILY[\s\S]*?!prepared\.fontManager[\s\S]*?shaping font source 준비 실패/,
+  /requiresShapingManager[\s\S]*?OLD_HANGUL_FONT_FAMILY[\s\S]*?!prepared\.fontManager[\s\S]*?shaping font source preparation failed/,
   'Old-Hangul font preparation should require a shaping-capable font manager',
 );
 assert.doesNotMatch(
@@ -2617,7 +2617,7 @@ const strictMissingFontReplay = runExecutableTextReplay({
   positions: [0, 10],
   style: { fontFamily: 'Missing Family', fontSize: 20 },
 }, { requirePreparedFontFamilies: true });
-assert.match(String(strictMissingFontReplay.error), /font family가 준비되지 않았습니다/);
+assert.match(String(strictMissingFontReplay.error), /font family is not prepared/);
 assert.equal(
   strictMissingFontReplay.events.some((event) => event.type === 'paint.create'),
   false,

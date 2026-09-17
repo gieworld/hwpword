@@ -1481,7 +1481,7 @@ export function onContextMenu(this: any, e: MouseEvent): void {
         ...items,
         { type: 'separator' },
         { type: 'command', commandId: 'field:edit', label: 'Edit Click-here Field…' },
-        { type: 'command', commandId: 'field:remove', label: 'Remove Click-here Field' },
+        { type: 'command', commandId: 'field:remove', label: 'Delete Click-here Field' },
       ];
     }
   } catch { /* 무시 */ }

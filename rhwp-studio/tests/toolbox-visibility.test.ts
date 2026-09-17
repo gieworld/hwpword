@@ -84,7 +84,7 @@ test('도구 상자 설정은 루트 표시 상태와 메뉴 체크 상태를 �
   );
   assert.deepEqual(
     [button.active, button.ariaChecked, button.ariaExpanded, button.ariaLabel, button.title],
-    [false, null, 'false', 'Basic Toolbar Expand', 'Basic Toolbar Expand (Ctrl+F1)'],
+    [false, null, 'false', 'Expand Basic Toolbar', 'Expand Basic Toolbar (Ctrl+F1)'],
   );
 
   applyToolboxVisibility(dom, { basic: true, format: false });
@@ -99,7 +99,7 @@ test('도구 상자 설정은 루트 표시 상태와 메뉴 체크 상태를 �
   );
   assert.deepEqual(
     [button.active, button.ariaChecked, button.ariaExpanded, button.ariaLabel, button.title],
-    [true, null, 'true', 'Basic Toolbar Collapse', 'Basic Toolbar Collapse (Ctrl+F1)'],
+    [true, null, 'true', 'Collapse Basic Toolbar', 'Collapse Basic Toolbar (Ctrl+F1)'],
   );
 });
 

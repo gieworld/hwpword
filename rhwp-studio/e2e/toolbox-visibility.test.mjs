@@ -63,8 +63,8 @@ runTest('도구 상자 표시 상태 저장·복원', async ({ page }) => {
     `TC2: 각 표시 상태가 체크로 표시됨 (${JSON.stringify(menuShown)})`);
   const buttonExpanded = await page.evaluate(readToggleButton);
   assert(buttonExpanded.active === true && buttonExpanded.expanded === 'true'
-      && buttonExpanded.label === '기본 도구 상자 접기'
-      && buttonExpanded.title === '기본 도구 상자 접기 (Ctrl+F1)',
+      && buttonExpanded.label === 'Collapse Basic Toolbar'
+      && buttonExpanded.title === 'Collapse Basic Toolbar (Ctrl+F1)',
     `TC2: 펼친 버튼 상태와 설명이 맞음 (${JSON.stringify(buttonExpanded)})`);
 
   // ── TC3: 우측 버튼도 기존 커맨드를 실행하고 설정에 저장한다 ─
@@ -89,7 +89,7 @@ runTest('도구 상자 표시 상태 저장·복원', async ({ page }) => {
     `TC3: 버튼 토글이 rhwp-settings 에 저장됨 (${JSON.stringify(toggled.stored)})`);
   assert(toggled.bars.icon === 'none' && toggled.bars.style === 'none',
     `TC3: 버튼으로 두 도구 상자가 숨겨짐 (${JSON.stringify(toggled.bars)})`);
-  assert(toggled.button.expanded === 'false' && toggled.button.label === '기본 도구 상자 펴기',
+  assert(toggled.button.expanded === 'false' && toggled.button.label === 'Expand Basic Toolbar',
     `TC3: 접힌 버튼 상태와 설명이 맞음 (${JSON.stringify(toggled.button)})`);
 
   // ── TC4: Ctrl+F1도 같은 커맨드로 다시 편다 ─────────────────

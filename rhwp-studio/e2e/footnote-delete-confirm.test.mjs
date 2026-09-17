@@ -150,9 +150,9 @@ runTest('본문 각주 삭제 확인창/취소/Undo', async ({ page }) => {
   await page.keyboard.press('Delete');
   await page.waitForSelector('.modal-overlay .dialog-wrap', { timeout: 3000 });
   const cancelDialog = await dialogText(page);
-  assert(cancelDialog.includes('각주를 삭제하시겠습니까?'), 'Delete 경로 확인창 메시지 표시');
+  assert(cancelDialog.includes('Delete this footnote?'), 'Delete 경로 확인창 메시지 표시');
   await screenshot(page, 'footnote-delete-confirm-delete');
-  await clickDialogButton(page, '취소');
+  await clickDialogButton(page, 'Cancel');
 
   const afterCancel = await footnoteState(page);
   assert(JSON.stringify(afterCancel.markerP3) === '[7]', '취소 후 첫 번째 각주 마커 유지');
@@ -164,8 +164,8 @@ runTest('본문 각주 삭제 확인창/취소/Undo', async ({ page }) => {
   await page.keyboard.press('Backspace');
   await page.waitForSelector('.modal-overlay .dialog-wrap', { timeout: 3000 });
   const confirmDialog = await dialogText(page);
-  assert(confirmDialog.includes('각주를 삭제하시겠습니까?'), 'Backspace 경로 동일 확인창 메시지 표시');
-  await clickDialogButton(page, '확인');
+  assert(confirmDialog.includes('Delete this footnote?'), 'Backspace 경로 동일 확인창 메시지 표시');
+  await clickDialogButton(page, 'OK');
 
   const afterDelete = await footnoteState(page);
   assert(JSON.stringify(afterDelete.markerP3) === '[]', '확인 후 첫 번째 각주 마커 삭제');
