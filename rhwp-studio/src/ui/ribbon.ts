@@ -6,6 +6,22 @@ import { FILE_PAGE_COMMANDS, QUICK_ACCESS, RIBBON_TABS, type RibbonButton, type 
 const ACTIVE_TAB_KEY = 'hwpword.ribbon.tab';
 
 /**
+ * The only commands upstream actually syncs as a checked/pressed toggle onto every
+ * `[data-cmd="<id>"]` element (see syncTextMarkMenu/syncClipMenu/view:border-transparent/
+ * view:toggle-grid in command/commands/view.ts, and the form-mode toggle in main.ts).
+ * Everything else that has a `[data-cmd]` in the hidden classic menu bar (Save, Paste, Undo, ...)
+ * is a plain command, not a toggle, and must not get aria-pressed.
+ */
+const TOGGLE_COMMAND_IDS = new Set([
+  'view:para-mark',
+  'view:ctrl-mark',
+  'view:border-transparent',
+  'view:toggle-grid',
+  'view:toggle-clip',
+  'view:form-mode',
+]);
+
+/**
  * Word-style ribbon for HWP Word. Renders ribbon-data.ts, dispatches existing command IDs through the
  * shared CommandDispatcher, and mirrors enabled state the way MenuBar does.
  */
@@ -52,6 +68,9 @@ export class Ribbon {
     }
     this.selectTab(saved && this.panels.has(saved) ? saved : 'home');
     eventBus.on('command-state-changed', () => this.scheduleRefresh());
+    // Caret/selection moves (e.g. clicking into a table) don't emit command-state-changed,
+    // but they do change which commands apply — updateCaret emits this on every one of them.
+    eventBus.on('cursor-rect-updated', () => this.scheduleRefresh());
   }
 
   private renderStrip(): HTMLElement {
@@ -178,7 +197,17 @@ export class Ribbon {
     for (const el of this.buttons) {
       const inPanel = el.closest('.ribbon-panel');
       if (inPanel && inPanel !== panel) continue;
-      el.disabled = !this.dispatcher.isEnabled(el.dataset.ribbonCmd!);
+      const cmd = el.dataset.ribbonCmd!;
+      el.disabled = !this.dispatcher.isEnabled(cmd);
+      // Only real toggle commands get aria-pressed — most other commands also have a
+      // [data-cmd="<id>"] element in the hidden classic menu bar (Save, Paste, Undo, ...),
+      // but those are plain commands, not toggles, and must not claim to be pressable.
+      if (TOGGLE_COMMAND_IDS.has(cmd)) {
+        const upstream = document.querySelector(`[data-cmd="${cmd}"]`);
+        const active = upstream?.classList.contains('active') ?? false;
+        el.classList.toggle('active', active);
+        el.setAttribute('aria-pressed', String(active));
+      }
     }
   }
 

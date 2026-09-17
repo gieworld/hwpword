@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { codeOnly } from './support/source-guard.ts';
+import { codeOnly, functionBodyFrom } from './support/source-guard.ts';
 
 const rootDir = dirname(dirname(fileURLToPath(import.meta.url)));
 const source = (path: string) => readFileSync(join(rootDir, path), 'utf8');
@@ -41,6 +41,28 @@ test('ribbon buttons act on mousedown so the editor keeps its text selection', (
 
 test('the desktop app skips the first-run skin prompt, which would fight the Word look', () => {
   assert.match(codeOnly(source('src/main.ts')), /if \(!isHwpWordDesktop\(\)\) maybeShowSkinOnboarding\(\);/);
+});
+
+test('the ribbon refreshes button state on caret/selection moves, not just command-state-changed', () => {
+  const ribbon = codeOnly(source('src/ui/ribbon.ts'));
+  assert.match(ribbon, /eventBus\.on\('command-state-changed', \(\) => this\.scheduleRefresh\(\)\);/);
+  assert.match(ribbon, /eventBus\.on\('cursor-rect-updated', \(\) => this\.scheduleRefresh\(\)\);/);
+});
+
+test('refreshStates mirrors upstream [data-cmd].active onto the ribbon button, only for real toggle commands', () => {
+  const ribbon = codeOnly(source('src/ui/ribbon.ts'));
+  // Most commands (Save, Paste, Undo, ...) also have a [data-cmd] element in the hidden classic
+  // menu bar, but only these six are ever synced as a checked/pressed toggle upstream — everything
+  // else must not get aria-pressed (a screen reader would otherwise call plain buttons "pressed").
+  assert.match(
+    ribbon,
+    /TOGGLE_COMMAND_IDS = new Set\(\[\s*'view:para-mark',\s*'view:ctrl-mark',\s*'view:border-transparent',\s*'view:toggle-grid',\s*'view:toggle-clip',\s*'view:form-mode',\s*\]\);/,
+  );
+  const body = functionBodyFrom(ribbon, 'private refreshStates(): void');
+  assert.match(body, /if \(TOGGLE_COMMAND_IDS\.has\(cmd\)\) \{/);
+  assert.match(body, /document\.querySelector\(`\[data-cmd="\$\{cmd\}"\]`\)/);
+  assert.match(body, /classList\.toggle\('active', active\)/);
+  assert.match(body, /setAttribute\('aria-pressed', String\(active\)\)/);
 });
 
 test('recent documents on the File page open with the keyboard too', () => {

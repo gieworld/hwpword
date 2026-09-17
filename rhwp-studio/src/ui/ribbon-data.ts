@@ -83,7 +83,7 @@ export const RIBBON_TABS: readonly RibbonTab[] = [
           { cmd: 'format:level-decrease', label: 'Decrease Level', glyph: '⇥' },
           { cmd: 'format:line-spacing-increase', label: 'More Line Spacing', glyph: '↕+' },
           { cmd: 'format:line-spacing-decrease', label: 'Less Line Spacing', glyph: '↕−' },
-          { cmd: 'view:para-mark', label: 'Show Marks', icon: 'icon-para-mark' },
+          { cmd: 'view:para-mark', label: 'Paragraph Marks', icon: 'icon-para-mark' },
         ],
       },
       {

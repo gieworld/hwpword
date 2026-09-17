@@ -171,6 +171,13 @@
   opacity: 0.4;
 }
 
+/* Toggle commands (Paragraph Marks, Control Codes, Grid, ...) mirrored from upstream's
+   [data-cmd="<id>"].active — see Ribbon.refreshStates(). */
+.ribbon-btn.active {
+  background: var(--ui-selected);
+  border-color: var(--hwpword-accent);
+}
+
 .ribbon-btn-large {
   grid-row: span 3;
   flex-direction: column;
