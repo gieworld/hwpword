@@ -226,7 +226,7 @@ export class TableCellPropsDialog extends ModalDialog {
     // 셀 크기
     const sizeSection = this.createSection('Cell Size');
     const sizeCheck = this.row();
-    this.cellApplySizeCheck = this.checkbox('Apply Cell Size');
+    this.cellApplySizeCheck = this.checkbox('Apply cell size');
     sizeCheck.appendChild(this.cellApplySizeCheck.parentElement!);
     sizeSection.appendChild(sizeCheck);
 
@@ -246,7 +246,7 @@ export class TableCellPropsDialog extends ModalDialog {
     // 안 여백
     const padSection = this.createSection('Inner Margin');
     const padCheck = this.row();
-    this.cellPaddingCheck = this.checkbox('Set Inner Margin');
+    this.cellPaddingCheck = this.checkbox('Set inner margin');
     padCheck.appendChild(this.cellPaddingCheck.parentElement!);
     padSection.appendChild(padCheck);
 
@@ -272,7 +272,7 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 세로 정렬
     const valignRow = this.row();
-    valignRow.appendChild(this.label('Vertical Alignment'));
+    valignRow.appendChild(this.label('Vertical alignment'));
     const valignGroup = document.createElement('div');
     valignGroup.className = 'dialog-btn-group';
     this.cellVAlignBtns = ['Top', 'Center', 'Bottom'].map((text, i) => {
@@ -288,7 +288,7 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 세로쓰기
     const tdirRow = this.row();
-    tdirRow.appendChild(this.label('Vertical Text'));
+    tdirRow.appendChild(this.label('Vertical text'));
     const tdirGroup = document.createElement('div');
     tdirGroup.className = 'dialog-btn-group';
     this.cellTextDirBtns = ['Horizontal Text', 'Vertical Text'].map((text, i) => {
@@ -329,14 +329,14 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 체크박스 옵션들
     const optRow1 = this.row();
-    this.cellSingleLineCheck = this.checkbox('Single-Line Input(S)');
+    this.cellSingleLineCheck = this.checkbox('Single-line input(S)');
     optRow1.appendChild(this.cellSingleLineCheck.parentElement!);
-    this.cellProtectCheck = this.checkbox('Protect Cell');
+    this.cellProtectCheck = this.checkbox('Protect cell');
     optRow1.appendChild(this.cellProtectCheck.parentElement!);
     attrSection.appendChild(optRow1);
 
     const optRow2 = this.row();
-    this.cellHeaderCheck = this.checkbox('Header Cell');
+    this.cellHeaderCheck = this.checkbox('Header cell');
     optRow2.appendChild(this.cellHeaderCheck.parentElement!);
     attrSection.appendChild(optRow2);
 
@@ -345,7 +345,7 @@ export class TableCellPropsDialog extends ModalDialog {
     // 필드
     const fieldSection = this.createSection('Field');
     const fieldRow = this.row();
-    fieldRow.appendChild(this.label('Field Name'));
+    fieldRow.appendChild(this.label('Field name'));
     this.cellFieldNameInput = document.createElement('input');
     this.cellFieldNameInput.type = 'text';
     this.cellFieldNameInput.className = 'dialog-text-input';
@@ -353,7 +353,7 @@ export class TableCellPropsDialog extends ModalDialog {
     fieldSection.appendChild(fieldRow);
 
     const fieldRow2 = this.row();
-    this.cellEditableCheck = this.checkbox('Editable in Form Mode');
+    this.cellEditableCheck = this.checkbox('Editable in form mode');
     fieldRow2.appendChild(this.cellEditableCheck.parentElement!);
     fieldSection.appendChild(fieldRow2);
 
@@ -372,7 +372,7 @@ export class TableCellPropsDialog extends ModalDialog {
     const pageSection = this.createSection('Multiple Page Support');
 
     const pbRow = this.row();
-    pbRow.appendChild(this.label('At Page Boundary(Q)'));
+    pbRow.appendChild(this.label('At page boundary(Q)'));
     this.tablePageBreakSelect = this.selectOptions([
       ['2', 'Split'], ['1', 'Split by Cell'], ['0', 'Do Not Split'],
     ]);
@@ -380,13 +380,13 @@ export class TableCellPropsDialog extends ModalDialog {
     pageSection.appendChild(pbRow);
 
     const rhRow = this.row();
-    this.tableRepeatHeaderCheck = this.checkbox('Repeat Header Row');
+    this.tableRepeatHeaderCheck = this.checkbox('Repeat header row');
     rhRow.appendChild(this.tableRepeatHeaderCheck.parentElement!);
     pageSection.appendChild(rhRow);
 
     // 자동으로 나뉜 표의 경계선 설정
     const abRow = this.row();
-    this.tableAutoBorderCheck = this.checkbox('Set Border for Split Table(J)');
+    this.tableAutoBorderCheck = this.checkbox('Set border for split table(J)');
     abRow.appendChild(this.tableAutoBorderCheck.parentElement!);
     pageSection.appendChild(abRow);
 
@@ -482,7 +482,7 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 글자처럼 취급 체크박스
     const tacRow = this.row();
-    this.treatAsCharCheck = this.checkbox('Treat as Character');
+    this.treatAsCharCheck = this.checkbox('Treat as character');
     tacRow.appendChild(this.treatAsCharCheck.parentElement!);
     posSection.appendChild(tacRow);
     this.treatAsCharCheck.addEventListener('change', () => this.updatePositionVisibility());
@@ -493,7 +493,7 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 본문과의 배치 (버튼 4개)
     const wrapRow = this.row();
-    wrapRow.appendChild(this.label('Text Wrapping'));
+    wrapRow.appendChild(this.label('Text wrapping'));
     const wrapGroup = document.createElement('div');
     wrapGroup.className = 'dialog-btn-group';
     this.wrapBtns = [];
@@ -550,14 +550,14 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 체크박스 옵션들
     const optRow = this.row();
-    this.restrictInPageCheck = this.checkbox('Restrict to Page Area');
+    this.restrictInPageCheck = this.checkbox('Restrict to page area');
     optRow.appendChild(this.restrictInPageCheck.parentElement!);
-    this.allowOverlapCheck = this.checkbox('Allow Overlap');
+    this.allowOverlapCheck = this.checkbox('Allow overlap');
     optRow.appendChild(this.allowOverlapCheck.parentElement!);
     this.posGroup.appendChild(optRow);
 
     const anchorRow = this.row();
-    this.keepWithAnchorCheck = this.checkbox('Keep Object and Anchor on the Same Page');
+    this.keepWithAnchorCheck = this.checkbox('Keep object and anchor on the same page');
     anchorRow.appendChild(this.keepWithAnchorCheck.parentElement!);
     this.posGroup.appendChild(anchorRow);
 
@@ -567,7 +567,7 @@ export class TableCellPropsDialog extends ModalDialog {
     // ── 개체 회전 ──
     const rotSection = this.createSection('Rotation');
     const rotRow = this.row();
-    rotRow.appendChild(this.label('Rotation Angle'));
+    rotRow.appendChild(this.label('Rotation angle'));
     const rotInput = this.numberInput();
     rotInput.disabled = true;
     rotInput.value = '0';
@@ -597,7 +597,7 @@ export class TableCellPropsDialog extends ModalDialog {
     // ── 기타 ──
     const etcSection = this.createSection('Other');
     const etcRow = this.row();
-    etcRow.appendChild(this.label('Number Type'));
+    etcRow.appendChild(this.label('Number type'));
     const numSelect = this.selectOptions([['Table', 'Table']]);
     numSelect.disabled = true;
     etcRow.appendChild(numSelect);
@@ -738,14 +738,14 @@ export class TableCellPropsDialog extends ModalDialog {
     this.captionFieldsWrap.appendChild(capGapRow);
 
     const capSizeRow = this.row();
-    capSizeRow.appendChild(this.label('Caption Size(S)'));
+    capSizeRow.appendChild(this.label('Caption size(S)'));
     this.captionWidthInput = this.numberInput();
     capSizeRow.appendChild(this.captionWidthInput);
     capSizeRow.appendChild(this.unit('mm'));
     this.captionFieldsWrap.appendChild(capSizeRow);
 
     const capExpandRow = this.row();
-    this.captionExpandCheck = this.checkbox('Expand Width to Margin(W)');
+    this.captionExpandCheck = this.checkbox('Expand width to margin(W)');
     capExpandRow.appendChild(this.captionExpandCheck.parentElement!);
     this.captionFieldsWrap.appendChild(capExpandRow);
 
@@ -914,7 +914,7 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 선 모양 바로 적용
     const immediateRow = this.row();
-    this.borderApplyImmediateCheck = this.checkbox('Apply Line Style Immediately(I)');
+    this.borderApplyImmediateCheck = this.checkbox('Apply line style immediately(I)');
     immediateRow.appendChild(this.borderApplyImmediateCheck.parentElement!);
     previewSection.appendChild(immediateRow);
 
@@ -938,7 +938,7 @@ export class TableCellPropsDialog extends ModalDialog {
     // ── 자동 나뉜 표 경계선 설정 ──
     const abSection = this.createSection('Auto Border');
     const abRow = this.row();
-    this.borderAutoBorderCheck = this.checkbox('Set Border for Split Table(J)');
+    this.borderAutoBorderCheck = this.checkbox('Set border for split table(J)');
     abRow.appendChild(this.borderAutoBorderCheck.parentElement!);
     abSection.appendChild(abRow);
 
@@ -1115,7 +1115,7 @@ export class TableCellPropsDialog extends ModalDialog {
     this.bgNoneRadio.checked = true;
     this.bgNoneRadio.addEventListener('change', () => this.updateBgPreview());
     noneRow.appendChild(this.bgNoneRadio);
-    noneRow.appendChild(document.createTextNode(' No Fill'));
+    noneRow.appendChild(document.createTextNode(' No fill'));
     fillSection.appendChild(noneRow);
 
     const colorRow = this.row();
@@ -1132,7 +1132,7 @@ export class TableCellPropsDialog extends ModalDialog {
     colorFields.style.marginLeft = '20px';
 
     const faceRow = this.row();
-    faceRow.appendChild(this.label('Fill Color(C)'));
+    faceRow.appendChild(this.label('Fill color(C)'));
     this.bgColorPicker = document.createElement('input');
     this.bgColorPicker.type = 'color';
     this.bgColorPicker.value = '#ffffff';
@@ -1146,7 +1146,7 @@ export class TableCellPropsDialog extends ModalDialog {
     colorFields.appendChild(faceRow);
 
     const patColorRow = this.row();
-    patColorRow.appendChild(this.label('Pattern Color(K)'));
+    patColorRow.appendChild(this.label('Pattern color(K)'));
     this.bgPatternColorPicker = document.createElement('input');
     this.bgPatternColorPicker.type = 'color';
     this.bgPatternColorPicker.value = '#000000';
@@ -1160,7 +1160,7 @@ export class TableCellPropsDialog extends ModalDialog {
     colorFields.appendChild(patColorRow);
 
     const patTypeRow = this.row();
-    patTypeRow.appendChild(this.label('Pattern Shape(L)'));
+    patTypeRow.appendChild(this.label('Pattern shape(L)'));
     this.bgPatternTypeSelect = this.selectOptions([
       ['0', 'None'], ['1', 'Horizontal Lines'], ['2', 'Vertical Lines'], ['3', 'Backslash'],
       ['4', 'Slash'], ['5', 'Cross'], ['6', 'X'],
@@ -1202,7 +1202,7 @@ export class TableCellPropsDialog extends ModalDialog {
     const imgSection = this.createSection('Picture');
     imgSection.classList.add('disabled');
     const imgRow = this.row();
-    imgRow.appendChild(this.label('Picture File'));
+    imgRow.appendChild(this.label('Picture file'));
     const imgBtn = document.createElement('button');
     imgBtn.type = 'button';
     imgBtn.className = 'dialog-btn';

@@ -284,8 +284,8 @@ export class TableCreateDialog {
 
     // 줄/칸 섹션
     const sec1 = createSection('Rows/Columns');
-    const rowInput = createSpinnerRow(sec1, 'Number of Rows', 4, 1, 256);
-    const colInput = createSpinnerRow(sec1, 'Number of Columns', 5, 1, 256);
+    const rowInput = createSpinnerRow(sec1, 'Number of rows', 4, 1, 256);
+    const colInput = createSpinnerRow(sec1, 'Number of columns', 5, 1, 256);
     form.appendChild(sec1);
 
     // 크기 지정 섹션
@@ -351,7 +351,7 @@ export class TableCreateDialog {
     treatChk.checked = false;
     const treatLbl = document.createElement('label');
     treatLbl.htmlFor = 'tc-treat-as-char';
-    treatLbl.textContent = ' Treat as Character';
+    treatLbl.textContent = ' Treat as character';
     treatLbl.style.fontSize = '12px';
     treatRow.appendChild(treatChk);
     treatRow.appendChild(treatLbl);

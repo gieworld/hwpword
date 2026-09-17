@@ -189,7 +189,7 @@ export class PageSetupDialog extends ModalDialog {
 
     // ── 적용 범위 ──
     const scopeRow = this.row();
-    scopeRow.appendChild(this.label('Apply To'));
+    scopeRow.appendChild(this.label('Apply to'));
     this.scopeSelect = document.createElement('select');
     this.scopeSelect.className = 'dialog-select';
     this.scopeSelect.style.width = '120px';

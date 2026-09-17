@@ -54,7 +54,7 @@ export class GotoDialog extends ModalDialog {
     const row = document.createElement('div');
     row.className = 'dialog-row';
     const label = document.createElement('label');
-    label.textContent = 'Page Number:';
+    label.textContent = 'Page number:';
     label.style.width = '60px';
     this.pageInput = document.createElement('input');
     this.pageInput.type = 'number';

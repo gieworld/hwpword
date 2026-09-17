@@ -413,7 +413,7 @@ runTest('편집 undo 계약 실동작 (Task #2301)', async ({ page }) => {
   const tblDepth0 = await undoDepth(page);
 
   await openObjectPropsDialog(page);
-  await toggleDialogCheckbox(page, 'Restrict to Page Area');
+  await toggleDialogCheckbox(page, 'Restrict to page area');
   await clickPrimary(page);
 
   const tblAfter = await getTbl();

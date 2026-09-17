@@ -191,7 +191,7 @@ export class FindDialog {
     this.caseSensitiveCheck.id = 'find-case-sensitive';
     const caseLabel = document.createElement('label');
     caseLabel.htmlFor = 'find-case-sensitive';
-    caseLabel.textContent = ' Match Case';
+    caseLabel.textContent = ' Match case';
     optRow.appendChild(this.caseSensitiveCheck);
     optRow.appendChild(caseLabel);
 
