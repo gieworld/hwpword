@@ -5276,7 +5276,8 @@ export class InputHandler {
     // paste() asks the main process for an OS-level paste, which fires the same 'paste' DOM
     // event on the focused textarea (handled by onPaste below) as Ctrl+V does.
     if (isHwpWordDesktop()) {
-      void (window as unknown as DesktopWindowLike).hwpwordDesktop?.paste().catch(() => {});
+      void (window as unknown as DesktopWindowLike).hwpwordDesktop?.paste()
+        .catch((error) => console.warn('[hwpword] paste failed', error));
       return true;
     }
     return document.execCommand('paste');

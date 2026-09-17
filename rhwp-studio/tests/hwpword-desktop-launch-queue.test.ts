@@ -174,3 +174,9 @@ test('performPaste routes through the desktop bridge instead of execCommand, whi
   assert.match(body, /\.hwpwordDesktop\?\.paste\(\)/);
   assert.match(body, /return document\.execCommand\('paste'\);/);
 });
+
+test('performPaste logs a paste IPC failure instead of swallowing it silently', () => {
+  const inputHandlerTs = codeOnly(readFileSync(new URL('../src/engine/input-handler.ts', import.meta.url), 'utf8'));
+  const body = functionBodyFrom(inputHandlerTs, 'performPaste(): boolean');
+  assert.match(body, /\.catch\(\(error\) => console\.warn\('\[hwpword\] paste failed', error\)\)/);
+});

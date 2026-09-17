@@ -88,16 +88,22 @@ function createWindow(launchPaths = []) {
   win.webContents.on('render-process-gone', (_event, details) => {
     if (details.reason === 'clean-exit') return;
     console.error(`[hwpword] renderer gone (reason=${details.reason}) for window ${win.id}`);
+    // A crashed renderer can leave the window hidden (e.g. it died before 'ready-to-show'),
+    // in which case a message box parented to it never appears.
+    if (!win.isDestroyed() && !win.isVisible()) win.show();
     void dialog.showMessageBox(win, {
       type: 'warning',
       title: 'HWP Word',
       message: 'This window stopped working.',
-      detail: `Reason: ${details.reason}. Changes since the last autosave may be lost.`,
+      detail: `Reason: ${details.reason}. Unsaved changes in this window may be lost.`,
       buttons: ['Reload', 'Close'],
       defaultId: 0,
       cancelId: 1,
       noLink: true,
     }).then(({ response }) => {
+      // The user (or another crash handler) may have already closed this window while the
+      // dialog was up; reload()/destroy() on a destroyed BrowserWindow throws.
+      if (win.isDestroyed()) return;
       if (response === 0) {
         // Launch tokens are keyed by webContents id, which reload() keeps, so the re-delivered
         // launch files still resolve.
