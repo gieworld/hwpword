@@ -87,10 +87,13 @@ function createWindow(launchPaths = []) {
   // 'clean-exit' also fires for a normal quit/destroy, which needs no recovery dialog.
   win.webContents.on('render-process-gone', (_event, details) => {
     if (details.reason === 'clean-exit') return;
+    // The window can already be gone (it was closed as the renderer died); every call below,
+    // win.id included, throws on a destroyed BrowserWindow.
+    if (win.isDestroyed()) return;
     console.error(`[hwpword] renderer gone (reason=${details.reason}) for window ${win.id}`);
     // A crashed renderer can leave the window hidden (e.g. it died before 'ready-to-show'),
     // in which case a message box parented to it never appears.
-    if (!win.isDestroyed() && !win.isVisible()) win.show();
+    if (!win.isVisible()) win.show();
     void dialog.showMessageBox(win, {
       type: 'warning',
       title: 'HWP Word',

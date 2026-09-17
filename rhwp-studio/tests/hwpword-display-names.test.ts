@@ -26,6 +26,19 @@ test('built-in style names get English names, others are romanized', () => {
   assert.equal(styleDisplayName('Heading 1'), 'Heading 1');
 });
 
+test('a decomposed (NFD) name still hits the table and still romanizes', () => {
+  assert.equal(fontDisplayName('함초롬바탕'.normalize('NFD')), 'HCR Batang');
+  assert.equal(fontDisplayName('문화쓰기'.normalize('NFD')), 'Munhwasseugi');
+  assert.equal(styleDisplayName('바탕글'.normalize('NFD')), 'Normal');
+});
+
+test('an Object.prototype key is not mistaken for a known name', () => {
+  for (const key of ['constructor', 'toString', 'hasOwnProperty', '__proto__']) {
+    assert.equal(fontDisplayName(key), key);
+    assert.equal(styleDisplayName(key), key);
+  }
+});
+
 test('display names never contain Hangul', () => {
   for (const name of ['함초롬돋움', '새굴림', '양재튼튼체B', '가나다 라마', 'ㄱㄴㄷ']) {
     assert.doesNotMatch(fontDisplayName(name), /[\u1100-\u11FF\u3130-\u318F\uAC00-\uD7AF]/, name);

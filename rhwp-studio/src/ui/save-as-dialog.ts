@@ -75,7 +75,7 @@ class SaveAsDialog extends ModalDialog {
       const passwordButton = document.createElement('button');
       passwordButton.type = 'button';
       passwordButton.className = 'dialog-btn';
-      passwordButton.textContent = 'Set Password...';
+      passwordButton.textContent = 'Set Password…';
       passwordButton.style.marginTop = '12px';
       passwordButton.addEventListener('click', () => {
         const value = this.confirmValue();

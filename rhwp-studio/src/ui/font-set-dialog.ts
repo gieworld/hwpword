@@ -200,7 +200,7 @@ export class FontSetDialog extends ModalDialog {
     const fs = customs[this.selectedIndex];
     if (!fs) return;
 
-    if (confirm(`Delete the selected representative font "${fs.name}"?`)) {
+    if (confirm(`Delete the selected representative font "${fontDisplayName(fs.name)}"?`)) {
       userSettings.removeFontSet(this.selectedIndex);
       this.refreshList();
     }

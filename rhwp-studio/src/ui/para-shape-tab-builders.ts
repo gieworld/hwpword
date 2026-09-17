@@ -270,7 +270,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   defaultTabLabel.textContent = '40.0 pt';
   const changeBtn = document.createElement('button');
   changeBtn.className = 'dialog-btn';
-  changeBtn.textContent = 'Change...';
+  changeBtn.textContent = 'Change…';
   changeBtn.disabled = true;
   defaultRow.appendChild(defaultLabel);
   defaultRow.appendChild(defaultTabLabel);

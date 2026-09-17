@@ -1206,7 +1206,7 @@ export class TableCellPropsDialog extends ModalDialog {
     const imgBtn = document.createElement('button');
     imgBtn.type = 'button';
     imgBtn.className = 'dialog-btn';
-    imgBtn.textContent = 'Open...';
+    imgBtn.textContent = 'Open…';
     imgBtn.disabled = true;
     imgRow.appendChild(imgBtn);
     imgSection.appendChild(imgRow);

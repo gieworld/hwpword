@@ -735,12 +735,9 @@ function buildGranularControlDiffs(
   if (l.type === 'table' && r.type === 'table') {
     // (없음) below is the "no value" sentinel parsed back out of the persisted .summary field (see
     // buildTableSummary) — every comparison/fallback against it must keep matching that exact string.
-    const hasCellText =
-      (lk.cprev && lk.cprev !== '(없음)') || // hwpword-keep-korean
-      (rk.cprev && rk.cprev !== '(없음)') || // hwpword-keep-korean
-      (lk.tprev && lk.tprev !== '(없음)') || // hwpword-keep-korean
-      (rk.tprev && rk.tprev !== '(없음)'); // hwpword-keep-korean
-    const tableLabel = hasCellText ? 'Table' : 'Table'; // 표/테이블 both mean "table"; merged into one English label
+    // Upstream picked 표/테이블 by whether the table had cell text; both mean "table", so the
+    // English label is the same either way.
+    const tableLabel = 'Table';
     const rowsColsChanged = (lk.r ?? '') !== (rk.r ?? '') || (lk.c ?? '') !== (rk.c ?? '');
     push('rows-cols', `${tableLabel} rows/columns changed`, `r=${lk.r ?? '(없음)'} c=${lk.c ?? '(없음)'}`, `r=${rk.r ?? '(없음)'} c=${rk.c ?? '(없음)'}`); // hwpword-keep-korean
     push('size', `${tableLabel} size changed`, `box=${lk.box ?? '(없음)'}`, `box=${rk.box ?? '(없음)'}`); // hwpword-keep-korean

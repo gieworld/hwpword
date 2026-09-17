@@ -386,7 +386,7 @@ export class Toolbar {
       this.highlightDropdown.classList.remove('open');
     });
     const btnOther = document.createElement('button');
-    btnOther.textContent = 'Other Color...';
+    btnOther.textContent = 'Other Color…';
     const hiddenPicker = document.createElement('input');
     hiddenPicker.type = 'color';
     hiddenPicker.value = this.highlightColor;

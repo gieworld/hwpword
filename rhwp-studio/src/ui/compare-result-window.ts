@@ -321,7 +321,9 @@ export class CompareResultWindow {
     push('Layout', kv.wrap);
     push('Anchor', kv.rel);
 
-    if (lines.length === 0) return raw;
+    // Not `raw`: a legacy history snapshot's summary can carry the engine's Korean "no value"
+    // sentinel, and nothing downstream translates it.
+    if (lines.length === 0) return '(none)';
     return lines.join('\n');
   }
 

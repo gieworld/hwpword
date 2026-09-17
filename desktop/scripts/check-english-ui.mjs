@@ -12,7 +12,7 @@ import { spawn, execFileSync } from 'node:child_process';
 import { createServer } from 'node:net';
 import { existsSync, readdirSync, mkdtempSync, copyFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -74,7 +74,7 @@ function getFreePort() {
 }
 
 function resolveSampleDoc(argPath) {
-  if (argPath) return join(process.cwd(), argPath);
+  if (argPath) return resolve(process.cwd(), argPath); // resolve(), not join(): an absolute path must stay itself
   const defaultPath = join(repoRoot, 'corpus', 'spike', 'launch-test.hwp');
   if (existsSync(defaultPath)) return defaultPath;
   const samplesDir = join(repoRoot, 'samples');
@@ -365,6 +365,7 @@ async function main() {
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--exe') {
       exePath = argv[++i];
+      if (!exePath) throw new Error('--exe needs a path to HWP Word.exe');
     } else if (!argv[i].startsWith('--')) {
       samplePathArg = argv[i];
     }

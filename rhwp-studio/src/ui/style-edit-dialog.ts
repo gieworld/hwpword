@@ -183,13 +183,13 @@ export class StyleEditDialog extends ModalDialog {
     const btnPara = document.createElement('button');
     btnPara.type = 'button';
     btnPara.className = 'se-shape-btn';
-    btnPara.textContent = 'Paragraph...';
+    btnPara.textContent = 'Paragraph…';
     btnPara.addEventListener('click', () => this.openParaDialog());
 
     const btnChar = document.createElement('button');
     btnChar.type = 'button';
     btnChar.className = 'se-shape-btn';
-    btnChar.textContent = 'Character...';
+    btnChar.textContent = 'Character…';
     btnChar.addEventListener('click', () => this.openCharDialog());
 
     shapeBtns.appendChild(btnPara);

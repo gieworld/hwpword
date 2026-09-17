@@ -1138,7 +1138,7 @@ export class PicturePropsDialog {
     iRow1.appendChild(this.imageFileInput);
     const browseBtn = document.createElement('button');
     browseBtn.className = 'dialog-btn';
-    browseBtn.textContent = '...';
+    browseBtn.textContent = '…';
     browseBtn.disabled = true;
     iRow1.appendChild(browseBtn);
     const embedLabel = this.checkboxLabel('Embed in document');
