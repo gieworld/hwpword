@@ -31,6 +31,7 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
 - Run built app: `npm --prefix desktop start`
 - Dev loop: `npm --prefix rhwp-studio run dev` in one terminal, `npm --prefix desktop run dev` in another
 - Corpus round-trip check: `npm --prefix desktop run corpus` → `corpus/report-corpus.md`
+- Visible-UI English check: `npm --prefix desktop run check:english` (needs `build:studio` first; launches the app over CDP and scans chrome/dialogs/menus for Hangul)
 - Installer: `npm --prefix desktop run dist` → `desktop/dist/`
 
 ## Rules
@@ -46,4 +47,4 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
    the before-report (the next run overwrites it), then `git merge vX.Y.Z`.
 3. On conflicts in `.claude/`, `.mcp.json`, `AGENTS.md` or `CLAUDE.md`, keep ours (`git rm` the upstream copy / `git checkout --ours CLAUDE.md`).
 4. Set `@rhwp/core` to `X.Y.Z` in `desktop/package.json`, then `npm --prefix desktop install` and `npm --prefix desktop run build:studio`.
-5. Run both test suites and the corpus check; compare the reports.
+5. Run both test suites, the corpus check, and `npm --prefix desktop run check:english`; compare the reports.
