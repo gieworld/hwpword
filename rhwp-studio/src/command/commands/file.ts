@@ -62,6 +62,7 @@ import {
 import { openDocumentViaPicker } from '../file-open-picker';
 import { PdfPrintDialog } from '@/ui/pdf-print-dialog';
 import { userSettings } from '@/core/user-settings';
+import { toEnglishMessage } from '@/core/engine-messages';
 import { showToast } from '@/ui/toast';
 import { addRecentDoc, clearRecentDocs, listRecentDocs, removeRecentDoc } from '@/recent/recent-store';
 import { openRecentEntry } from '@/recent/recent-open';
@@ -242,7 +243,7 @@ function exportHtmlBasedFile(services: CommandServices, format: HtmlExportFormat
     downloadBlob(new Blob([file.content], { type: file.mimeType }), file.fileName);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    alert(`Failed to export ${label}:\n${message}`);
+    alert(`Failed to export ${label}:\n${toEnglishMessage(message)}`);
   }
 }
 
@@ -373,7 +374,7 @@ async function saveAsFormat(services: CommandServices, format: SaveFormat): Prom
 function reportSaveError(scope: string, error: unknown): void {
   const message = error instanceof Error ? error.message : String(error);
   console.error(`[${scope}] 저장 실패:`, message);
-  alert(`Could not save the file:\n${message}`);
+  alert(`Could not save the file:\n${toEnglishMessage(message)}`);
 }
 
 export type SaveCurrentDocumentResult = 'saved' | 'cancelled' | 'failed' | 'unsupported';
@@ -666,11 +667,12 @@ async function runPdfPrint(services: CommandServices): Promise<void> {
     restoreStatus = false;
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[file:print-to-pdf]', msg);
-    if (statusEl) statusEl.textContent = `PDF preparation failed: ${msg}`;
+    const msgEn = toEnglishMessage(msg);
+    if (statusEl) statusEl.textContent = `PDF preparation failed: ${msgEn}`;
     if (dialogVisible && dialog) {
-      dialog.showError(msg);
+      dialog.showError(msgEn);
     } else {
-      showToast({ message: `Failed to prepare the PDF: ${msg}`, durationMs: 5000 });
+      showToast({ message: `Failed to prepare the PDF: ${msgEn}`, durationMs: 5000 });
     }
   } finally {
     if (originalDocumentTitle !== null) {
@@ -725,11 +727,12 @@ async function runPrintPreview(services: CommandServices): Promise<void> {
     restoreStatus = false;
     const msg = err instanceof Error ? err.message : String(err);
     console.error('[file:print]', msg);
-    if (statusEl) statusEl.textContent = `Print preview failed: ${msg}`;
+    const msgEn = toEnglishMessage(msg);
+    if (statusEl) statusEl.textContent = `Print preview failed: ${msgEn}`;
     if (err instanceof PrintPreviewBlockedError) {
       alert('The print preview popup was blocked. Allow popups and try again.');
     } else {
-      showToast({ message: `Print preview failed: ${msg}`, durationMs: 5000 });
+      showToast({ message: `Print preview failed: ${msgEn}`, durationMs: 5000 });
     }
   } finally {
     if (!keepPreviewOpen) surface?.close();

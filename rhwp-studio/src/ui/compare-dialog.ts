@@ -1,6 +1,7 @@
 import type { CommandServices } from '@/command/types';
 import { formatDiffLocationCombined } from '@/compare/diff-location-label';
 import { compareDocuments } from '@/compare/diff-engine';
+import { toEnglishMessage } from '@/core/engine-messages';
 import type { CompareSessionStore } from '@/compare/session';
 import type { CompareOptions, DiffItem, DiffKind } from '@/compare/types';
 import { CompareResultWindow } from './compare-result-window';
@@ -267,7 +268,7 @@ export class CompareDialog {
         this.compareSessionStore.gotoDiff(0);
       }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
+      const msg = toEnglishMessage(e instanceof Error ? e.message : String(e));
       this.resultMetaEl.textContent = `비교 실패: ${msg}`;
     } finally {
       this.running = false;

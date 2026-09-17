@@ -2,6 +2,7 @@ import { formatDiffLocationCombined, formatParagraphLocationForSide, isComparePr
 import type { CompareSessionStore } from '@/compare/session';
 import type { CompareSession, DiffAnchor, DiffItem } from '@/compare/types';
 import { WasmBridge } from '@/core/wasm-bridge';
+import { toEnglishMessage } from '@/core/engine-messages';
 
 type CompareSourceDocument = {
   bytes: Uint8Array;
@@ -410,7 +411,7 @@ export class CompareResultWindow {
       this.leftStatusEl.textContent = '왼쪽 문서 페이지 준비 완료';
       this.rightStatusEl.textContent = '오른쪽 문서 페이지 준비 완료';
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
+      const msg = toEnglishMessage(e instanceof Error ? e.message : String(e));
       this.leftStatusEl.textContent = `페이지 로드 실패: ${msg}`;
       this.rightStatusEl.textContent = `페이지 로드 실패: ${msg}`;
     }
@@ -509,7 +510,7 @@ export class CompareResultWindow {
           statusEl.textContent = `${locShort ? `${locShort} · ` : ''}${pageLine} 실제 화면${contextNote}`;
           wrap.scrollTop = Math.max(0, marker.offsetTop - Math.floor(wrap.clientHeight * 0.15));
         } catch (err) {
-          const msg = err instanceof Error ? err.message : String(err);
+          const msg = toEnglishMessage(err instanceof Error ? err.message : String(err));
           statusEl.textContent = `페이지 렌더 실패: ${msg}`;
           marker.style.display = 'none';
         }
@@ -518,7 +519,7 @@ export class CompareResultWindow {
         requestAnimationFrame(draw);
       });
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
+      const msg = toEnglishMessage(e instanceof Error ? e.message : String(e));
       statusEl.textContent = `페이지 렌더 실패: ${msg}`;
       marker.style.display = 'none';
     }

@@ -27,6 +27,7 @@
 import type { CommandServices } from '@/command/types';
 import { formatDiffLocationCombined } from '@/compare/diff-location-label';
 import { buildSnapshotFromWasm, compareDocuments, compareSnapshots } from '@/compare/diff-engine';
+import { toEnglishMessage } from '@/core/engine-messages';
 import type { CompareSessionStore } from '@/compare/session';
 import type { CompareOptions, DiffItem, DiffKind } from '@/compare/types';
 import { clearHistory, deleteHistorySnapshot, getHistoryPayload, listHistoryMeta, saveHistoryIrSnapshot } from '@/history/idb-store';
@@ -194,7 +195,7 @@ export class HistoryDialog {
       await this.refreshList();
       this.resultMetaEl.textContent = '스냅샷을 저장했습니다.';
     } catch (err) {
-      const msg = err instanceof Error ? err.message : String(err);
+      const msg = toEnglishMessage(err instanceof Error ? err.message : String(err));
       this.resultMetaEl.textContent = `저장 실패: ${msg}`;
     }
   }
@@ -262,7 +263,7 @@ export class HistoryDialog {
         this.compareSessionStore.gotoDiff(0);
       }
     } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
+      const msg = toEnglishMessage(e instanceof Error ? e.message : String(e));
       this.resultMetaEl.textContent = `비교 실패: ${msg}`;
     }
   }

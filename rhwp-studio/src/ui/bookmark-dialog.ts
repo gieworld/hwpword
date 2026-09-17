@@ -5,6 +5,7 @@
  */
 import type { CommandServices } from '@/command/types';
 import type { BookmarkInfo } from '@/core/types';
+import { toEnglishMessage } from '@/core/engine-messages';
 import { enableDialogDrag } from './dialog-drag';
 
 type SortMode = 'name' | 'position';
@@ -314,7 +315,7 @@ export class BookmarkDialog {
       this.hide();
     } else {
       this.statusLabel.style.color = '#c00';
-      this.statusLabel.textContent = errMsg ?? '책갈피 추가 실패';
+      this.statusLabel.textContent = errMsg ? toEnglishMessage(errMsg) : '책갈피 추가 실패';
     }
   }
 
@@ -391,7 +392,7 @@ export class BookmarkDialog {
       this.refreshList();
     } else {
       this.statusLabel.style.color = '#c00';
-      this.statusLabel.textContent = errMsg ?? '이름 변경 실패';
+      this.statusLabel.textContent = errMsg ? toEnglishMessage(errMsg) : '이름 변경 실패';
     }
   }
 }

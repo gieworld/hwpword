@@ -1,4 +1,5 @@
 import { WasmBridge } from '@/core/wasm-bridge';
+import { toEnglishMessage } from '@/core/engine-messages';
 import type { DocumentInfo, PageInfo } from '@/core/types';
 import { EventBus } from '@/core/event-bus';
 import { assertRemoteDocumentBytes } from '@/core/document-signature';
@@ -120,6 +121,14 @@ const autosaveManager = new AutosaveManager({
 autosaveManager.connect(eventBus);
 // HWP Word desktop: files Windows launched us with arrive through the PWA launch-queue path below.
 installDesktopLaunchQueue(window as unknown as DesktopWindowLike);
+
+// Engine (WASM/Rust) errors can reach a plain `alert(...)` call anywhere in the app before a
+// caller has a chance to translate them. Patch the global once so every alert shows English.
+const nativeAlert = window.alert.bind(window);
+window.alert = (message?: unknown): void => {
+  if (message === undefined) { nativeAlert(); return; }
+  nativeAlert(toEnglishMessage(String(message)));
+};
 
 initThemeSync((effective, mode) => {
   eventBus.emit('theme-changed', { mode, effective });
@@ -822,7 +831,7 @@ async function initialize(): Promise<void> {
     rendererInitialized = true;
   } catch (error) {
     rendererInitializationError = error instanceof Error ? error.message : String(error);
-    msg.textContent = `WASM initialization failed: ${error}`;
+    msg.textContent = `WASM initialization failed: ${toEnglishMessage(rendererInitializationError)}`;
     console.error('[main] WASM 초기화 실패:', error);
   }
 }
@@ -1738,7 +1747,7 @@ async function createNewDocument(): Promise<void> {
       await initializeDocument(docInfo, `New Document.hwp — ${docInfo.pageCount} pages`);
     });
   } catch (error) {
-    msg.textContent = `Failed to create new document: ${error}`;
+    msg.textContent = `Failed to create new document: ${toEnglishMessage(String(error))}`;
     console.error('[main] 새 문서 생성 실패:', error);
   }
 }
@@ -1925,7 +1934,7 @@ function showFileUrlAccessGuidance(): void {
  * 병행 사용한다.
  */
 function showLoadError(error: unknown): void {
-  const raw = String(error).replace(/^Error:\s*/, '');
+  const raw = toEnglishMessage(String(error).replace(/^Error:\s*/, ''));
   const errMsg = `Failed to load file: ${raw}`;
   const sb = sbMessage();
   if (sb) sb.textContent = errMsg;

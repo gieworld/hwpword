@@ -7,6 +7,8 @@
  * - 일반 재사용 가능 — 다른 안내에도 활용 가능
  */
 
+import { toEnglishMessage } from '@/core/engine-messages';
+
 const CONTAINER_ID = 'rhwp-toast-container';
 const DEFAULT_DURATION_MS = 8000;
 const SLIDE_DURATION_MS = 200;
@@ -81,7 +83,7 @@ export function showToast(options: ToastOptions): void {
   const body = document.createElement('div');
   body.style.flex = '1';
   body.style.whiteSpace = 'pre-line';
-  body.textContent = options.message;
+  body.textContent = toEnglishMessage(options.message);
   toast.appendChild(body);
 
   // 액션 버튼 (선택, 텍스트 링크 스타일)
