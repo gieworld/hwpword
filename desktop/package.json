@@ -9,6 +9,7 @@
   "main": "main.mjs",
   "scripts": {
     "test": "node --test test/*.test.mjs",
+    "corpus": "electron corpus/run.mjs",
     "sync-core": "node scripts/sync-core.mjs",
     "build:studio": "node scripts/sync-core.mjs && node scripts/build-studio.mjs",
     "start": "electron .",
