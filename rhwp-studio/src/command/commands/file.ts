@@ -65,6 +65,7 @@ import { userSettings } from '@/core/user-settings';
 import { showToast } from '@/ui/toast';
 import { addRecentDoc, clearRecentDocs, listRecentDocs, removeRecentDoc } from '@/recent/recent-store';
 import { openRecentEntry } from '@/recent/recent-open';
+import { isHwpWordDesktop } from '@/desktop/desktop-launch-queue';
 
 /**
  * 파일 열기 대화상자(File System Access picker, 미지원 시 숨김 input 폴백)를 열어
@@ -206,6 +207,8 @@ async function tryFileSystemSave(
     });
   } catch (error) {
     if (isUserCancelError(error)) return 'cancelled';
+    // HWP Word desktop: a failed write to a real file must be reported, never replaced by a silent download.
+    if (isHwpWordDesktop()) throw error;
     console.warn('[file:save] File System Access API 실패, 폴백:', error);
     return { method: 'fallback', handle: null, fileName: suggestedName };
   }

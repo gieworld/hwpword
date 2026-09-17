@@ -1,12 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   createDesktopLaunchQueue,
   installDesktopLaunchQueue,
+  isHwpWordDesktop,
   type DesktopFileBridge,
 } from '../src/desktop/desktop-launch-queue.ts';
 import { handlePwaLaunchFiles, type OpenDocumentBytesPayload } from '../src/command/pwa-file-handling.ts';
 import { saveDocumentToFileSystem, type FileSystemFileHandleLike } from '../src/command/file-system-access.ts';
+import { functionBodyFrom, codeOnly } from './support/source-guard.ts';
 
 function fakeBridge(files: Record<string, { name: string; bytes: Uint8Array<ArrayBuffer> }>) {
   const writes: Array<{ token: string; bytes: number[] }> = [];
@@ -90,4 +93,32 @@ test('installs over the browser launchQueue getter, but only inside HWP Word', (
   assert.equal(installDesktopLaunchQueue(desktop), true);
   assert.notEqual(desktop.launchQueue, nativeQueue);
   assert.equal(typeof desktop.launchQueue.setConsumer, 'function');
+});
+
+test('a failed write rejects with a readable message and keeps the cause', async () => {
+  const cause = new Error('EPERM: operation not permitted');
+  const bridge: DesktopFileBridge = {
+    async getLaunchFiles() { return [{ token: 't1', name: 'form.hwp' }]; },
+    async readFile() { return new Uint8Array(); },
+    async writeFile() { throw cause; },
+  };
+  const [handle] = await launchedHandles(bridge);
+  const writable = await handle.createWritable();
+  await writable.write(new Blob([new Uint8Array([1])]));
+  await assert.rejects(writable.close(), (error: Error) => {
+    assert.equal(error.message, 'Could not save "form.hwp". It may be read-only or open in another program.');
+    assert.equal(error.cause, cause);
+    return true;
+  });
+});
+
+test('isHwpWordDesktop is true only when the preload bridge exists', () => {
+  assert.equal(isHwpWordDesktop({}), false);
+  assert.equal(isHwpWordDesktop({ hwpwordDesktop: fakeBridge({}).bridge }), true);
+});
+
+test('desktop saves report write failures instead of falling back to a download', () => {
+  const fileTs = codeOnly(readFileSync(new URL('../src/command/commands/file.ts', import.meta.url), 'utf8'));
+  const body = functionBodyFrom(fileTs, 'async function tryFileSystemSave');
+  assert.match(body, /if \(isUserCancelError\(error\)\) return 'cancelled';\s*if \(isHwpWordDesktop\(\)\) throw error;/);
 });

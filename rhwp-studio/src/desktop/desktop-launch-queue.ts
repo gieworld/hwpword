@@ -15,6 +15,11 @@ export interface DesktopWindowLike {
   hwpwordDesktop?: DesktopFileBridge;
 }
 
+/** True inside the HWP Word Electron app, where the preload exposes `window.hwpwordDesktop`. */
+export function isHwpWordDesktop(win: DesktopWindowLike = globalThis as DesktopWindowLike): boolean {
+  return win.hwpwordDesktop !== undefined;
+}
+
 function createDesktopFileHandle(bridge: DesktopFileBridge, token: string, name: string): FileSystemFileHandleLike {
   const handle: FileSystemFileHandleLike = {
     kind: 'file',
@@ -29,7 +34,12 @@ function createDesktopFileHandle(bridge: DesktopFileBridge, token: string, name:
           parts.push(data);
         },
         async close() {
-          await bridge.writeFile(token, new Uint8Array(await new Blob(parts).arrayBuffer()));
+          const bytes = new Uint8Array(await new Blob(parts).arrayBuffer());
+          try {
+            await bridge.writeFile(token, bytes);
+          } catch (error) {
+            throw new Error(`Could not save "${name}". It may be read-only or open in another program.`, { cause: error });
+          }
         },
       };
     },
