@@ -14,11 +14,11 @@ export interface PrintPage {
 export type PrintIntent = 'print' | 'pdf';
 
 export const PDF_PRINT_GUIDANCE =
-  '브라우저 인쇄 창에서 ‘대상 → PDF로 저장’을 선택합니다.';
+  "In the browser's print dialog, choose Destination → Save as PDF.";
 
 export function pdfPrintTitle(fileName: string): string {
   const baseName = fileName.trim().replace(/\.(hwp|hwpx|hml)$/i, '').trim();
-  return baseName || '문서';
+  return baseName || 'Document';
 }
 
 export function printProgressText(
@@ -26,14 +26,14 @@ export function printProgressText(
   currentPage: number,
   pageCount: number,
 ): string {
-  const label = intent === 'pdf' ? 'PDF 준비 중…' : '인쇄 준비 중…';
+  const label = intent === 'pdf' ? 'Preparing PDF…' : 'Preparing to print…';
   return `${label} (${currentPage}/${pageCount})`;
 }
 
 export function printReadyText(intent: PrintIntent): string {
   return intent === 'pdf'
-    ? `PDF 준비 완료 — ${PDF_PRINT_GUIDANCE}`
-    : '인쇄 미리보기 준비 완료';
+    ? `PDF ready — ${PDF_PRINT_GUIDANCE}`
+    : 'Print preview ready';
 }
 
 // 표준 판형의 변 길이(mm): A3~A5 · JIS B4/B5 · Letter · Legal · Tabloid.
@@ -201,7 +201,7 @@ export function appendSvgPage(doc: Document, container: HTMLElement, printPage: 
   const parsed = new DOMParser().parseFromString(printPage.svg, 'image/svg+xml');
   const parseError = parsed.querySelector('parsererror');
   if (parseError) {
-    throw new Error(`인쇄용 SVG 파싱 실패: ${parseError.textContent || 'parsererror'}`);
+    throw new Error(`Failed to parse print SVG: ${parseError.textContent || 'parsererror'}`);
   }
 
   namespaceSvgIds(parsed.documentElement, printPage.pageName);

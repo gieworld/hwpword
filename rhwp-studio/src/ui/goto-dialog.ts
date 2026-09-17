@@ -19,7 +19,7 @@ export class GotoDialog extends ModalDialog {
   private pageEnterHandler: ((e: KeyboardEvent) => void) | null = null;
 
   constructor(services: CommandServices, tab?: 'page' | 'bookmark') {
-    super('찾아가기', 300);
+    super('Go To', 300);
     this.services = services;
     if (tab) this.activeTab = tab;
   }
@@ -34,12 +34,12 @@ export class GotoDialog extends ModalDialog {
 
     this.tabBtnPage = document.createElement('button');
     this.tabBtnPage.className = 'goto-tab-btn';
-    this.tabBtnPage.textContent = '쪽';
+    this.tabBtnPage.textContent = 'Page';
     this.tabBtnPage.addEventListener('click', () => this.switchTab('page'));
 
     this.tabBtnBookmark = document.createElement('button');
     this.tabBtnBookmark.className = 'goto-tab-btn';
-    this.tabBtnBookmark.textContent = '책갈피';
+    this.tabBtnBookmark.textContent = 'Bookmark';
     this.tabBtnBookmark.addEventListener('click', () => this.switchTab('bookmark'));
 
     tabBar.appendChild(this.tabBtnPage);
@@ -54,7 +54,7 @@ export class GotoDialog extends ModalDialog {
     const row = document.createElement('div');
     row.className = 'dialog-row';
     const label = document.createElement('label');
-    label.textContent = '쪽 번호:';
+    label.textContent = 'Page Number:';
     label.style.width = '60px';
     this.pageInput = document.createElement('input');
     this.pageInput.type = 'number';
@@ -68,7 +68,7 @@ export class GotoDialog extends ModalDialog {
     this.pageInput.style.fontSize = '12px';
 
     const rangeLabel = document.createElement('span');
-    rangeLabel.textContent = ` / ${totalPages}쪽`;
+    rangeLabel.textContent = ` / ${totalPages} pages`;
     rangeLabel.style.color = '#666';
 
     row.appendChild(label);
@@ -114,7 +114,7 @@ export class GotoDialog extends ModalDialog {
     if (bookmarks.length === 0) {
       const empty = document.createElement('div');
       empty.style.cssText = 'color:#999;font-size:11px;padding:12px;text-align:center';
-      empty.textContent = '등록된 책갈피가 없습니다.';
+      empty.textContent = 'No bookmarks found.';
       this.bookmarkList.appendChild(empty);
       return;
     }
@@ -123,7 +123,7 @@ export class GotoDialog extends ModalDialog {
     for (const bm of bookmarks) {
       const item = document.createElement('div');
       item.className = 'goto-bookmark-item';
-      item.textContent = bm.name || '(이름 없음)';
+      item.textContent = bm.name || '(No name)';
       item.addEventListener('click', () => {
         this.bookmarkList.querySelectorAll('.goto-bookmark-item').forEach(el => el.classList.remove('selected'));
         item.classList.add('selected');
@@ -221,27 +221,27 @@ export class GotoDialog extends ModalDialog {
     const pageNum = parseInt(this.pageInput.value, 10);
 
     if (isNaN(pageNum) || pageNum < 1 || pageNum > totalPages) {
-      this.statusLabel.textContent = `1~${totalPages} 범위의 쪽 번호를 입력하세요.`;
+      this.statusLabel.textContent = `Enter a page number between 1 and ${totalPages}.`;
       return false;
     }
 
     const globalPage = pageNum - 1;
     const posResult = this.services.wasm.getPositionOfPage(globalPage);
     if (!posResult.ok) {
-      this.statusLabel.textContent = '해당 쪽을 찾을 수 없습니다.';
+      this.statusLabel.textContent = 'Could not find that page.';
       return false;
     }
 
     // 표가 쪽의 첫 항목이면 해당 상위 문단에 커서를 둘 수 없을 수 있다. 화면 이동은
     // 커서 배치와 독립적으로 먼저 완료해야 대형 문서의 후반부도 항상 표시된다.
     if (!this.services.gotoPage(globalPage)) {
-      this.statusLabel.textContent = '해당 쪽으로 화면을 이동할 수 없습니다.';
+      this.statusLabel.textContent = 'Could not move the view to that page.';
       return false;
     }
 
     const ih = this.services.getInputHandler();
     if (!ih) {
-      this.statusLabel.textContent = '문서 입력기를 찾을 수 없습니다.';
+      this.statusLabel.textContent = 'Could not find the document input handler.';
       return false;
     }
 
@@ -257,7 +257,7 @@ export class GotoDialog extends ModalDialog {
     if (!moved) {
       // 화면은 대상 쪽으로 이동했지만 커서를 놓을 문단을 찾지 못했다. 다음 입력을
       // 허용하려 모달을 유지한다.
-      this.statusLabel.textContent = '해당 쪽의 커서 위치를 찾을 수 없습니다. 쪽 번호를 다시 입력하세요.';
+      this.statusLabel.textContent = 'Could not find a cursor position on that page. Enter the page number again.';
       this.pageInput.focus();
       this.pageInput.select();
       return false;

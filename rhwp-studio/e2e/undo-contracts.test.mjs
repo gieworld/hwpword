@@ -227,7 +227,7 @@ runTest('편집 undo 계약 실동작 (Task #2301)', async ({ page }) => {
   });
   await page.evaluate(() => {
     const btn = [...document.querySelectorAll('.find-dialog button, .dialog-btn')]
-      .find(b => b.offsetParent !== null && b.textContent.trim() === '모두 바꾸기');
+      .find(b => b.offsetParent !== null && b.textContent.trim() === 'Replace All');
     btn.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
     btn.click();
   });
@@ -413,7 +413,7 @@ runTest('편집 undo 계약 실동작 (Task #2301)', async ({ page }) => {
   const tblDepth0 = await undoDepth(page);
 
   await openObjectPropsDialog(page);
-  await toggleDialogCheckbox(page, '쪽 영역 안으로 제한');
+  await toggleDialogCheckbox(page, 'Restrict to Page Area');
   await clickPrimary(page);
 
   const tblAfter = await getTbl();

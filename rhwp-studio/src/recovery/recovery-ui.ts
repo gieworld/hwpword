@@ -12,7 +12,7 @@ class AutosaveRecoveryDialog extends ModalDialog {
   private selectedDraftId: string;
 
   constructor(private readonly drafts: AutosaveDraft[]) {
-    super('문서 복구', 520);
+    super('Document Recovery', 520);
     this.selectedDraftId = drafts[0]?.id ?? '';
   }
 
@@ -24,13 +24,13 @@ class AutosaveRecoveryDialog extends ModalDialog {
 
     const lead = document.createElement('p');
     lead.style.margin = '0 0 12px';
-    lead.textContent = '저장되지 않은 문서 복구본이 있습니다. 복구할 문서를 선택하세요.';
+    lead.textContent = 'There are unsaved document recovery drafts. Choose a document to recover.';
     body.appendChild(lead);
 
     const note = document.createElement('p');
     note.style.margin = '0 0 14px';
     note.style.color = 'var(--text-muted, #8b95a1)';
-    note.textContent = '복구해도 원본 파일을 자동으로 덮어쓰지 않습니다. 저장하려면 복구 후 직접 저장하세요.';
+    note.textContent = 'Recovering will not automatically overwrite the original file. Save manually after recovering if you want to keep it.';
     body.appendChild(note);
 
     const list = document.createElement('div');
@@ -64,9 +64,9 @@ class AutosaveRecoveryDialog extends ModalDialog {
       title.classList.add('recovery-draft-title');
       const displayName = draft.fileName || (() => {
         switch (draft.sourceFormat?.toLowerCase()) {
-          case 'hml': return '문서.hml';
-          case 'hwpx': return '문서.hwpx';
-          default: return '문서.hwp';
+          case 'hml': return 'Document.hml';
+          case 'hwpx': return 'Document.hwpx';
+          default: return 'Document.hwp';
         }
       })();
       title.textContent = displayName;
@@ -111,14 +111,14 @@ class AutosaveRecoveryDialog extends ModalDialog {
       const restoreBtn = this.dialog.querySelector('.dialog-btn-primary') as HTMLButtonElement | null;
       const cancelBtn = footer?.querySelector('.dialog-btn:not(.dialog-btn-primary)') as HTMLButtonElement | null;
 
-      if (restoreBtn) restoreBtn.textContent = '복구';
-      if (cancelBtn) cancelBtn.textContent = '나중에';
+      if (restoreBtn) restoreBtn.textContent = 'Restore';
+      if (cancelBtn) cancelBtn.textContent = 'Later';
 
       const deleteBtn = document.createElement('button');
       deleteBtn.type = 'button';
       deleteBtn.className = 'dialog-btn';
-      deleteBtn.textContent = '삭제';
-      deleteBtn.title = '복구 후보를 모두 삭제합니다.';
+      deleteBtn.textContent = 'Delete';
+      deleteBtn.title = 'Deletes all recovery drafts.';
       deleteBtn.addEventListener('click', () => {
         this.resolve({ action: 'delete-all' });
         super.hide();

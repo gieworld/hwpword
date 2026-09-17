@@ -55,7 +55,7 @@ runTest('#3953 대형 문서 찾아가기', async ({ page }) => {
     error: body.textContent ?? '',
     inputFocused: document.activeElement === body.querySelector('input[type="number"]'),
   }));
-  assert(invalidInputState.error.includes('범위의 쪽 번호'), '잘못된 쪽 번호는 모달 안에 오류를 표시');
+  assert(invalidInputState.error.includes('page number between'), '잘못된 쪽 번호는 모달 안에 오류를 표시');
   assert(invalidInputState.inputFocused, '잘못된 쪽 번호 뒤 입력칸을 다시 선택');
   await page.keyboard.press('Escape');
   await page.waitForSelector('.modal-overlay', { hidden: true, timeout: 10_000 });

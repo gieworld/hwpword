@@ -72,7 +72,7 @@ export class PageSetupDialog extends ModalDialog {
   private scopeSelect!: HTMLSelectElement;
 
   constructor(wasm: WasmBridge, eventBus: EventBus, sectionIdx: number, private services?: CommandServices) {
-    super('편집 용지', 440);
+    super('Page Setup', 440);
     this.wasm = wasm;
     this.eventBus = eventBus;
     this.sectionIdx = sectionIdx;
@@ -88,7 +88,7 @@ export class PageSetupDialog extends ModalDialog {
     const body = document.createElement('div');
 
     // ── 용지 종류 ──
-    const paperSection = this.createSection('용지 종류');
+    const paperSection = this.createSection('Paper Size');
     const paperRow = this.row();
 
     this.paperSelect = document.createElement('select');
@@ -102,18 +102,18 @@ export class PageSetupDialog extends ModalDialog {
     }
     const customOpt = document.createElement('option');
     customOpt.value = 'custom';
-    customOpt.textContent = '사용자 정의';
+    customOpt.textContent = 'Custom';
     this.paperSelect.appendChild(customOpt);
 
     this.paperSelect.addEventListener('change', () => this.onPaperChange());
     paperRow.appendChild(this.paperSelect);
 
     const dimRow = this.row();
-    dimRow.appendChild(this.label('폭'));
+    dimRow.appendChild(this.label('Width'));
     this.widthInput = this.numberInput();
     dimRow.appendChild(this.widthInput);
     dimRow.appendChild(this.unit('mm'));
-    dimRow.appendChild(this.label('길이'));
+    dimRow.appendChild(this.label('Height'));
     this.heightInput = this.numberInput();
     dimRow.appendChild(this.heightInput);
     dimRow.appendChild(this.unit('mm'));
@@ -127,12 +127,12 @@ export class PageSetupDialog extends ModalDialog {
     sectionsRow.className = 'page-setup-sections';
 
     // 용지 방향
-    const orientSection = this.createSection('용지 방향');
+    const orientSection = this.createSection('Orientation');
     const orientRow = document.createElement('div');
     orientRow.className = 'dialog-icon-radio-group';
     this.landscapeRadios = [
-      this.iconRadio('orient', '세로', 'false', ORIENT_ICONS.portrait, orientRow),
-      this.iconRadio('orient', '가로', 'true', ORIENT_ICONS.landscape, orientRow),
+      this.iconRadio('orient', 'Portrait', 'false', ORIENT_ICONS.portrait, orientRow),
+      this.iconRadio('orient', 'Landscape', 'true', ORIENT_ICONS.landscape, orientRow),
     ];
     for (const r of this.landscapeRadios) {
       r.addEventListener('change', () => this.onOrientChange());
@@ -140,13 +140,13 @@ export class PageSetupDialog extends ModalDialog {
     orientSection.appendChild(orientRow);
 
     // 제본
-    const bindSection = this.createSection('제본');
+    const bindSection = this.createSection('Binding');
     const bindRow = document.createElement('div');
     bindRow.className = 'dialog-icon-radio-group';
     this.bindingRadios = [
-      this.iconRadio('binding', '한쪽', '0', BINDING_ICONS.single, bindRow),
-      this.iconRadio('binding', '맞쪽', '1', BINDING_ICONS.duplex, bindRow),
-      this.iconRadio('binding', '위로', '2', BINDING_ICONS.top, bindRow),
+      this.iconRadio('binding', 'One-Sided', '0', BINDING_ICONS.single, bindRow),
+      this.iconRadio('binding', 'Facing Pages', '1', BINDING_ICONS.duplex, bindRow),
+      this.iconRadio('binding', 'Top', '2', BINDING_ICONS.top, bindRow),
     ];
     bindSection.appendChild(bindRow);
 
@@ -155,19 +155,19 @@ export class PageSetupDialog extends ModalDialog {
     body.appendChild(sectionsRow);
 
     // ── 용지 여백 ──
-    const marginSection = this.createSection('용지 여백');
+    const marginSection = this.createSection('Margins');
     const marginGrid = document.createElement('div');
     marginGrid.className = 'margin-grid';
 
     this.marginInputs = {} as Record<string, HTMLInputElement>;
     const fields: [string, string][] = [
-      ['marginTop', '위쪽'],
-      ['marginBottom', '아래쪽'],
-      ['marginLeft', '왼쪽'],
-      ['marginRight', '오른쪽'],
-      ['marginHeader', '머리말'],
-      ['marginFooter', '꼬리말'],
-      ['marginGutter', '제본'],
+      ['marginTop', 'Top'],
+      ['marginBottom', 'Bottom'],
+      ['marginLeft', 'Left'],
+      ['marginRight', 'Right'],
+      ['marginHeader', 'Header'],
+      ['marginFooter', 'Footer'],
+      ['marginGutter', 'Gutter'],
     ];
 
     // 2열 배치: grid 직접 자식으로 배치 (label, input, unit × 2)
@@ -189,11 +189,11 @@ export class PageSetupDialog extends ModalDialog {
 
     // ── 적용 범위 ──
     const scopeRow = this.row();
-    scopeRow.appendChild(this.label('적용 범위'));
+    scopeRow.appendChild(this.label('Apply To'));
     this.scopeSelect = document.createElement('select');
     this.scopeSelect.className = 'dialog-select';
     this.scopeSelect.style.width = '120px';
-    for (const [val, text] of [['all', '문서 전체'], ['new-section', '새 구역으로']] as const) {
+    for (const [val, text] of [['all', 'Whole Document'], ['new-section', 'As New Section']] as const) {
       const opt = document.createElement('option');
       opt.value = val;
       opt.textContent = text;

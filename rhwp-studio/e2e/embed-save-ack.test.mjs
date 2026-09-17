@@ -61,7 +61,7 @@ runTest('Task #2660 호스트 저장 완료 통지 (notifySaved)', async ({ page
       const deadline = Date.now() + timeoutMs;
       while (Date.now() < deadline) {
         const dialog = iframeEl.contentDocument?.querySelector('.modal-overlay .dialog-wrap');
-        if (dialog && (dialog.textContent || '').includes('문서 복구')) return true;
+        if (dialog && (dialog.textContent || '').includes('Document Recovery')) return true;
         await new Promise((delay) => setTimeout(delay, 200));
       }
       return false;
@@ -198,7 +198,7 @@ runTest('Task #2660 호스트 저장 완료 통지 (notifySaved)', async ({ page
     const deadline = Date.now() + 2_500;
     while (Date.now() < deadline) {
       const dialog = document.querySelector('.modal-overlay .dialog-wrap');
-      if (dialog && (dialog.textContent || '').includes('문서 복구')) return true;
+      if (dialog && (dialog.textContent || '').includes('Document Recovery')) return true;
       await new Promise((delay) => setTimeout(delay, 200));
     }
     return false;

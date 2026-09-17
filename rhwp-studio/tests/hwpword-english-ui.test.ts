@@ -27,6 +27,13 @@ const ENGLISH_UI_SOURCES = [
   'src/ui/para-shape-tab-builders.ts',
   'src/ui/style-dialog.ts',
   'src/ui/style-edit-dialog.ts',
+  'src/ui/page-setup-dialog.ts',
+  'src/ui/table-create-dialog.ts',
+  'src/ui/table-cell-props-dialog.ts',
+  'src/ui/find-dialog.ts',
+  'src/ui/goto-dialog.ts',
+  'src/command/print-pages.ts',
+  'src/recovery/recovery-ui.ts',
 ];
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힯]/;

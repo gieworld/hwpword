@@ -109,12 +109,12 @@ test('namespaceSvgReferenceValue는 SVG url/hash 참조를 페이지별 id로 �
 });
 
 test('PDF 인쇄 의도는 준비 상태와 남은 브라우저 단계를 명확히 안내한다', () => {
-  assert.equal(printProgressText('pdf', 2, 7), 'PDF 준비 중… (2/7)');
+  assert.equal(printProgressText('pdf', 2, 7), 'Preparing PDF… (2/7)');
   assert.equal(
     printReadyText('pdf'),
-    `PDF 준비 완료 — ${PDF_PRINT_GUIDANCE}`,
+    `PDF ready — ${PDF_PRINT_GUIDANCE}`,
   );
-  assert.match(PDF_PRINT_GUIDANCE, /대상 → PDF로 저장/);
+  assert.match(PDF_PRINT_GUIDANCE, /Save as PDF/);
 });
 
 test('PDF 기본 파일명은 원본 문서 이름을 보존하고 HWP 계열 확장자를 제거한다', () => {
@@ -122,10 +122,10 @@ test('PDF 기본 파일명은 원본 문서 이름을 보존하고 HWP 계열 �
   assert.equal(pdfPrintTitle('회의록.HWPX'), '회의록');
   assert.equal(pdfPrintTitle('양식.hml'), '양식');
   assert.equal(pdfPrintTitle('확장자 없는 문서'), '확장자 없는 문서');
-  assert.equal(pdfPrintTitle(' .hwp '), '문서');
+  assert.equal(pdfPrintTitle(' .hwp '), 'Document');
 });
 
 test('일반 인쇄는 같은 진행 helper를 쓰되 PDF 안내를 표시하지 않는다', () => {
-  assert.equal(printProgressText('print', 1, 3), '인쇄 준비 중… (1/3)');
-  assert.equal(printReadyText('print'), '인쇄 미리보기 준비 완료');
+  assert.equal(printProgressText('print', 1, 3), 'Preparing to print… (1/3)');
+  assert.equal(printReadyText('print'), 'Print preview ready');
 });

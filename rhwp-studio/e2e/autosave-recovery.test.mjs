@@ -120,13 +120,13 @@ async function openAndRestore(page, expectedFileNamePart) {
   await navigateApp(page);
   await page.waitForSelector('.modal-overlay .dialog-wrap', { timeout: 5000 });
   const dialogText = await page.$eval('.modal-overlay .dialog-wrap', el => el.textContent || '');
-  assert(dialogText.includes('문서 복구'), '복구 대화상자 표시');
-  assert(dialogText.includes('원본 파일을 자동으로 덮어쓰지 않습니다'), '원본 자동 덮어쓰기 아님 안내 표시');
+  assert(dialogText.includes('Document Recovery'), '복구 대화상자 표시');
+  assert(dialogText.includes('will not automatically overwrite the original file'), '원본 자동 덮어쓰기 아님 안내 표시');
   assert(dialogText.includes(expectedFileNamePart), `복구 후보 파일명 표시 (${expectedFileNamePart})`);
 
   await page.evaluate(() => {
     const button = Array.from(document.querySelectorAll('.modal-overlay .dialog-btn'))
-      .find((btn) => (btn.textContent || '').trim() === '복구');
+      .find((btn) => (btn.textContent || '').trim() === 'Restore');
     if (!button) throw new Error('복구 버튼을 찾을 수 없습니다');
     button.click();
   });
