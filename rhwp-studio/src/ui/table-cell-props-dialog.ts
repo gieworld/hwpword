@@ -923,7 +923,7 @@ export class TableCellPropsDialog extends ModalDialog {
     // ── 셀 간격 ──
     const spacingSection = this.createSection('Cell Spacing');
     const spacingRow = this.row();
-    spacingRow.appendChild(this.label('Cell Spacing'));
+    spacingRow.appendChild(this.label('Cell spacing'));
     this.borderCellSpacingInput = this.numberInput();
     spacingRow.appendChild(this.borderCellSpacingInput);
     spacingRow.appendChild(this.unit('mm'));
