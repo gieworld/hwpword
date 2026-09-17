@@ -1,21 +1,19 @@
 import init, { HwpDocument } from '/core/rhwp.js';
-import { compareRoundTrip, lossCount } from '/lib/report.mjs';
+import { compareRoundTrip, documentText, lossCount } from '/lib/report.mjs';
 
 const ready = init();
 
 function snapshot(doc) {
   const pages = doc.pageCount();
-  const pageTexts = [];
   let renderErrors = 0;
   for (let i = 0; i < pages; i += 1) {
-    pageTexts.push(doc.getPageText(i));
     try {
       doc.renderPageSvg(i);
     } catch {
       renderErrors += 1;
     }
   }
-  return { pages, sections: doc.getSectionCount(), pageTexts, renderErrors };
+  return { pages, sections: doc.getSectionCount(), text: documentText(doc.getTextFileUnicode()), renderErrors };
 }
 
 /** Installed if text measured with the font differs from a generic fallback (same resolution rhwp's canvas uses). */

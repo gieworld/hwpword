@@ -29,20 +29,26 @@ function serve(request) {
 }
 
 app.whenReady().then(async () => {
-  protocol.handle('app', serve);
-  const names = readdirSync(corpusDir).filter((name) => /\.(hwp|hwpx|hml)$/i.test(name)).sort();
-  if (names.length === 0) {
-    console.error(`No .hwp/.hwpx/.hml files in ${corpusDir}`);
+  try {
+    protocol.handle('app', serve);
+    const names = readdirSync(corpusDir).filter((name) => /\.(hwp|hwpx|hml)$/i.test(name)).sort();
+    if (names.length === 0) {
+      console.error(`No .hwp/.hwpx/.hml files in ${corpusDir}`);
+      app.exit(1);
+      return;
+    }
+    const win = new BrowserWindow({ show: false, webPreferences: { contextIsolation: true, sandbox: true } });
+    win.webContents.on('console-message', (event) => console.log(event.message));
+    await win.loadURL('app://corpus/index.html');
+    const results = await win.webContents.executeJavaScript(`window.runCorpus(${JSON.stringify(names)})`);
+    mkdirSync(repoCorpusDir, { recursive: true });
+    const reportPath = join(repoCorpusDir, `report-${basename(corpusDir)}.md`);
+    writeFileSync(reportPath, toMarkdown(results, new Date().toISOString()));
+    console.log(`Wrote ${reportPath}`);
+    app.quit();
+  } catch (error) {
+    // Without this a missing folder or a failed page script leaves `npm run corpus` hanging.
+    console.error(error);
     app.exit(1);
-    return;
   }
-  const win = new BrowserWindow({ show: false, webPreferences: { contextIsolation: true, sandbox: true } });
-  win.webContents.on('console-message', (event) => console.log(event.message));
-  await win.loadURL('app://corpus/index.html');
-  const results = await win.webContents.executeJavaScript(`window.runCorpus(${JSON.stringify(names)})`);
-  mkdirSync(repoCorpusDir, { recursive: true });
-  const reportPath = join(repoCorpusDir, `report-${basename(corpusDir)}.md`);
-  writeFileSync(reportPath, toMarkdown(results, new Date().toISOString()));
-  console.log(`Wrote ${reportPath}`);
-  app.quit();
 });

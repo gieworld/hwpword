@@ -1,18 +1,29 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compareRoundTrip, lossCount, normalizeText, toMarkdown } from '../corpus/lib/report.mjs';
+import { compareRoundTrip, documentText, lossCount, normalizeText, toMarkdown } from '../corpus/lib/report.mjs';
 
-test('re-pagination alone is not a text difference', () => {
-  const before = { pages: 2, sections: 1, pageTexts: ['Hello ', 'world\n'] };
-  const after = { pages: 1, sections: 1, pageTexts: ['Hello world'] };
-  assert.equal(normalizeText(before.pageTexts), 'Helloworld');
+test('line breaks and spacing alone are not a text difference', () => {
+  const before = { pages: 2, sections: 1, text: 'Hello \r\nworld\r\n' };
+  const after = { pages: 1, sections: 1, text: 'Hello world' };
+  assert.equal(normalizeText(before.text), 'Helloworld');
   assert.deepEqual(compareRoundTrip(before, after), { textEqual: true, pagesEqual: false, sectionsEqual: true });
 });
 
 test('changed text is detected', () => {
-  const before = { pages: 1, sections: 1, pageTexts: ['신청서 성명'] };
-  const after = { pages: 1, sections: 1, pageTexts: ['신청서'] };
+  const before = { pages: 1, sections: 1, text: '신청서 성명' };
+  const after = { pages: 1, sections: 1, text: '신청서' };
   assert.equal(compareRoundTrip(before, after).textEqual, false);
+});
+
+test('table cell text lost on save is a text difference', () => {
+  const before = { pages: 1, sections: 1, text: '제1조(목적)\r\n\r\n성명\r\n홍길동' };
+  const after = { pages: 1, sections: 1, text: '제1조(목적)\r\n\r\n\r\n' };
+  assert.equal(compareRoundTrip(before, after).textEqual, false);
+});
+
+test('document text comes from the engine JSON string', () => {
+  assert.equal(documentText(JSON.stringify('본문\r\n표 안 글')), '본문\r\n표 안 글');
+  assert.throws(() => documentText('{"text":"x"}'), /document text/);
 });
 
 test('loss count comes from the export report', () => {

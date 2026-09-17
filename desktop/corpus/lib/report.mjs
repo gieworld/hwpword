@@ -1,11 +1,21 @@
-/** All page text with whitespace removed, so re-pagination after a save doesn't count as a text change. */
-export function normalizeText(pageTexts) {
-  return pageTexts.join('').replace(/\s+/g, '');
+/**
+ * `HwpDocument.getTextFileUnicode()` is a JSON string literal holding the whole document text: body paragraphs
+ * plus table cells and text boxes (not headers, footers or footnotes). Unlike `getPageText`, it sees table text.
+ */
+export function documentText(textFileJson) {
+  const text = JSON.parse(textFileJson);
+  if (typeof text !== 'string') throw new Error('getTextFileUnicode did not return document text');
+  return text;
+}
+
+/** Document text with whitespace removed, so line-break or spacing changes after a save don't count as a text change. */
+export function normalizeText(text) {
+  return text.replace(/\s+/g, '');
 }
 
 export function compareRoundTrip(before, after) {
   return {
-    textEqual: normalizeText(before.pageTexts) === normalizeText(after.pageTexts),
+    textEqual: normalizeText(before.text) === normalizeText(after.text),
     pagesEqual: before.pages === after.pages,
     sectionsEqual: before.sections === after.sections,
   };
