@@ -38,7 +38,7 @@ class SaveAsDialog extends ModalDialog {
     body.style.padding = '16px 20px';
 
     const label = document.createElement('label');
-    label.textContent = 'File Name(N):';
+    label.textContent = 'File Name:';
     label.style.display = 'block';
     label.style.marginBottom = '6px';
     label.style.fontSize = '13px';

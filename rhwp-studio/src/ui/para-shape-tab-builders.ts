@@ -93,10 +93,10 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   const typeRow = document.createElement('div');
   typeRow.className = 'dialog-row';
   const TAB_TYPES = [
-    { value: '0', label: 'Left(L)' },
-    { value: '1', label: 'Right(R)' },
-    { value: '2', label: 'Center(C)' },
-    { value: '3', label: 'Decimal(M)' },
+    { value: '0', label: 'Left' },
+    { value: '1', label: 'Right' },
+    { value: '2', label: 'Center' },
+    { value: '3', label: 'Decimal' },
   ];
   const tabTypeRadios = TAB_TYPES.map(({ value, label: lbl }) => {
     const labelEl = document.createElement('label');
@@ -118,7 +118,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   fillRow.className = 'dialog-row';
   const fillLabel = document.createElement('label');
   fillLabel.className = 'dialog-label';
-  fillLabel.textContent = 'Fill shape(F):';
+  fillLabel.textContent = 'Fill shape:';
   const tabFillSelect = document.createElement('select');
   tabFillSelect.className = 'dialog-select';
   [
@@ -145,7 +145,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   posRow.className = 'dialog-row';
   const posLabel = document.createElement('label');
   posLabel.className = 'dialog-label';
-  posLabel.textContent = 'Tab position(P):';
+  posLabel.textContent = 'Tab position:';
   const tabPositionInput = document.createElement('input');
   tabPositionInput.className = 'dialog-input';
   tabPositionInput.type = 'number';
@@ -249,8 +249,8 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
     autoRow.appendChild(labelEl);
     return cb;
   };
-  const tabAutoLeftCb = mkCb('Auto tab for hanging indent(E)');
-  const tabAutoRightCb = mkCb('Auto tab at end of paragraph(I)');
+  const tabAutoLeftCb = mkCb('Auto tab for hanging indent');
+  const tabAutoRightCb = mkCb('Auto tab at end of paragraph');
   autoSection.appendChild(autoRow);
   panel.appendChild(autoSection);
 
@@ -402,7 +402,7 @@ export function buildBorderTab(
 
   // 종류(Y)
   const typeRow = row();
-  typeRow.appendChild(label('Type(Y):'));
+  typeRow.appendChild(label('Type:'));
   const bdTypeSelect = document.createElement('select');
   bdTypeSelect.className = 'dialog-select';
   bdTypeSelect.style.width = '100px';
@@ -424,7 +424,7 @@ export function buildBorderTab(
 
   // 굵기(I)
   const widthRow = row();
-  widthRow.appendChild(label('Weight(I):'));
+  widthRow.appendChild(label('Weight:'));
   const bdWidthSelect = document.createElement('select');
   bdWidthSelect.className = 'dialog-select';
   bdWidthSelect.style.width = '100px';
@@ -442,7 +442,7 @@ export function buildBorderTab(
 
   // 색(C)
   const colorRow = row();
-  colorRow.appendChild(label('Color(C):'));
+  colorRow.appendChild(label('Color:'));
   const bdColorInput = document.createElement('input');
   bdColorInput.type = 'color';
   bdColorInput.value = '#000000';
@@ -459,7 +459,7 @@ export function buildBorderTab(
   bdConnectCb.id = 'ps-bd-connect';
   const connectLabel = document.createElement('label');
   connectLabel.htmlFor = 'ps-bd-connect';
-  connectLabel.textContent = ' Connect paragraph borders(M)';
+  connectLabel.textContent = ' Connect paragraph borders';
   connectRow.appendChild(bdConnectCb);
   connectRow.appendChild(connectLabel);
   borderLeft.appendChild(connectRow);
@@ -472,7 +472,7 @@ export function buildBorderTab(
   bdApplyImmCb.checked = true;
   const applyLabel = document.createElement('label');
   applyLabel.htmlFor = 'ps-bd-apply-imm';
-  applyLabel.textContent = ' Apply line style immediately(I)';
+  applyLabel.textContent = ' Apply line style immediately';
   applyRow.appendChild(bdApplyImmCb);
   applyRow.appendChild(applyLabel);
   borderLeft.appendChild(applyRow);
@@ -517,7 +517,7 @@ export function buildBorderTab(
 
   // 면 색(Q)
   const faceRow = row();
-  faceRow.appendChild(label('Fill color(Q):'));
+  faceRow.appendChild(label('Fill color:'));
   const bgFillSelect = document.createElement('select');
   bgFillSelect.className = 'dialog-select';
   bgFillSelect.style.width = '100px';
@@ -537,14 +537,14 @@ export function buildBorderTab(
 
   // 무늬 색(P) + 무늬 모양(L)
   const patRow = row();
-  patRow.appendChild(label('Pattern color(P):'));
+  patRow.appendChild(label('Pattern color:'));
   const bgPatColorInput = document.createElement('input');
   bgPatColorInput.type = 'color';
   bgPatColorInput.value = '#000000';
   bgPatColorInput.className = 'cs-color-btn';
   patRow.appendChild(bgPatColorInput);
 
-  const patLabel = label('Pattern shape(L):');
+  const patLabel = label('Pattern shape:');
   patLabel.style.marginLeft = '10px';
   patRow.appendChild(patLabel);
   const bgPatShapeSelect = document.createElement('select');
@@ -584,21 +584,21 @@ export function buildBorderTab(
   };
 
   // 1행: 왼쪽(E), 위쪽(U)
-  const [c0, si0] = makeCell('Left(E):');
-  const [c1, si2] = makeCell('Top(U):');
+  const [c0, si0] = makeCell('Left:');
+  const [c1, si2] = makeCell('Top:');
   bdSpacingInputs.push(si0, si2); // [0]=left, [1]=top
   spacingGrid.appendChild(c0);
   spacingGrid.appendChild(c1);
 
   // 2행: 오른쪽(B), 아래쪽(V)
-  const [c2, si1] = makeCell('Right(B):');
-  const [c3, si3] = makeCell('Bottom(V):');
+  const [c2, si1] = makeCell('Right:');
+  const [c3, si3] = makeCell('Bottom:');
   bdSpacingInputs.push(si1, si3); // [2]=right, [3]=bottom
   spacingGrid.appendChild(c2);
   spacingGrid.appendChild(c3);
 
   // 3행: 모두(A), 문단 여백 무시(B)
-  const [c4, siAll] = makeCell('All(A):');
+  const [c4, siAll] = makeCell('All:');
   const bdAllSpacingInput = siAll;
   bdAllSpacingInput.addEventListener('change', () => {
     const v = bdAllSpacingInput.value;
@@ -613,7 +613,7 @@ export function buildBorderTab(
   bdIgnoreMarginCb.id = 'ps-bd-ignore-margin';
   const ignoreLabel = document.createElement('label');
   ignoreLabel.htmlFor = 'ps-bd-ignore-margin';
-  ignoreLabel.textContent = ' Ignore paragraph margin(B)';
+  ignoreLabel.textContent = ' Ignore paragraph margin';
   ignoreCell.appendChild(bdIgnoreMarginCb);
   ignoreCell.appendChild(ignoreLabel);
   spacingGrid.appendChild(ignoreCell);

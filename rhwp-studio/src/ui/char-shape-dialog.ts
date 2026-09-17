@@ -276,7 +276,7 @@ export class CharShapeDialog {
 
     // ── 기준 크기
     const sizeRow = this.row();
-    sizeRow.appendChild(this.label('Base size(Z):'));
+    sizeRow.appendChild(this.label('Base size:'));
     this.baseSizeInput = this.numberInput(1, 4096, 0.5);
     this.baseSizeInput.style.width = '60px';
     sizeRow.appendChild(this.baseSizeInput);
@@ -288,7 +288,7 @@ export class CharShapeDialog {
 
     // 언어 + 글꼴 (한 줄)
     const langFontRow = this.row();
-    langFontRow.appendChild(this.label('Script(L):'));
+    langFontRow.appendChild(this.label('Script:'));
     this.langSelect = document.createElement('select');
     this.langSelect.className = 'dialog-select';
     this.langSelect.style.width = '72px';
@@ -305,7 +305,7 @@ export class CharShapeDialog {
     });
     langFontRow.appendChild(this.langSelect);
 
-    const fontLabel = this.label('Font(T):');
+    const fontLabel = this.label('Font:');
     fontLabel.style.marginLeft = '12px';
     langFontRow.appendChild(fontLabel);
     this.fontSelect = document.createElement('select');
@@ -341,12 +341,12 @@ export class CharShapeDialog {
 
     // 상대 크기 + 장평 (2열)
     const row1 = this.row();
-    row1.appendChild(this.label('Relative size(B):'));
+    row1.appendChild(this.label('Relative size:'));
     this.langInputs['cs-relative-size'] = this.numberInput(10, 250);
     this.langInputs['cs-relative-size'].style.width = '50px';
     row1.appendChild(this.langInputs['cs-relative-size']);
     row1.appendChild(this.unit('%'));
-    const ratioLabel = this.label('Character width(W):');
+    const ratioLabel = this.label('Character width:');
     ratioLabel.style.marginLeft = '16px';
     row1.appendChild(ratioLabel);
     this.langInputs['cs-ratio'] = this.numberInput(50, 200);
@@ -357,12 +357,12 @@ export class CharShapeDialog {
 
     // 글자 위치 + 자간 (2열)
     const row2 = this.row();
-    row2.appendChild(this.label('Character position(E):'));
+    row2.appendChild(this.label('Character position:'));
     this.langInputs['cs-char-offset'] = this.numberInput(-100, 100);
     this.langInputs['cs-char-offset'].style.width = '50px';
     row2.appendChild(this.langInputs['cs-char-offset']);
     row2.appendChild(this.unit('%'));
-    const spacingLabel = this.label('Character spacing(P):');
+    const spacingLabel = this.label('Character spacing:');
     spacingLabel.style.marginLeft = '16px';
     row2.appendChild(spacingLabel);
     this.langInputs['cs-spacing'] = this.numberInput(-50, 50);
@@ -399,14 +399,14 @@ export class CharShapeDialog {
 
     // 글자 색 + 음영 색
     const colorRow = this.row();
-    colorRow.appendChild(this.label('Font color(C):'));
+    colorRow.appendChild(this.label('Font color:'));
     this.textColorInput = document.createElement('input');
     this.textColorInput.type = 'color';
     this.textColorInput.className = 'cs-color-btn';
     this.textColorInput.addEventListener('input', () => this.updatePreview());
     colorRow.appendChild(this.textColorInput);
 
-    const shadeLabel = this.label('Shading color(G):');
+    const shadeLabel = this.label('Shading color:');
     shadeLabel.style.marginLeft = '16px';
     colorRow.appendChild(shadeLabel);
     this.shadeColorInput = document.createElement('input');
@@ -440,7 +440,7 @@ export class CharShapeDialog {
     const radioRow = this.row();
     this.shadowRadios = [];
     const shadowOpts: [string, string, string][] = [
-      ['0', 'None(N)', 'N'], ['1', 'Discontinuous(U)', 'U'], ['2', 'Continuous(T)', 'T'],
+      ['0', 'None', 'N'], ['1', 'Discontinuous', 'U'], ['2', 'Continuous', 'T'],
     ];
     shadowOpts.forEach(([val, lbl, key]) => {
       const lb = document.createElement('label');
@@ -459,19 +459,19 @@ export class CharShapeDialog {
 
     // X 방향 / Y 방향 / 색
     const xyRow = this.row();
-    xyRow.appendChild(this.label('X offset(X):'));
+    xyRow.appendChild(this.label('X offset:'));
     this.shadowXInput = this.numberInput(-100, 100);
     this.shadowXInput.style.width = '42px';
     xyRow.appendChild(this.shadowXInput);
     xyRow.appendChild(this.unit('%'));
-    const yLabel = this.label('Y offset(Y):');
+    const yLabel = this.label('Y offset:');
     yLabel.style.marginLeft = '10px';
     xyRow.appendChild(yLabel);
     this.shadowYInput = this.numberInput(-100, 100);
     this.shadowYInput.style.width = '42px';
     xyRow.appendChild(this.shadowYInput);
     xyRow.appendChild(this.unit('%'));
-    const scLabel = this.label('Color(C):');
+    const scLabel = this.label('Color:');
     scLabel.style.marginLeft = '10px';
     xyRow.appendChild(scLabel);
     this.shadowColorInput = document.createElement('input');
@@ -484,7 +484,7 @@ export class CharShapeDialog {
     // ── 밑줄
     const ulFs = this.createFieldset('Underline');
     const ulRow = this.row();
-    ulRow.appendChild(this.label('Position(L):'));
+    ulRow.appendChild(this.label('Position:'));
     this.ulPosSelect = document.createElement('select');
     this.ulPosSelect.className = 'dialog-select';
     this.ulPosSelect.style.width = '68px';
@@ -495,7 +495,7 @@ export class CharShapeDialog {
     }
     ulRow.appendChild(this.ulPosSelect);
 
-    const ulmLabel = this.label('Shape(M):');
+    const ulmLabel = this.label('Shape:');
     ulmLabel.style.marginLeft = '10px';
     ulRow.appendChild(ulmLabel);
     this.ulShapeSelect = document.createElement('select');
@@ -514,7 +514,7 @@ export class CharShapeDialog {
     }
     ulRow.appendChild(this.ulShapeSelect);
 
-    const ulcLabel = this.label('Color(B):');
+    const ulcLabel = this.label('Color:');
     ulcLabel.style.marginLeft = '10px';
     ulRow.appendChild(ulcLabel);
     this.ulColorInput = document.createElement('input');
@@ -527,7 +527,7 @@ export class CharShapeDialog {
     // ── 취소선
     const stFs = this.createFieldset('Strikethrough');
     const stRow = this.row();
-    stRow.appendChild(this.label('Shape(S):'));
+    stRow.appendChild(this.label('Shape:'));
     this.strikeShapeSelect = document.createElement('select');
     this.strikeShapeSelect.className = 'dialog-select';
     this.strikeShapeSelect.style.width = '90px';
@@ -544,7 +544,7 @@ export class CharShapeDialog {
     }
     stRow.appendChild(this.strikeShapeSelect);
 
-    const stcLabel = this.label('Color(H):');
+    const stcLabel = this.label('Color:');
     stcLabel.style.marginLeft = '10px';
     stRow.appendChild(stcLabel);
     this.strikeColorInput = document.createElement('input');
@@ -557,7 +557,7 @@ export class CharShapeDialog {
     // ── 기타
     const etcFs = this.createFieldset('Other');
     const etcRow1 = this.row();
-    etcRow1.appendChild(this.label('Outline(O):'));
+    etcRow1.appendChild(this.label('Outline:'));
     this.outlineTypeSelect = document.createElement('select');
     this.outlineTypeSelect.className = 'dialog-select';
     this.outlineTypeSelect.style.width = '80px';
@@ -568,7 +568,7 @@ export class CharShapeDialog {
     });
     etcRow1.appendChild(this.outlineTypeSelect);
 
-    const emLabel = this.label('Emphasis mark(E):');
+    const emLabel = this.label('Emphasis mark:');
     emLabel.style.marginLeft = '10px';
     etcRow1.appendChild(emLabel);
     this.emphasisSelect = document.createElement('select');
@@ -587,8 +587,8 @@ export class CharShapeDialog {
 
     // 체크박스 행
     const etcRow2 = this.row();
-    const fitCb = this.checkbox('Match space width to font(F)');
-    const kerningCb = this.checkbox('Kerning(K)');
+    const fitCb = this.checkbox('Match space width to font');
+    const kerningCb = this.checkbox('Kerning');
     this.kerningCheckbox = kerningCb.querySelector('input')!;
     etcRow2.appendChild(fitCb);
     etcRow2.appendChild(kerningCb);
@@ -623,7 +623,7 @@ export class CharShapeDialog {
 
     // 종류(Y) — HWP 스펙 선 종류 값에 매핑
     const typeRow = this.row();
-    typeRow.appendChild(this.label('Type(Y):'));
+    typeRow.appendChild(this.label('Type:'));
     this.borderTypeSelect = document.createElement('select');
     this.borderTypeSelect.className = 'dialog-select';
     this.borderTypeSelect.style.width = '100px';
@@ -641,7 +641,7 @@ export class CharShapeDialog {
 
     // 굵기(I) — HWP 스펙 width 인덱스에 매핑
     const widthRow = this.row();
-    widthRow.appendChild(this.label('Weight(I):'));
+    widthRow.appendChild(this.label('Weight:'));
     this.borderWidthSelect = document.createElement('select');
     this.borderWidthSelect.className = 'dialog-select';
     this.borderWidthSelect.style.width = '100px';
@@ -661,7 +661,7 @@ export class CharShapeDialog {
 
     // 색(C)
     const colorRow = this.row();
-    colorRow.appendChild(this.label('Color(C):'));
+    colorRow.appendChild(this.label('Color:'));
     this.borderColorInput = document.createElement('input');
     this.borderColorInput.type = 'color';
     this.borderColorInput.value = '#000000';
@@ -717,7 +717,7 @@ export class CharShapeDialog {
 
     // 면 색(Q) — 색 없음 + 색 선택
     const faceRow = this.row();
-    faceRow.appendChild(this.label('Fill color(Q):'));
+    faceRow.appendChild(this.label('Fill color:'));
     this.faceColorSelect = document.createElement('select');
     this.faceColorSelect.className = 'dialog-select';
     this.faceColorSelect.style.width = '100px';
@@ -738,14 +738,14 @@ export class CharShapeDialog {
 
     // 무늬 색(P) + 무늬 모양(L)
     const patRow = this.row();
-    patRow.appendChild(this.label('Pattern color(P):'));
+    patRow.appendChild(this.label('Pattern color:'));
     this.patColorInput = document.createElement('input');
     this.patColorInput.type = 'color';
     this.patColorInput.value = '#000000';
     this.patColorInput.className = 'cs-color-btn';
     patRow.appendChild(this.patColorInput);
 
-    const patLabel = this.label('Pattern shape(L):');
+    const patLabel = this.label('Pattern shape:');
     patLabel.style.marginLeft = '10px';
     patRow.appendChild(patLabel);
     this.patShapeSelect = document.createElement('select');

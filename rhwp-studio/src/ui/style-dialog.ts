@@ -79,7 +79,7 @@ export class StyleDialog extends ModalDialog {
 
     const listLabel = document.createElement('div');
     listLabel.className = 'sd-list-label';
-    listLabel.textContent = 'Style list(M):';
+    listLabel.textContent = 'Style list:';
     leftCol.appendChild(listLabel);
 
     this.styleList = document.createElement('div');

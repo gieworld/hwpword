@@ -94,7 +94,7 @@ export class StyleEditDialog extends ModalDialog {
     nameGroup.className = 'se-field-group';
     const nameLabel = document.createElement('label');
     nameLabel.className = 'se-label';
-    nameLabel.textContent = 'Style name(N):';
+    nameLabel.textContent = 'Style name:';
     this.nameInput = document.createElement('input');
     this.nameInput.className = 'se-field-input';
     this.nameInput.maxLength = MAX_STYLE_NAME_LEN;
@@ -106,7 +106,7 @@ export class StyleEditDialog extends ModalDialog {
     enGroup.className = 'se-field-group';
     const enLabel = document.createElement('label');
     enLabel.className = 'se-label';
-    enLabel.textContent = 'English name(E):';
+    enLabel.textContent = 'English name:';
     this.enNameInput = document.createElement('input');
     this.enNameInput.className = 'se-field-input';
     this.enNameInput.maxLength = MAX_STYLE_NAME_LEN;
@@ -140,7 +140,7 @@ export class StyleEditDialog extends ModalDialog {
       this.typePara.checked = true;
       this.typePara.addEventListener('change', () => this.onTypeChange());
       lblPara.appendChild(this.typePara);
-      lblPara.appendChild(document.createTextNode(' Paragraph(P)'));
+      lblPara.appendChild(document.createTextNode(' Paragraph'));
 
       const lblChar = document.createElement('label');
       this.typeChar = document.createElement('input');
@@ -149,7 +149,7 @@ export class StyleEditDialog extends ModalDialog {
       this.typeChar.value = '1';
       this.typeChar.addEventListener('change', () => this.onTypeChange());
       lblChar.appendChild(this.typeChar);
-      lblChar.appendChild(document.createTextNode(' Character(C)'));
+      lblChar.appendChild(document.createTextNode(' Character'));
 
       radioGroup.appendChild(lblPara);
       radioGroup.appendChild(lblChar);
@@ -164,7 +164,7 @@ export class StyleEditDialog extends ModalDialog {
       nextGroup.className = 'se-field-group se-next-group';
       const nextLabel = document.createElement('label');
       nextLabel.className = 'se-label';
-      nextLabel.textContent = 'Style for next paragraph(S):';
+      nextLabel.textContent = 'Style for next paragraph:';
       this.nextStyleSelect = document.createElement('select');
       this.nextStyleSelect.className = 'se-field-select';
       this.populateNextStyleSelect();

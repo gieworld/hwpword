@@ -164,7 +164,7 @@ export const PARA_NUM_PRESETS_KO: ParaNumPreset[] = [
   },
   {
     name: '(1) (가) (a) 1) 가) a) ① ㉮ ⓐ', // hwpword-keep-korean: unused upstream preset data
-    nameEn: '(I) (A) (1) i) a) 1) ①',
+    nameEn: '(I) (A) (1) i) a) 1) ①', // hwpword-keep-text: unused upstream preset data; numbering-level format preview (Roman/alpha numerals), not a Hancom mnemonic
     format: parseFormat('(^1)[::](^2)[::](^3)[::]^4)[::]^5)[::]^6)[::]^7[::]^8[::]^9[::][::]'),
     attrs: parseAttrs(';;50;;1;1;0;;1;[::];;50;;1;1;8;;1;[::];;50;;1;1;5;;1;[::];;50;;1;1;0;;1;[::];;50;;1;1;8;;1;[::];;50;;1;1;5;;1;[::];;50;;1;1;1;;1;[::];;50;;1;1;9;;1;[::];;50;;1;1;7;;1;[::];;50;;1;1;0;;1;[::]'),
   },

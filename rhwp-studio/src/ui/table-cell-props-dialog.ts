@@ -329,7 +329,7 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 체크박스 옵션들
     const optRow1 = this.row();
-    this.cellSingleLineCheck = this.checkbox('Single-line input(S)');
+    this.cellSingleLineCheck = this.checkbox('Single-line input');
     optRow1.appendChild(this.cellSingleLineCheck.parentElement!);
     this.cellProtectCheck = this.checkbox('Protect cell');
     optRow1.appendChild(this.cellProtectCheck.parentElement!);
@@ -372,7 +372,7 @@ export class TableCellPropsDialog extends ModalDialog {
     const pageSection = this.createSection('Multiple Page Support');
 
     const pbRow = this.row();
-    pbRow.appendChild(this.label('At page boundary(Q)'));
+    pbRow.appendChild(this.label('At page boundary'));
     this.tablePageBreakSelect = this.selectOptions([
       ['2', 'Split'], ['1', 'Split by Cell'], ['0', 'Do Not Split'],
     ]);
@@ -386,14 +386,14 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 자동으로 나뉜 표의 경계선 설정
     const abRow = this.row();
-    this.tableAutoBorderCheck = this.checkbox('Set border for split table(J)');
+    this.tableAutoBorderCheck = this.checkbox('Set border for split table');
     abRow.appendChild(this.tableAutoBorderCheck.parentElement!);
     pageSection.appendChild(abRow);
 
     this.tableAutoBorderFields = document.createElement('div');
     this.tableAutoBorderFields.className = 'tcp-disabled';
     const abLineRow = this.row();
-    abLineRow.appendChild(this.label('Type(N)'));
+    abLineRow.appendChild(this.label('Type'));
     const abLineType = this.selectOptions([
       ['0', 'None'], ['1', 'Solid'], ['2', 'Dashed'], ['3', 'Dotted'],
       ['4', 'Dash-Dot'], ['5', 'Dash-Dot-Dot'], ['6', 'Long Dash'], ['7', 'Double'],
@@ -402,7 +402,7 @@ export class TableCellPropsDialog extends ModalDialog {
     abLineRow.appendChild(abLineType);
     this.tableAutoBorderFields.appendChild(abLineRow);
     const abWidthRow = this.row();
-    abWidthRow.appendChild(this.label('Weight(H)'));
+    abWidthRow.appendChild(this.label('Weight'));
     const abWidth = this.selectOptions([
       ['0', '0.1mm'], ['1', '0.12mm'], ['2', '0.15mm'], ['3', '0.2mm'],
       ['4', '0.25mm'], ['5', '0.3mm'], ['6', '0.4mm'],
@@ -411,7 +411,7 @@ export class TableCellPropsDialog extends ModalDialog {
     abWidthRow.appendChild(abWidth);
     this.tableAutoBorderFields.appendChild(abWidthRow);
     const abColorRow = this.row();
-    abColorRow.appendChild(this.label('Color(S)'));
+    abColorRow.appendChild(this.label('Color'));
     const abColor = document.createElement('input');
     abColor.type = 'color';
     abColor.value = '#000000';
@@ -738,14 +738,14 @@ export class TableCellPropsDialog extends ModalDialog {
     this.captionFieldsWrap.appendChild(capGapRow);
 
     const capSizeRow = this.row();
-    capSizeRow.appendChild(this.label('Caption size(S)'));
+    capSizeRow.appendChild(this.label('Caption size'));
     this.captionWidthInput = this.numberInput();
     capSizeRow.appendChild(this.captionWidthInput);
     capSizeRow.appendChild(this.unit('mm'));
     this.captionFieldsWrap.appendChild(capSizeRow);
 
     const capExpandRow = this.row();
-    this.captionExpandCheck = this.checkbox('Expand width to margin(W)');
+    this.captionExpandCheck = this.checkbox('Expand width to margin');
     capExpandRow.appendChild(this.captionExpandCheck.parentElement!);
     this.captionFieldsWrap.appendChild(capExpandRow);
 
@@ -800,7 +800,7 @@ export class TableCellPropsDialog extends ModalDialog {
     this.borderTarget = 'table';
 
     // ── 선 종류 시각적 격자 ──
-    const lineSection = this.createSection('Line Type(Y)');
+    const lineSection = this.createSection('Line Type');
     this.borderLineTypeGrid = document.createElement('div');
     this.borderLineTypeGrid.className = 'tcp-line-type-grid';
     const lineTypeDefs = [
@@ -914,7 +914,7 @@ export class TableCellPropsDialog extends ModalDialog {
 
     // 선 모양 바로 적용
     const immediateRow = this.row();
-    this.borderApplyImmediateCheck = this.checkbox('Apply line style immediately(I)');
+    this.borderApplyImmediateCheck = this.checkbox('Apply line style immediately');
     immediateRow.appendChild(this.borderApplyImmediateCheck.parentElement!);
     previewSection.appendChild(immediateRow);
 
@@ -938,7 +938,7 @@ export class TableCellPropsDialog extends ModalDialog {
     // ── 자동 나뉜 표 경계선 설정 ──
     const abSection = this.createSection('Auto Border');
     const abRow = this.row();
-    this.borderAutoBorderCheck = this.checkbox('Set border for split table(J)');
+    this.borderAutoBorderCheck = this.checkbox('Set border for split table');
     abRow.appendChild(this.borderAutoBorderCheck.parentElement!);
     abSection.appendChild(abRow);
 
@@ -1124,7 +1124,7 @@ export class TableCellPropsDialog extends ModalDialog {
     this.bgColorRadio.name = 'bgFill';
     this.bgColorRadio.addEventListener('change', () => this.updateBgPreview());
     colorRow.appendChild(this.bgColorRadio);
-    colorRow.appendChild(document.createTextNode(' Color(Q)'));
+    colorRow.appendChild(document.createTextNode(' Color'));
     fillSection.appendChild(colorRow);
 
     // 면색 + 무늬색 + 무늬모양
@@ -1132,7 +1132,7 @@ export class TableCellPropsDialog extends ModalDialog {
     colorFields.style.marginLeft = '20px';
 
     const faceRow = this.row();
-    faceRow.appendChild(this.label('Fill color(C)'));
+    faceRow.appendChild(this.label('Fill color'));
     this.bgColorPicker = document.createElement('input');
     this.bgColorPicker.type = 'color';
     this.bgColorPicker.value = '#ffffff';
@@ -1146,7 +1146,7 @@ export class TableCellPropsDialog extends ModalDialog {
     colorFields.appendChild(faceRow);
 
     const patColorRow = this.row();
-    patColorRow.appendChild(this.label('Pattern color(K)'));
+    patColorRow.appendChild(this.label('Pattern color'));
     this.bgPatternColorPicker = document.createElement('input');
     this.bgPatternColorPicker.type = 'color';
     this.bgPatternColorPicker.value = '#000000';
@@ -1160,7 +1160,7 @@ export class TableCellPropsDialog extends ModalDialog {
     colorFields.appendChild(patColorRow);
 
     const patTypeRow = this.row();
-    patTypeRow.appendChild(this.label('Pattern shape(L)'));
+    patTypeRow.appendChild(this.label('Pattern shape'));
     this.bgPatternTypeSelect = this.selectOptions([
       ['0', 'None'], ['1', 'Horizontal Lines'], ['2', 'Vertical Lines'], ['3', 'Backslash'],
       ['4', 'Slash'], ['5', 'Cross'], ['6', 'X'],
@@ -1480,7 +1480,7 @@ export class TableCellPropsDialog extends ModalDialog {
   private buildAllSpinner(inputs: Record<string, HTMLInputElement>): HTMLElement {
     const wrap = document.createElement('div');
     wrap.className = 'tcp-all-spinner';
-    const lbl = this.label('All(A)');
+    const lbl = this.label('All');
     wrap.appendChild(lbl);
 
     const setAll = (delta: number) => {

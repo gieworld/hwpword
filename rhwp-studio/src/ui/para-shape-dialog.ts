@@ -296,7 +296,7 @@ export class ParaShapeDialog {
     // 여백 (좌측)
     const marginFs = createFieldset('Margin');
     const mlRow = row();
-    const mlLabel = label('Left(E):');
+    const mlLabel = label('Left:');
     mlLabel.style.minWidth = '62px';
     mlLabel.style.textAlign = 'right';
     mlRow.appendChild(mlLabel);
@@ -307,7 +307,7 @@ export class ParaShapeDialog {
     marginFs.appendChild(mlRow);
 
     const mrRow = row();
-    const mrLabel = label('Right(O):');
+    const mrLabel = label('Right:');
     mrLabel.style.minWidth = '62px';
     mrLabel.style.textAlign = 'right';
     mrRow.appendChild(mrLabel);
@@ -328,7 +328,7 @@ export class ParaShapeDialog {
     normalRadio.value = 'normal';
     this.firstLineRadios.push(normalRadio);
     normalRow.appendChild(normalRadio);
-    normalRow.appendChild(label('Normal(N)'));
+    normalRow.appendChild(label('Normal'));
     firstLineFs.appendChild(normalRow);
 
     const indentRow = row();
@@ -339,7 +339,7 @@ export class ParaShapeDialog {
     indentRadio.value = 'indent';
     this.firstLineRadios.push(indentRadio);
     indentRow.appendChild(indentRadio);
-    const indentLabel = label('Indent(A)');
+    const indentLabel = label('Indent');
     indentLabel.style.whiteSpace = 'nowrap';
     indentRow.appendChild(indentLabel);
     this.indentInput = numberInput(0, 999, 0.1);
@@ -355,7 +355,7 @@ export class ParaShapeDialog {
     hangRadio.value = 'hanging';
     this.firstLineRadios.push(hangRadio);
     hangRow.appendChild(hangRadio);
-    const hangLabel = label('Hanging Indent(B)');
+    const hangLabel = label('Hanging Indent');
     hangLabel.style.whiteSpace = 'nowrap';
     hangRow.appendChild(hangLabel);
     firstLineFs.appendChild(hangRow);
@@ -376,7 +376,7 @@ export class ParaShapeDialog {
     const spacingFs = createFieldset('Spacing');
 
     const lsRow = row();
-    lsRow.appendChild(label('Line spacing(S):'));
+    lsRow.appendChild(label('Line spacing:'));
     this.lineSpacingTypeSelect = document.createElement('select');
     this.lineSpacingTypeSelect.className = 'dialog-select';
     this.lineSpacingTypeSelect.style.width = '100px';
@@ -397,12 +397,12 @@ export class ParaShapeDialog {
     spacingFs.appendChild(lsRow);
 
     const paraSpRow = row();
-    paraSpRow.appendChild(label('Space before(U):'));
+    paraSpRow.appendChild(label('Space before:'));
     this.spacingBeforeInput = numberInput(0, 999, 0.1);
     this.spacingBeforeInput.style.width = '55px';
     paraSpRow.appendChild(this.spacingBeforeInput);
     paraSpRow.appendChild(unit('pt'));
-    const afterLabel = label('Space after(V):');
+    const afterLabel = label('Space after:');
     afterLabel.style.marginLeft = '12px';
     paraSpRow.appendChild(afterLabel);
     this.spacingAfterInput = numberInput(0, 999, 0.1);
@@ -440,8 +440,8 @@ export class ParaShapeDialog {
 
     this.headTypeRadios = [];
     const headTypes: [string, string][] = [
-      ['None', 'None(O)'], ['Outline', 'Outline paragraph(U)'],
-      ['Number', 'Numbered paragraph(M)'], ['Bullet', 'Bulleted paragraph(B)'],
+      ['None', 'None'], ['Outline', 'Outline paragraph'],
+      ['Number', 'Numbered paragraph'], ['Bullet', 'Bulleted paragraph'],
     ];
 
     // 수준 드롭다운 (개요/번호 선택 시만 활성)
@@ -476,7 +476,7 @@ export class ParaShapeDialog {
       if (val === 'Outline') {
         const span = document.createElement('span');
         span.style.marginLeft = '12px';
-        span.appendChild(document.createTextNode('Level(L): '));
+        span.appendChild(document.createTextNode('Level: '));
         span.appendChild(this.paraLevelSelect);
         row.appendChild(span);
       }
@@ -508,14 +508,14 @@ export class ParaShapeDialog {
       return cb;
     };
 
-    this.widowOrphanCb = makeCb('Widow/orphan control(K)');
-    this.keepWithNextCb = makeCb('Keep with next paragraph(N)');
-    this.keepLinesCb = makeCb('Keep lines together(P)');
-    this.pageBreakBeforeCb = makeCb('Page break before paragraph(E)');
-    this.fontLineHeightCb = makeCb('Line height that matches the font(H)');
-    this.singleLineCb = makeCb('Type as a single line(W)');
-    this.autoSpaceKrEnCb = makeCb('Automatically adjust spacing between Hangul and Latin(G)');
-    this.autoSpaceKrNumCb = makeCb('Automatically adjust spacing between Hangul and numbers(R)');
+    this.widowOrphanCb = makeCb('Widow/orphan control');
+    this.keepWithNextCb = makeCb('Keep with next paragraph');
+    this.keepLinesCb = makeCb('Keep lines together');
+    this.pageBreakBeforeCb = makeCb('Page break before paragraph');
+    this.fontLineHeightCb = makeCb('Line height that matches the font');
+    this.singleLineCb = makeCb('Type as a single line');
+    this.autoSpaceKrEnCb = makeCb('Automatically adjust spacing between Hangul and Latin');
+    this.autoSpaceKrNumCb = makeCb('Automatically adjust spacing between Hangul and numbers');
 
     // 세로 정렬
     const vaRow = document.createElement('div');
@@ -523,7 +523,7 @@ export class ParaShapeDialog {
     vaRow.style.padding = '2px 0';
     const vaLabel = document.createElement('label');
     vaLabel.className = 'dialog-label';
-    vaLabel.textContent = 'Vertical alignment(S):';
+    vaLabel.textContent = 'Vertical alignment:';
     vaLabel.style.marginRight = '8px';
     this.verticalAlignSelect = document.createElement('select');
     this.verticalAlignSelect.className = 'dialog-select';
@@ -545,7 +545,7 @@ export class ParaShapeDialog {
     const breakFs = createFieldset('Line Break Rules');
 
     const krRow = row();
-    krRow.appendChild(label('Hangul(K):'));
+    krRow.appendChild(label('Hangul:'));
     this.koreanBreakSelect = document.createElement('select');
     this.koreanBreakSelect.className = 'dialog-select';
     this.koreanBreakSelect.style.width = '100px';
@@ -558,7 +558,7 @@ export class ParaShapeDialog {
     breakFs.appendChild(krRow);
 
     const enRow = row();
-    enRow.appendChild(label('Latin(E):'));
+    enRow.appendChild(label('Latin:'));
     this.englishBreakSelect = document.createElement('select');
     this.englishBreakSelect.className = 'dialog-select';
     this.englishBreakSelect.style.width = '100px';
