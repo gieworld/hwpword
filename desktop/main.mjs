@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { originOf, resolveAppPath } from './lib/app-path.mjs';
-import { createSerialWriter, LaunchFileRegistry, launchPathsFromArgv } from './lib/launch-files.mjs';
+import { createSerialWriter, LaunchFileRegistry, launchPathsFromArgv, pathKey } from './lib/launch-files.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const APP_HOST = 'hwpword';
@@ -19,6 +19,7 @@ const STUDIO_DIST = app.isPackaged
 const launchFiles = new LaunchFileRegistry();
 // Every window lives in this one process (single-instance lock), so quick repeated saves must queue per file.
 const saveFile = createSerialWriter();
+const windowsByPath = new Map();
 
 // Service workers are deliberately not enabled for this scheme: no stale caches across installer upgrades.
 protocol.registerSchemesAsPrivileged([
@@ -80,9 +81,27 @@ function createWindow(launchPaths = []) {
   return win;
 }
 
+function focusWindow(win) {
+  if (win.isMinimized()) win.restore();
+  win.focus();
+}
+
+/** One window per file: launching a file that is already open brings its window forward, so two editors never overwrite each other. */
 function openLaunchPaths(paths) {
   if (paths.length === 0) return false;
-  for (const path of paths) createWindow([path]);
+  for (const path of paths) {
+    const key = pathKey(path);
+    const open = windowsByPath.get(key);
+    if (open) {
+      focusWindow(open);
+      continue;
+    }
+    const win = createWindow([path]);
+    windowsByPath.set(key, win);
+    win.on('closed', () => {
+      if (windowsByPath.get(key) === win) windowsByPath.delete(key);
+    });
+  }
   return true;
 }
 
@@ -127,12 +146,8 @@ if (!app.requestSingleInstanceLock()) {
   app.on('second-instance', (_event, argv, workingDirectory) => {
     if (openLaunchPaths(launchPathsFromArgv(argv, workingDirectory))) return;
     const [existing] = BrowserWindow.getAllWindows();
-    if (!existing) {
-      createWindow();
-      return;
-    }
-    if (existing.isMinimized()) existing.restore();
-    existing.focus();
+    if (existing) focusWindow(existing);
+    else createWindow();
   });
 
   app.whenReady().then(() => {
