@@ -52,9 +52,13 @@ async function checkFile(name) {
 
     stage = 'save';
     const exported = result.format === 'hwpx' ? doc.exportHwpxWithReport() : doc.exportHwpWithReport();
-    result.lossCount = lossCount(exported.contentLoss());
-    const saved = exported.takeBytes();
-    exported.free();
+    let saved;
+    try {
+      result.lossCount = lossCount(exported.contentLoss());
+      saved = exported.takeBytes();
+    } finally {
+      exported.free();
+    }
 
     stage = 'reopen';
     const reopened = new HwpDocument(saved);
