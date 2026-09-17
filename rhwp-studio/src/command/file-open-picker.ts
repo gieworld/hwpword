@@ -34,7 +34,7 @@ export async function openDocumentViaPicker(deps: OpenFilePickerDependencies): P
       handle = await pickOpenFileHandle(deps.windowLike);
     } catch (error) {
       // 교차 출처 서브프레임 등에서 showOpenFilePicker 자체가 거부되는 경우(SecurityError 등).
-      deps.warn('[file:open] File System Access API 실패, 폴백:', error);
+      deps.warn('[file:open] File System Access API failed, falling back:', error);
       nativeOpenPickerAvailable = false;
     }
   }
@@ -61,6 +61,6 @@ export async function openDocumentViaPicker(deps: OpenFilePickerDependencies): P
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error('[file:open] 열기 실패:', message);
-    deps.alert(`파일 열기에 실패했습니다:\n${message}`);
+    deps.alert(`Could not open the file:\n${message}`);
   }
 }

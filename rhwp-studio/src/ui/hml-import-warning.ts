@@ -8,6 +8,6 @@ export function showHmlImportWarning(metadata: HmlOpenMetadata): void {
   showToast({
     message: buildHmlImportWarningMessage(metadata),
     durationMs: 0,
-    confirmLabel: '확인',
+    confirmLabel: 'OK',
   });
 }

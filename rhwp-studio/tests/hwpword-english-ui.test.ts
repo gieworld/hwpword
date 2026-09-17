@@ -44,6 +44,10 @@ const ENGLISH_UI_SOURCES = [
   // Task 11: input-handler.ts overrides some ContextMenuItem.label values directly
   // (context-menu.ts renders item.label ?? def.label) — those overrides must be English too.
   'src/engine/input-handler.ts',
+  // Final review: the lossy-save warning, the open-failure alert and the HML import toast button.
+  'src/core/export-content-loss.ts',
+  'src/command/file-open-picker.ts',
+  'src/ui/hml-import-warning.ts',
 ];
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힯]/;

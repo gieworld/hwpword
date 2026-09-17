@@ -86,7 +86,7 @@ test('보고서 파싱 실패는 바이트만 반환하지 않고 WASM artifact�
 
   assert.throws(
     () => consumeWasmDocumentExport(exported),
-    /보고서 항목이 올바르지 않습니다/,
+    /report has invalid entries/,
   );
   assert.equal(events.at(-1), 'free');
 });
@@ -274,6 +274,6 @@ test('Studio 명시 저장은 reported artifact를 primary 저장 뒤 fallback d
 
 test('알림은 출력 형식과 정확한 손실 위치를 사용자 상호작용에 남긴다', () => {
   const message = buildContentLossNotice(parseContentLossReport(lossReport));
-  assert.match(message ?? '', /HWPX 파일은 저장되었지만/);
-  assert.match(message ?? '', /그림·첨부 데이터 #7: BinData\/image7\.png/);
+  assert.match(message ?? '', /^The HWPX file was saved, but some content could not be preserved\./);
+  assert.match(message ?? '', /Picture or attachment data #7: BinData\/image7\.png/);
 });

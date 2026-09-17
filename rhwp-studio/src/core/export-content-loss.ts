@@ -89,12 +89,12 @@ export function parseContentLossReport(value: unknown): ContentLossReport {
     || !Number.isSafeInteger(value.count)
     || value.count < 0
     || !Array.isArray(value.losses)) {
-    throw new Error('내보내기 내용 손실 보고서 형식을 확인할 수 없습니다');
+    throw new Error('Could not read the export content-loss report');
   }
 
   const losses = value.losses.map(parseLoss);
   if (losses.some((loss) => loss === null) || value.count !== losses.length) {
-    throw new Error('내보내기 내용 손실 보고서 항목이 올바르지 않습니다');
+    throw new Error('The export content-loss report has invalid entries');
   }
 
   return {
@@ -113,9 +113,9 @@ export function parseContentLossReport(value: unknown): ContentLossReport {
  */
 export function consumeWasmDocumentExport(exported: WasmDocumentExport): DocumentExportArtifact {
   try {
-    if (!exported.hasBytes()) throw new Error('내보내기 결과에 바이트가 없습니다');
+    if (!exported.hasBytes()) throw new Error('The export produced no document bytes');
     const bytes = exported.takeBytes();
-    if (exported.hasBytes()) throw new Error('내보내기 바이트 소유권을 옮기지 못했습니다');
+    if (exported.hasBytes()) throw new Error('Could not take the exported document bytes');
     const contentLoss = parseContentLossReport(JSON.parse(exported.contentLoss()));
     return { bytes, contentLoss };
   } finally {
@@ -129,10 +129,10 @@ export function runReportedExport(exporter: () => WasmDocumentExport): DocumentE
 
 function subjectLabel(loss: ContentLossRecord): string {
   switch (loss.subject) {
-    case 'binaryData': return '그림·첨부 데이터';
-    case 'control': return '문서 개체';
-    case 'fieldParameters': return '필드 속성';
-    default: return '문서 내용';
+    case 'binaryData': return 'Picture or attachment data';
+    case 'control': return 'Document object';
+    case 'fieldParameters': return 'Field properties';
+    default: return 'Document content';
   }
 }
 
@@ -145,9 +145,9 @@ export function buildContentLossNotice(report: ContentLossReport): string | null
     return `• ${subjectLabel(loss)}${resource}: ${loss.path}`;
   });
   const remaining = report.losses.length - shown.length;
-  if (remaining > 0) shown.push(`• 그 밖의 손실 ${remaining}건`);
+  if (remaining > 0) shown.push(`• ${remaining} more`);
   return [
-    `${format} 파일은 저장되었지만 일부 내용을 보존하지 못했습니다.`,
+    `The ${format} file was saved, but some content could not be preserved.`,
     ...shown,
   ].join('\n');
 }
