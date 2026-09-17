@@ -100,6 +100,7 @@ import { CENTER_ZOOM_ANCHOR } from '@/view/zoom-anchor';
 import { withBusyCursor } from '@/view/busy-cursor';
 import { formatPageIndicator } from '@/view/page-indicator';
 import { installEmbedRuntime } from '@/embed/runtime';
+import { installDesktopLaunchQueue, type DesktopWindowLike } from '@/desktop/desktop-launch-queue';
 import type { EmbedRendererRuntimeRequestV1 } from '@/embed/rpc-router';
 import { enrichFontDecisionTrace } from '@/core/font-decision-trace';
 import { DocumentAgentController } from '@/document-agent/controller';
@@ -116,6 +117,9 @@ const autosaveManager = new AutosaveManager({
   onStatus: handleAutosaveStatus,
 });
 autosaveManager.connect(eventBus);
+// HWP Word desktop: files Windows launched us with arrive through the PWA launch-queue path below.
+installDesktopLaunchQueue(window as unknown as DesktopWindowLike);
+
 initThemeSync((effective, mode) => {
   eventBus.emit('theme-changed', { mode, effective });
   eventBus.emit('command-state-changed');

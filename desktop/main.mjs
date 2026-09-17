@@ -1,8 +1,11 @@
-// HWP Word main process: serves the rhwp-studio build over app://hwpword and keeps the renderer locked down.
-import { app, BrowserWindow, dialog, Menu, net, protocol, session, shell } from 'electron';
+// HWP Word main process: serves the rhwp-studio build over app://hwpword, keeps the renderer locked down,
+// and hands files Windows launched us with to the studio through token-scoped IPC.
+import { app, BrowserWindow, dialog, ipcMain, Menu, net, protocol, session, shell } from 'electron';
+import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { originOf, resolveAppPath } from './lib/app-path.mjs';
+import { LaunchFileRegistry, launchPathsFromArgv, writeFileAtomic } from './lib/launch-files.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const APP_HOST = 'hwpword';
@@ -13,6 +16,7 @@ const DEV_ORIGIN = DEV_URL ? originOf(DEV_URL) : null;
 const STUDIO_DIST = app.isPackaged
   ? join(process.resourcesPath, 'studio')
   : join(here, '..', 'rhwp-studio', 'dist');
+const launchFiles = new LaunchFileRegistry();
 
 // Service workers are deliberately not enabled for this scheme: no stale caches across installer upgrades.
 protocol.registerSchemesAsPrivileged([
@@ -35,7 +39,7 @@ function hardenSession(ses) {
   ses.setPermissionCheckHandler((_webContents, _permission, requestingOrigin) => isTrustedUrl(`${requestingOrigin}/`));
 }
 
-function createWindow() {
+function createWindow(launchPaths = []) {
   const win = new BrowserWindow({
     width: 1400,
     height: 900,
@@ -43,8 +47,16 @@ function createWindow() {
     minHeight: 600,
     show: false,
     title: 'HWP Word',
-    webPreferences: { contextIsolation: true, sandbox: true, nodeIntegration: false },
+    webPreferences: {
+      preload: join(here, 'preload.cjs'),
+      contextIsolation: true,
+      sandbox: true,
+      nodeIntegration: false,
+    },
   });
+  const ownerId = win.webContents.id;
+  launchFiles.register(ownerId, launchPaths);
+  win.on('closed', () => launchFiles.release(ownerId));
   win.on('page-title-updated', (event) => event.preventDefault());
   // rhwp-studio registers beforeunload while the document is dirty; Electron would otherwise block the close silently.
   win.webContents.on('will-prevent-unload', (event) => {
@@ -66,6 +78,31 @@ function createWindow() {
   return win;
 }
 
+function openLaunchPaths(paths) {
+  if (paths.length === 0) return false;
+  for (const path of paths) createWindow([path]);
+  return true;
+}
+
+function registerIpc() {
+  const ownerOf = (event) => {
+    if (!isTrustedUrl(event.senderFrame?.url ?? '')) throw new Error('Untrusted sender');
+    return event.sender.id;
+  };
+  const pathOf = (event, token) => {
+    const path = launchFiles.pathFor(ownerOf(event), token);
+    if (!path) throw new Error('Unknown file token');
+    return path;
+  };
+  ipcMain.handle('hwpword:get-launch-files', (event) => launchFiles.list(ownerOf(event)));
+  ipcMain.handle('hwpword:read-file', async (event, token) => new Uint8Array(await readFile(pathOf(event, token))));
+  ipcMain.handle('hwpword:write-file', async (event, token, bytes) => {
+    const path = pathOf(event, token);
+    if (!(bytes instanceof Uint8Array)) throw new Error('Expected document bytes');
+    await writeFileAtomic(path, bytes);
+  });
+}
+
 app.on('web-contents-created', (_event, contents) => {
   // Print preview opens print.html in a child window; anything else leaves the app.
   contents.setWindowOpenHandler(({ url }) => {
@@ -82,14 +119,30 @@ app.on('web-contents-created', (_event, contents) => {
 
 Menu.setApplicationMenu(null);
 
-app.whenReady().then(() => {
-  protocol.handle('app', (request) => {
-    const filePath = resolveAppPath(STUDIO_DIST, request.url, APP_HOST);
-    if (!filePath) return new Response('Not found', { status: 404 });
-    return net.fetch(pathToFileURL(filePath).toString());
+if (!app.requestSingleInstanceLock()) {
+  app.quit();
+} else {
+  app.on('second-instance', (_event, argv, workingDirectory) => {
+    if (openLaunchPaths(launchPathsFromArgv(argv, workingDirectory))) return;
+    const [existing] = BrowserWindow.getAllWindows();
+    if (!existing) {
+      createWindow();
+      return;
+    }
+    if (existing.isMinimized()) existing.restore();
+    existing.focus();
   });
-  hardenSession(session.defaultSession);
-  createWindow();
-});
 
-app.on('window-all-closed', () => app.quit());
+  app.whenReady().then(() => {
+    protocol.handle('app', (request) => {
+      const filePath = resolveAppPath(STUDIO_DIST, request.url, APP_HOST);
+      if (!filePath) return new Response('Not found', { status: 404 });
+      return net.fetch(pathToFileURL(filePath).toString());
+    });
+    hardenSession(session.defaultSession);
+    registerIpc();
+    if (!openLaunchPaths(launchPathsFromArgv(process.argv))) createWindow();
+  });
+
+  app.on('window-all-closed', () => app.quit());
+}
