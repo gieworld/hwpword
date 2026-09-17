@@ -876,7 +876,7 @@ export class InputHandler {
     const { width, height } = fitDroppedImageSizeRaw(naturalWidth, naturalHeight, pageInfo, pagePoint.pageX);
     // Default alt-text embedded in the picture control's document data (matches Hancom's own default).
     const desc =
-      `그림입니다.\r\n원본 그림의 이름: ${fileName}\r\n원본 그림의 크기: 가로 ${naturalWidth}pixel, 세로 ${naturalHeight}pixel`; // hwpword-keep-korean
+      `Picture.\r\nOriginal picture name: ${fileName}\r\nOriginal picture size: ${naturalWidth} x ${naturalHeight} pixels`;
 
     try {
       // 삽입 + 인라인 전환을 하나의 스냅샷으로 기록 (Undo 지원, pasteImage 경로와 동일 패턴)
