@@ -195,7 +195,11 @@ test('the visible style bar and status bar in index.html are English', () => {
     .slice(start, end)
     .replace(/<!--[\s\S]*?-->/g, '')
     .split('\n')
-    .filter((line) => HANGUL.test(withoutKoreanData(line)))
+    // Attribute values (e.g. option value="함초롬바탕") are data, not visible text — strip them before
+    // the Hangul check instead of exempting via withoutKoreanData, so Korean *visible* text on the same
+    // line (e.g. that same option's text content) is still caught.
+    .map((line) => line.replace(/\s[\w:-]+="[^"]*"/g, ''))
+    .filter((line) => HANGUL.test(line))
     .map((line) => line.trim());
   assert.deepEqual(offenders, []);
 });
