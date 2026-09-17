@@ -10,9 +10,12 @@
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "sync-core": "node scripts/sync-core.mjs",
-    "build:studio": "node scripts/sync-core.mjs && node scripts/build-studio.mjs"
+    "build:studio": "node scripts/sync-core.mjs && node scripts/build-studio.mjs",
+    "start": "electron .",
+    "dev": "electron . --dev-url=http://127.0.0.1:7700"
   },
   "devDependencies": {
-    "@rhwp/core": "0.8.6"
+    "@rhwp/core": "0.8.6",
+    "electron": "44.4.1"
   }
 }
