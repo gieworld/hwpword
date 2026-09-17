@@ -9,13 +9,25 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
 
 ## Layout
 
-- `rhwp-studio/`: upstream web editor (TypeScript + Vite). We only touch `index.html` (ribbon mount +
-  visible English text), `src/ui/ribbon*.ts`, `src/styles/hwpword.css`, one import in `src/style.css`,
-  `src/desktop/`, and English strings in the files listed by `tests/hwpword-english-ui.test.ts`.
-  `src/main.ts` also carries our hooks: the desktop launch queue, the ribbon, the skin-onboarding guard
-  (skipped on the desktop) and the startup plan (`desktopStartupPlan` gates draft recovery and the blank
-  document). `src/command/commands/file.ts` has one logic edit: desktop save failures are rethrown instead
-  of falling back to a download.
+- `rhwp-studio/`: upstream web editor (TypeScript + Vite). The English UI reaches into it broadly —
+  ~120 files under `src/` (most of them `src/ui/`, plus `src/command/`, `src/core/`, `src/engine/`,
+  `src/view/`) and ~70 test files. There is no list of touched files any more; `git diff v0.8.6..HEAD --
+  rhwp-studio/src` is the list. Nearly all of those edits are visible strings only. What is more than that:
+  - Ours outright: `src/ui/ribbon.ts` + `src/ui/ribbon-data.ts` (the ribbon, mounted from `index.html`),
+    `src/ui/display-names.ts` (English/romanized names for Korean fonts and styles),
+    `src/ui/command-palette-filter.ts` (hides desktop-irrelevant commands),
+    `src/core/engine-messages.ts` (`toEnglishMessage`, the one translation point for engine/OS error
+    text — called from `src/ui/toast.ts`, the global `alert` wrapper in `src/main.ts`, and
+    `reportSaveError` in `src/command/commands/file.ts`), `src/desktop/`, `src/styles/hwpword.css`
+    (one import in `src/style.css`).
+  - Logic hooks in upstream files: `src/main.ts` (desktop launch queue, ribbon, the skin-onboarding
+    guard skipped on the desktop, the startup plan where `desktopStartupPlan` gates draft recovery and
+    the blank document, the global `window.alert` wrapper, `setWindowTitle`);
+    `src/command/commands/file.ts` (desktop save failures are rethrown instead of falling back to a
+    download); `src/engine/input-handler.ts` (`performPaste` has a desktop branch that asks the main
+    process for an OS-level paste).
+  - `tests/support/source-guard.ts` (upstream) understands regex literals because our guards scan
+    files that contain them.
 - `desktop/`: our Electron app (main process, preload, installer, corpus check). It owns the
   `@rhwp/core` and Electron versions.
 - `pkg/`: generated copy of `@rhwp/core` (gitignored). Refresh with `npm --prefix desktop run sync-core`.
@@ -37,7 +49,15 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
 ## Rules
 
 - Never commit anything under `corpus/` (personal documents).
-- UI text is English; follow `docs/hwpword/glossary.md`. Font names and Hancom's attribution sentence stay Korean.
+- UI text is English; follow `docs/hwpword/glossary.md`. Korean font/style *values* stay Korean (they
+  must match what is inside the HWP file), but what the UI shows goes through `fontDisplayName` /
+  `styleDisplayName` in `src/ui/display-names.ts`, so displayed names are English or romanized.
+  Hancom's attribution sentence stays Korean, verbatim.
+- Korean that is data and not UI needs a trailing `hwpword-keep-korean` comment on its line — that is
+  the only thing `tests/hwpword-english-ui.test.ts` exempts.
+- Write regexes as plain `/…/` literals. `tests/support/source-guard.ts` parses regex literals
+  (quotes, `[...]` classes and braces inside them), so the old ``new RegExp(String.raw`…`)`` dance is
+  gone; don't reintroduce it. Its contract is `tests/hwpword-source-guard-regex.test.ts`.
 - Don't translate the hidden `#menu-bar` / `#icon-toolbar` markup in `rhwp-studio/index.html`.
 
 ## Upgrading rhwp
@@ -48,3 +68,7 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
 3. On conflicts in `.claude/`, `.mcp.json`, `AGENTS.md` or `CLAUDE.md`, keep ours (`git rm` the upstream copy / `git checkout --ours CLAUDE.md`).
 4. Set `@rhwp/core` to `X.Y.Z` in `desktop/package.json`, then `npm --prefix desktop install` and `npm --prefix desktop run build:studio`.
 5. Run both test suites, the corpus check, and `npm --prefix desktop run check:english`; compare the reports.
+6. A merge brings Korean strings back into files we had translated, so after resolving conflicts re-run the
+   two static guards (`tests/hwpword-english-ui.test.ts`, `tests/hwpword-no-mnemonics.test.ts`) and
+   `npm --prefix desktop run check:english` — the guards catch source regressions, the check catches
+   runtime-composed text.
