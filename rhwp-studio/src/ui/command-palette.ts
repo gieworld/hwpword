@@ -2,6 +2,8 @@ import type { CommandRegistry } from '@/command/registry';
 import type { CommandDispatcher } from '@/command/dispatcher';
 import type { CommandDef } from '@/command/types';
 import { formatShortcutLabel } from '@/engine/navigation-keymap';
+import { isHwpWordDesktop } from '@/desktop/desktop-launch-queue';
+import { isPaletteCommandHidden } from './command-palette-filter';
 
 /**
  * `/` 커맨드 팔레트
@@ -130,7 +132,9 @@ export class CommandPalette {
   /** 팔레트에 노출할 커맨드 목록 구성 (disabled 제외) */
   private buildItems(): CommandDef[] {
     const all: CommandDef[] = [];
+    const desktop = isHwpWordDesktop();
     for (const id of this.registry.getAllIds()) {
+      if (isPaletteCommandHidden(id, desktop)) continue;
       const def = this.registry.get(id)!;
       // canExecute가 항상 false인 stub는 제외
       if (def.canExecute) {
