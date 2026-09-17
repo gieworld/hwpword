@@ -5,7 +5,7 @@ import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { originOf, resolveAppPath } from './lib/app-path.mjs';
-import { LaunchFileRegistry, launchPathsFromArgv, writeFileAtomic } from './lib/launch-files.mjs';
+import { createSerialWriter, LaunchFileRegistry, launchPathsFromArgv } from './lib/launch-files.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const APP_HOST = 'hwpword';
@@ -17,6 +17,8 @@ const STUDIO_DIST = app.isPackaged
   ? join(process.resourcesPath, 'studio')
   : join(here, '..', 'rhwp-studio', 'dist');
 const launchFiles = new LaunchFileRegistry();
+// Every window lives in this one process (single-instance lock), so quick repeated saves must queue per file.
+const saveFile = createSerialWriter();
 
 // Service workers are deliberately not enabled for this scheme: no stale caches across installer upgrades.
 protocol.registerSchemesAsPrivileged([
@@ -99,7 +101,7 @@ function registerIpc() {
   ipcMain.handle('hwpword:write-file', async (event, token, bytes) => {
     const path = pathOf(event, token);
     if (!(bytes instanceof Uint8Array)) throw new Error('Expected document bytes');
-    await writeFileAtomic(path, bytes);
+    await saveFile(path, bytes);
   });
 }
 

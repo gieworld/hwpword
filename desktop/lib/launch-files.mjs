@@ -45,11 +45,31 @@ export class LaunchFileRegistry {
   }
 }
 
+/** One key per file on disk. HWP Word is Windows-only, where paths are case-insensitive. */
+export function pathKey(path) {
+  return resolve(path).toLowerCase();
+}
+
+/** Wraps `write(path, bytes)` so saves to the same file run one after another; each call still reports its own result. */
+export function createSerialWriter(write = writeFileAtomic) {
+  const tails = new Map();
+  return (path, bytes) => {
+    const key = pathKey(path);
+    const run = (tails.get(key) ?? Promise.resolve()).then(() => write(path, bytes));
+    const tail = run.catch(() => {});
+    tails.set(key, tail);
+    void tail.then(() => {
+      if (tails.get(key) === tail) tails.delete(key);
+    });
+    return run;
+  };
+}
+
 /** Temp file + rename, so a failed save never leaves a half-written document. */
 export async function writeFileAtomic(path, bytes) {
-  const temp = `${path}.hwpword-${process.pid}.tmp`;
-  await writeFile(temp, bytes);
+  const temp = `${path}.hwpword-${randomUUID()}.tmp`;
   try {
+    await writeFile(temp, bytes);
     await rename(temp, path);
   } catch (error) {
     await rm(temp, { force: true });
