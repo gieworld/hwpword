@@ -284,7 +284,7 @@ export class CompareResultWindow {
   }
 
   private formatInspectorText(raw: string): string {
-    if (!raw) return '(none)';
+    if (isComparePreviewAbsent(raw)) return '(none)';
     if (!raw.includes('=')) return raw;
 
     const kv = this.parseKvSummary(raw);
