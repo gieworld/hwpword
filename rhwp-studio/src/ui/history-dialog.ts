@@ -275,8 +275,12 @@ export class HistoryDialog {
       li.className = 'compare-result-item';
       li.dataset.diffId = item.id;
       const location = formatDiffLocationCombined(item);
-      const leftText = this.formatPreviewText(this.sanitizeControlPreview(item.leftPreview));
-      const rightText = this.formatPreviewText(this.sanitizeControlPreview(item.rightPreview));
+      const leftText = this.formatPreviewText(
+        item.kind === 'text' ? item.leftPreview : this.sanitizeControlPreview(item.leftPreview),
+      );
+      const rightText = this.formatPreviewText(
+        item.kind === 'text' ? item.rightPreview : this.sanitizeControlPreview(item.rightPreview),
+      );
       const previewLine = (item.kind === 'text' || item.severity !== 'modified')
         ? `<div class="compare-result-preview">L: ${this.escape(leftText)} / R: ${this.escape(rightText)}</div>`
         : '';

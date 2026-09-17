@@ -324,8 +324,12 @@ export class CompareDialog {
       li.dataset.diffId = item.id;
       const location = formatDiffLocationCombined(item);
       const valueDiff = this.renderValueDiff(item);
-      const leftPreview = this.formatPreviewText(this.sanitizeControlPreview(item.leftPreview));
-      const rightPreview = this.formatPreviewText(this.sanitizeControlPreview(item.rightPreview));
+      const leftPreview = this.formatPreviewText(
+        item.kind === 'text' ? item.leftPreview : this.sanitizeControlPreview(item.leftPreview),
+      );
+      const rightPreview = this.formatPreviewText(
+        item.kind === 'text' ? item.rightPreview : this.sanitizeControlPreview(item.rightPreview),
+      );
       const previewLine = (item.kind === 'text' || item.severity !== 'modified')
         ? `<div class="compare-result-preview">L: ${this.escape(leftPreview)} / R: ${this.escape(rightPreview)}</div>`
         : '';
