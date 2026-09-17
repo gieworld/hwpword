@@ -48,6 +48,7 @@ test('an English sentence with a Korean file name passes through unchanged', () 
       'Could not save "연간보고서.hwp". It may be read-only or open in another program.', // hwpword-keep-korean: fixture, a Korean file name the user typed — app data, not engine text
       'Opened the recovered copy of "보고서 Recovered.hwp". The original file is not overwritten automatically.', // hwpword-keep-korean: fixture, a Korean file name — app data, not engine text
       "Error invoking remote method 'hwpword:read-file': Error: EBUSY: resource busy or locked, open 'D:\\문서\\보고서.hwp'", // hwpword-keep-korean: fixture, a Korean path inside an Electron/OS error
+      'Could not save "보고서 최종본.hwp". It may be read-only or open in another program.', // hwpword-keep-korean: fixture, a two-word Korean file name — still the user's data
     ];
     for (const raw of samples) assert.equal(toEnglishMessage(raw), raw);
   } finally {
@@ -59,10 +60,34 @@ test('a fully Korean engine message still takes the generic path even with a Lat
   const original = console.warn;
   console.warn = () => {};
   try {
-    // No two consecutive English words, so the "user data inside an English sentence" exception
-    // must not fire: this is engine text we failed to translate.
+    // None of the leftover Korean sits in quotes or a path, so the "user data" exception must not
+    // fire: this is engine text we failed to translate.
     assert.equal(
       toEnglishMessage('렌더링 오류: 알 수 없는 렌더러 상태'), // hwpword-keep-korean: fixture, real Rust engine text shape (src/error.rs:42)
+      'The document engine reported an error.',
+    );
+  } finally {
+    console.warn = original;
+  }
+});
+
+test('an English wrapper around untranslated engine text keeps the wrapper, not the Korean', () => {
+  const original = console.warn;
+  console.warn = () => {};
+  try {
+    const unknown = '완전히 새로운 미지의 오류입니다'; // hwpword-keep-korean: fixture, deliberately unmapped Korean text
+    // The three app sinks that prepend English before calling us (file-open-picker.ts:64,
+    // main.ts:1411, insert.ts:154): the wrapper alone must not disable the generic fallback.
+    assert.equal(
+      toEnglishMessage(`Could not open the file:\n${unknown}`),
+      'Could not open the file:\nThe document engine reported an error.',
+    );
+    assert.equal(
+      toEnglishMessage(`Could not insert the picture.\n${unknown}`),
+      'Could not insert the picture.\nThe document engine reported an error.',
+    );
+    assert.equal(
+      toEnglishMessage('Initialization error: 렌더링 오류: 알 수 없는 렌더러 상태'), // hwpword-keep-korean: fixture, real Rust engine text shape behind an app prefix
       'The document engine reported an error.',
     );
   } finally {

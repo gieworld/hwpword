@@ -226,7 +226,7 @@ async function getTableQuickGridStyles(page) {
       const style = getComputedStyle(element);
       return style.position === 'fixed'
         && style.zIndex === '9999'
-        && element.textContent?.includes('Insert Table...');
+        && element.textContent?.includes('Insert Table…');
     });
   }, { timeout: 5000 });
   return await page.evaluate(() => {
@@ -234,7 +234,7 @@ async function getTableQuickGridStyles(page) {
       const style = getComputedStyle(element);
       return style.position === 'fixed'
         && style.zIndex === '9999'
-        && element.textContent?.includes('Insert Table...');
+        && element.textContent?.includes('Insert Table…');
     });
     const gridCell = popup?.querySelector('[data-row][data-col]');
     const cancelButton = popup?.querySelector('button');
@@ -260,7 +260,7 @@ async function closeTableQuickGrid(page) {
       if (
         style.position === 'fixed'
         && (style.zIndex === '9998' || style.zIndex === '9999')
-        && (element.textContent?.includes('Insert Table...') || element.childElementCount === 0)
+        && (element.textContent?.includes('Insert Table…') || element.childElementCount === 0)
       ) {
         element.remove();
       }

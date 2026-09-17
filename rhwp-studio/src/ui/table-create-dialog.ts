@@ -192,7 +192,7 @@ export class TableCreateDialog {
     icon.style.marginRight = '4px';
     icon.textContent = '\u229E';
     footer.appendChild(icon);
-    footer.appendChild(document.createTextNode('Insert Table...'));
+    footer.appendChild(document.createTextNode('Insert Table…'));
     footer.addEventListener('mouseenter', () => { footer.style.background = 'var(--color-accent-bg)'; });
     footer.addEventListener('mouseleave', () => { footer.style.background = ''; });
     footer.addEventListener('click', () => {
