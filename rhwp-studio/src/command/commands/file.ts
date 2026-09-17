@@ -855,7 +855,7 @@ export const fileCommands: CommandDef[] = [
   {
     // 문서 전체를 selection HTML 조립 기반의 단일 HTML 파일로 내보낸다.
     id: 'file:export-html',
-    label: 'Export as HTML',
+    label: 'Export to HTML',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       exportHtmlBasedFile(services, 'html');
@@ -864,7 +864,7 @@ export const fileCommands: CommandDef[] = [
   {
     // Word 가 여는 HTML 기반 .doc 문서로 내보낸다 (OOXML 아님).
     id: 'file:export-doc',
-    label: 'Export as Word Document (.doc)',
+    label: 'Export to Word (.doc)',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       exportHtmlBasedFile(services, 'doc');

@@ -304,7 +304,7 @@ export const formatCommands: CommandDef[] = [
   },
   {
     id: 'format:toggle-numbering',
-    label: 'Toggle Numbering',
+    label: 'Numbering',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services) {
       services.getInputHandler()?.toggleNumbering();
@@ -312,7 +312,7 @@ export const formatCommands: CommandDef[] = [
   },
   {
     id: 'format:toggle-bullet',
-    label: 'Toggle Bullets',
+    label: 'Bullets',
     canExecute: (ctx) => ctx.hasDocument,
     execute(services, params) {
       const bulletChar = params?.bulletChar as string | undefined;
