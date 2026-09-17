@@ -7,6 +7,7 @@
 
 import type { DocumentFontStatusItem, DocumentFontStatusReport } from '@/core/document-font-status';
 import { enableDialogDrag } from './dialog-drag';
+import { fontDisplayName } from './display-names';
 
 export type LocalFontsChoice = 'detect' | 'web-substitute' | 'cancel';
 
@@ -138,8 +139,8 @@ export class LocalFontsModal {
     const maxShow = 50;
     for (const item of this.report.fonts.slice(0, maxShow)) {
       const line = document.createElement('div');
-      const substitute = item.substituteFont ? ` → ${item.substituteFont}` : '';
-      line.textContent = `${item.fontName}: ${STATUS_LABEL[item.status]}${substitute}`;
+      const substitute = item.substituteFont ? ` → ${fontDisplayName(item.substituteFont)}` : '';
+      line.textContent = `${fontDisplayName(item.fontName)}: ${STATUS_LABEL[item.status]}${substitute}`;
       detailList.appendChild(line);
     }
     if (this.report.fonts.length > maxShow) {

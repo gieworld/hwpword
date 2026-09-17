@@ -27,6 +27,7 @@ import type { CommandServices } from '@/command/types';
 import { ModalDialog } from './dialog';
 import { CharShapeDialog } from './char-shape-dialog';
 import { ParaShapeDialog } from './para-shape-dialog';
+import { styleDisplayName } from './display-names';
 
 // [Task #2866] 스타일 이름/영문 이름은 HWP5 DocInfo STYLE 레코드에서 u16 길이
 // 프리픽스로 직렬화된다(`src/serializer/doc_info.rs`의 `serialize_style` →
@@ -213,7 +214,7 @@ export class StyleEditDialog extends ModalDialog {
         if (s.type !== 0) continue; // 문단 스타일만
         const opt = document.createElement('option');
         opt.value = String(s.id);
-        opt.textContent = s.name;
+        opt.textContent = styleDisplayName(s.name);
         if (s.id === this.styleInfo.nextStyleId) opt.selected = true;
         this.nextStyleSelect.appendChild(opt);
       }

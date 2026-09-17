@@ -31,6 +31,7 @@ import type { CharProperties } from '@/core/types';
 import { REGISTERED_FONTS } from '@/core/font-loader';
 import { getLocalFonts } from '@/core/local-fonts';
 import { enableDialogDrag } from './dialog-drag';
+import { fontDisplayName } from './display-names';
 
 const LANG_NAMES = ['All', 'Hangul', 'Latin', 'Hanja', 'Japanese', 'Other', 'Symbol', 'User'];
 
@@ -317,7 +318,7 @@ export class CharShapeDialog {
     buildFontList().forEach(f => {
       const opt = document.createElement('option');
       opt.value = f;
-      opt.textContent = f;
+      opt.textContent = fontDisplayName(f);
       webGroup.appendChild(opt);
     });
     this.fontSelect.appendChild(webGroup);
@@ -330,7 +331,7 @@ export class CharShapeDialog {
       localFonts.forEach(f => {
         const opt = document.createElement('option');
         opt.value = f;
-        opt.textContent = f;
+        opt.textContent = fontDisplayName(f);
         localGroup.appendChild(opt);
       });
       this.fontSelect.appendChild(localGroup);
@@ -792,7 +793,7 @@ export class CharShapeDialog {
     if (this.fontSelect.value !== fontName && fontName) {
       const opt = document.createElement('option');
       opt.value = fontName;
-      opt.textContent = fontName;
+      opt.textContent = fontDisplayName(fontName);
       this.fontSelect.appendChild(opt);
       this.fontSelect.value = fontName;
     }

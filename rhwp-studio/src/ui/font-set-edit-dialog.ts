@@ -8,6 +8,7 @@ import { LANG_LABELS } from '@/core/user-settings';
 import type { FontSet } from '@/core/user-settings';
 import { REGISTERED_FONTS } from '@/core/font-loader';
 import { getLocalFonts } from '@/core/local-fonts';
+import { fontDisplayName } from './display-names';
 
 /** 웹폰트 목록 (중복 제거 + 정렬) */
 function getWebFonts(): string[] {
@@ -79,7 +80,7 @@ export class FontSetEditDialog extends ModalDialog {
       for (const fontName of webFonts) {
         const opt = document.createElement('option');
         opt.value = fontName;
-        opt.textContent = fontName;
+        opt.textContent = fontDisplayName(fontName);
         webGroup.appendChild(opt);
       }
       select.appendChild(webGroup);
@@ -91,7 +92,7 @@ export class FontSetEditDialog extends ModalDialog {
         for (const fontName of localFonts) {
           const opt = document.createElement('option');
           opt.value = fontName;
-          opt.textContent = fontName;
+          opt.textContent = fontDisplayName(fontName);
           localGroup.appendChild(opt);
         }
         select.appendChild(localGroup);

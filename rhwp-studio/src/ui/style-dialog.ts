@@ -26,6 +26,7 @@ import type { EventBus } from '@/core/event-bus';
 import type { CommandServices } from '@/command/types';
 import type { CharProperties, ParaProperties } from '@/core/types';
 import { ModalDialog } from './dialog';
+import { fontDisplayName, styleDisplayName } from './display-names';
 
 interface StyleEntry {
   id: number;
@@ -156,7 +157,7 @@ export class StyleDialog extends ModalDialog {
 
       const name = document.createElement('span');
       name.className = 'sd-style-name';
-      name.textContent = s.name;
+      name.textContent = styleDisplayName(s.name);
 
       item.appendChild(typeIcon);
       item.appendChild(name);
@@ -235,7 +236,7 @@ export class StyleDialog extends ModalDialog {
     // 다음 스타일
     const style = this.styles.find(s => s.id === this.selectedId);
     const nextStyle = style ? this.styles.find(s => s.id === style.nextStyleId) : null;
-    const nextStyleName = nextStyle?.name ?? style?.name ?? '';
+    const nextStyleName = styleDisplayName(nextStyle?.name ?? style?.name ?? '');
 
     return [
       `Left margin: ${ml} pt&nbsp;&nbsp;&nbsp;First line: ${firstLine}`,
@@ -246,7 +247,7 @@ export class StyleDialog extends ModalDialog {
   }
 
   private buildCharInfo(cp: CharProperties): string {
-    const font = cp.fontFamily ?? 'sans-serif';
+    const font = fontDisplayName(cp.fontFamily ?? 'sans-serif');
     const size = cp.fontSize != null ? (cp.fontSize / 100).toFixed(0) : '10';
     const ratio = cp.ratios?.[0] ?? 100;
     const spacing = cp.spacings?.[0] ?? 0;
@@ -264,7 +265,7 @@ export class StyleDialog extends ModalDialog {
     }
     const style = this.styles.find(s => s.id === this.selectedId);
     if (!style) return;
-    if (!confirm(`Delete the style '${style.name}'?\nParagraphs using this style will change to Normal.`)) return;
+    if (!confirm(`Delete the style '${styleDisplayName(style.name)}'?\nParagraphs using this style will change to Normal.`)) return;
     const deletedId = this.selectedId;
     // [Task #3387] 삭제는 스타일 목록뿐 아니라 그 스타일을 쓰던 전 문단의 style_id 와
     // 뒤 ID 의 재배정까지 바꾸는 전문서 효과다. 스냅샷이 Document 전체를 담고 복원이
@@ -318,7 +319,7 @@ export class StyleDialog extends ModalDialog {
     // 현재 커서 위치 스타일 표시
     try {
       // eventBus로부터 현재 스타일 정보 가져오기
-      this.currentStyleLabel.textContent = this.styles.find(s => s.id === this.selectedId)?.name ?? '';
+      this.currentStyleLabel.textContent = styleDisplayName(this.styles.find(s => s.id === this.selectedId)?.name ?? '');
     } catch {
       // 무시
     }
@@ -329,7 +330,7 @@ export class StyleDialog extends ModalDialog {
     this.selectedId = styleId;
     const style = this.styles.find(s => s.id === styleId);
     if (this.currentStyleLabel) {
-      this.currentStyleLabel.textContent = style?.name ?? '';
+      this.currentStyleLabel.textContent = styleDisplayName(style?.name ?? '');
     }
     // 목록 선택 + 정보 패널 갱신
     this.renderList();

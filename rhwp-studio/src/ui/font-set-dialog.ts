@@ -8,6 +8,7 @@ import { ModalDialog } from './dialog';
 import { userSettings, BUILTIN_FONT_SETS, LANG_LABELS } from '@/core/user-settings';
 import type { FontSet } from '@/core/user-settings';
 import { FontSetEditDialog } from './font-set-edit-dialog';
+import { fontDisplayName } from './display-names';
 
 export class FontSetDialog extends ModalDialog {
   private listEl!: HTMLDivElement;
@@ -101,7 +102,7 @@ export class FontSetDialog extends ModalDialog {
 
     const nameSpan = document.createElement('span');
     nameSpan.className = 'fs-item-name';
-    nameSpan.textContent = fs.name;
+    nameSpan.textContent = fontDisplayName(fs.name);
     item.appendChild(nameSpan);
 
     if (isBuiltin) {
@@ -140,7 +141,7 @@ export class FontSetDialog extends ModalDialog {
 
     const name = document.createElement('div');
     name.className = 'fs-info-name';
-    name.textContent = fs.name;
+    name.textContent = fontDisplayName(fs.name);
     this.infoEl.appendChild(name);
 
     LANG_LABELS.forEach((label, i) => {
@@ -152,7 +153,7 @@ export class FontSetDialog extends ModalDialog {
       labelSpan.textContent = label;
       const valueSpan = document.createElement('span');
       valueSpan.className = 'fs-info-value';
-      valueSpan.textContent = val;
+      valueSpan.textContent = fontDisplayName(val);
       row.appendChild(labelSpan);
       row.appendChild(valueSpan);
       this.infoEl.appendChild(row);

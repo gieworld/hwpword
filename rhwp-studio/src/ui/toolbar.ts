@@ -5,6 +5,7 @@ import type { CommandDispatcher } from '@/command/dispatcher';
 import { userSettings } from '@/core/user-settings';
 import type { FontSet } from '@/core/user-settings';
 import { getLocalFonts } from '@/core/local-fonts';
+import { fontDisplayName, styleDisplayName } from './display-names';
 
 type FontMenuCategory = 'all' | 'current' | 'document' | 'fontSets' | 'system';
 
@@ -563,7 +564,7 @@ export class Toolbar {
       for (const style of styles) {
         const opt = document.createElement('option');
         opt.value = String(style.id);
-        opt.textContent = style.name;
+        opt.textContent = styleDisplayName(style.name);
         this.styleName.appendChild(opt);
       }
       this.styleDropdownInitialized = true;
@@ -711,7 +712,7 @@ export class Toolbar {
     for (const fs of fontSets) {
       const opt = document.createElement('option');
       opt.value = `__fontset__${fs.name}`;
-      opt.textContent = `◆ ${fs.name}`;
+      opt.textContent = `◆ ${fontDisplayName(fs.name)}`;
       group.appendChild(opt);
     }
 
@@ -724,7 +725,7 @@ export class Toolbar {
     if (!normalized || Array.from(this.fontName.options).some(option => option.value === normalized)) return;
     const opt = document.createElement('option');
     opt.value = normalized;
-    opt.textContent = normalized;
+    opt.textContent = fontDisplayName(normalized);
     this.fontName.appendChild(opt);
   }
 
@@ -856,13 +857,13 @@ export class Toolbar {
 
   private getFontMenuEntries(category: FontMenuCategory): FontMenuEntry[] {
     const current = this.fontName.value && !this.fontName.value.startsWith('__fontset__')
-      ? [{ value: this.fontName.value, label: this.fontName.value }]
+      ? [{ value: this.fontName.value, label: fontDisplayName(this.fontName.value) }]
       : [];
-    const documentFonts = this.fontMenuDocumentFonts.map(name => ({ value: name, label: name }));
-    const baseFonts = BASE_FONTS.map(name => ({ value: name, label: name }));
+    const documentFonts = this.fontMenuDocumentFonts.map(name => ({ value: name, label: fontDisplayName(name) }));
+    const baseFonts = BASE_FONTS.map(name => ({ value: name, label: fontDisplayName(name) }));
     const fontSets = userSettings.getAllFontSets().map(fontSet => ({
       value: `__fontset__${fontSet.name}`,
-      label: `◆ ${fontSet.name}`,
+      label: `◆ ${fontDisplayName(fontSet.name)}`,
     }));
     switch (category) {
       case 'current':
@@ -872,14 +873,14 @@ export class Toolbar {
       case 'fontSets':
         return fontSets;
       case 'system':
-        return getLocalFonts().map(name => ({ value: name, label: name }));
+        return getLocalFonts().map(name => ({ value: name, label: fontDisplayName(name) }));
       case 'all':
         return this.uniqueFontMenuEntries([
           ...current,
           ...documentFonts,
           ...baseFonts,
           ...fontSets,
-          ...getLocalFonts().map(name => ({ value: name, label: name })),
+          ...getLocalFonts().map(name => ({ value: name, label: fontDisplayName(name) })),
         ]);
     }
   }
