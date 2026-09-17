@@ -76,7 +76,7 @@ function appendTableCell(tr: HTMLTableRowElement, text: string): void {
 }
 
 export function buildTabSettingsTab(state: TabState): TabSettingsResult {
-  const TAB_TYPE_NAMES = ['왼쪽', '오른쪽', '가운데', '소수점'];
+  const TAB_TYPE_NAMES = ['Left', 'Right', 'Center', 'Decimal'];
 
   const panel = document.createElement('div');
   panel.className = 'dialog-tab-panel';
@@ -86,17 +86,17 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   typeSection.className = 'dialog-section';
   const typeTitle = document.createElement('legend');
   typeTitle.className = 'dialog-section-title';
-  typeTitle.textContent = '탭 종류';
+  typeTitle.textContent = 'Tab Type';
   typeSection.appendChild(typeTitle);
 
   // 라디오 행: 왼쪽/오른쪽/가운데/소수점
   const typeRow = document.createElement('div');
   typeRow.className = 'dialog-row';
   const TAB_TYPES = [
-    { value: '0', label: '왼쪽(L)' },
-    { value: '1', label: '오른쪽(R)' },
-    { value: '2', label: '가운데(C)' },
-    { value: '3', label: '소수점(M)' },
+    { value: '0', label: 'Left(L)' },
+    { value: '1', label: 'Right(R)' },
+    { value: '2', label: 'Center(C)' },
+    { value: '3', label: 'Decimal(M)' },
   ];
   const tabTypeRadios = TAB_TYPES.map(({ value, label: lbl }) => {
     const labelEl = document.createElement('label');
@@ -118,18 +118,18 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   fillRow.className = 'dialog-row';
   const fillLabel = document.createElement('label');
   fillLabel.className = 'dialog-label';
-  fillLabel.textContent = '채움 모양(F):';
+  fillLabel.textContent = 'Fill shape(F):';
   const tabFillSelect = document.createElement('select');
   tabFillSelect.className = 'dialog-select';
   [
-    { value: '0', label: '선 없음' },
-    { value: '1', label: '실선 ─────' },
-    { value: '2', label: '긴 점선 - - - -' },
-    { value: '3', label: '점선 ·········' },
+    { value: '0', label: 'No Line' },
+    { value: '1', label: 'Solid ─────' },
+    { value: '2', label: 'Dashed - - - -' },
+    { value: '3', label: 'Dotted ·········' },
     { value: '4', label: '-·-·-·-·-·' },
     { value: '5', label: '-··-··-··-··' },
-    { value: '6', label: '긴 파선 ── ── ──' },
-    { value: '7', label: '큰 동그라미 ○○○' },
+    { value: '6', label: 'Long Dash ── ── ──' },
+    { value: '7', label: 'Large Circle ○○○' },
   ].forEach(({ value, label: lbl }) => {
     const opt = document.createElement('option');
     opt.value = value;
@@ -145,7 +145,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   posRow.className = 'dialog-row';
   const posLabel = document.createElement('label');
   posLabel.className = 'dialog-label';
-  posLabel.textContent = '탭 위치(P):';
+  posLabel.textContent = 'Tab position(P):';
   const tabPositionInput = document.createElement('input');
   tabPositionInput.className = 'dialog-input';
   tabPositionInput.type = 'number';
@@ -157,7 +157,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   posUnit.textContent = 'pt';
   const addBtn = document.createElement('button');
   addBtn.className = 'dialog-btn';
-  addBtn.textContent = '추가(S)';
+  addBtn.textContent = 'Add(S)';
   addBtn.addEventListener('click', () => addTabStop());
   posRow.appendChild(posLabel);
   posRow.appendChild(tabPositionInput);
@@ -175,12 +175,12 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   tabListCol.className = 'ps-tab-list-col';
   const tabListLabel = document.createElement('div');
   tabListLabel.className = 'dialog-section-title';
-  tabListLabel.textContent = '탭 목록';
+  tabListLabel.textContent = 'Tab List';
   tabListCol.appendChild(tabListLabel);
   const tabTable = document.createElement('table');
   tabTable.className = 'ps-tab-table';
   const thead = document.createElement('thead');
-  appendHeaderRow(thead, ['위치', '종류']);
+  appendHeaderRow(thead, ['Position', 'Type']);
   tabTable.appendChild(thead);
   const tabListBody = document.createElement('tbody');
   tabTable.appendChild(tabListBody);
@@ -195,12 +195,12 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   const delBtn = document.createElement('button');
   delBtn.className = 'dialog-btn ps-tab-del-btn';
   delBtn.textContent = '\u2715';
-  delBtn.title = '선택 삭제';
+  delBtn.title = 'Delete selected';
   delBtn.addEventListener('click', () => deleteTabStop());
   const delAllBtn = document.createElement('button');
   delAllBtn.className = 'dialog-btn ps-tab-del-btn';
   delAllBtn.textContent = '\u2715\u2715';
-  delAllBtn.title = '전체 삭제';
+  delAllBtn.title = 'Delete all';
   delAllBtn.addEventListener('click', () => deleteAllTabStops());
   btnCol.appendChild(delBtn);
   btnCol.appendChild(delAllBtn);
@@ -210,12 +210,12 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   delListCol.className = 'ps-tab-list-col';
   const delListLabel = document.createElement('div');
   delListLabel.className = 'dialog-section-title';
-  delListLabel.textContent = '지운 탭 목록';
+  delListLabel.textContent = 'Deleted Tab List';
   delListCol.appendChild(delListLabel);
   const delTable = document.createElement('table');
   delTable.className = 'ps-tab-table';
   const dThead = document.createElement('thead');
-  appendHeaderRow(dThead, ['위치', '종류']);
+  appendHeaderRow(dThead, ['Position', 'Type']);
   delTable.appendChild(dThead);
   const deletedTabListBody = document.createElement('tbody');
   delTable.appendChild(deletedTabListBody);
@@ -234,7 +234,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   autoSection.className = 'dialog-section';
   const autoTitle = document.createElement('legend');
   autoTitle.className = 'dialog-section-title';
-  autoTitle.textContent = '자동 탭';
+  autoTitle.textContent = 'Automatic Tabs';
   autoSection.appendChild(autoTitle);
 
   const autoRow = document.createElement('div');
@@ -249,8 +249,8 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
     autoRow.appendChild(labelEl);
     return cb;
   };
-  const tabAutoLeftCb = mkCb('내어 쓰기용 자동 탭(E)');
-  const tabAutoRightCb = mkCb('문단 오른쪽 끝 자동 탭(I)');
+  const tabAutoLeftCb = mkCb('Auto tab for hanging indent(E)');
+  const tabAutoRightCb = mkCb('Auto tab at end of paragraph(I)');
   autoSection.appendChild(autoRow);
   panel.appendChild(autoSection);
 
@@ -259,18 +259,18 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
   defaultSection.className = 'dialog-section';
   const defaultTitle = document.createElement('legend');
   defaultTitle.className = 'dialog-section-title';
-  defaultTitle.textContent = '기본 탭';
+  defaultTitle.textContent = 'Default Tab';
   defaultSection.appendChild(defaultTitle);
 
   const defaultRow = document.createElement('div');
   defaultRow.className = 'dialog-row';
   const defaultLabel = document.createElement('span');
-  defaultLabel.textContent = '구역 기본 탭 간격: ';
+  defaultLabel.textContent = 'Section default tab spacing: ';
   const defaultTabLabel = document.createElement('span');
   defaultTabLabel.textContent = '40.0 pt';
   const changeBtn = document.createElement('button');
   changeBtn.className = 'dialog-btn';
-  changeBtn.textContent = '변경(H)...';
+  changeBtn.textContent = 'Change(H)...';
   changeBtn.disabled = true;
   defaultRow.appendChild(defaultLabel);
   defaultRow.appendChild(defaultTabLabel);
@@ -342,7 +342,7 @@ export function buildTabSettingsTab(state: TabState): TabSettingsResult {
       appendTableCell(tr, `${(t.position / 100).toFixed(1)} pt`);
       appendTableCell(tr, TAB_TYPE_NAMES[t.type] ?? '?');
       tr.addEventListener('dblclick', () => restoreTabStop(i));
-      tr.title = '더블클릭하여 복원';
+      tr.title = 'Double-click to restore';
       deletedTabListBody.appendChild(tr);
     });
   }
@@ -392,7 +392,7 @@ export function buildBorderTab(
   panel.className = 'dialog-tab-panel';
 
   // ── 테두리 섹션
-  const borderFs = createFieldset('테두리');
+  const borderFs = createFieldset('Borders');
   const borderContent = document.createElement('div');
   borderContent.className = 'ps-border-layout';
 
@@ -402,17 +402,17 @@ export function buildBorderTab(
 
   // 종류(Y)
   const typeRow = row();
-  typeRow.appendChild(label('종류(Y):'));
+  typeRow.appendChild(label('Type(Y):'));
   const bdTypeSelect = document.createElement('select');
   bdTypeSelect.className = 'dialog-select';
   bdTypeSelect.style.width = '100px';
   for (const [val, lbl] of [
-    ['0', '선 없음'], ['1', '실선'], ['2', '파선'], ['3', '점선'],
-    ['4', '일점쇄선'], ['5', '이점쇄선'], ['6', '긴 파선'], ['7', '동그라미'],
-    ['8', '이중선'], ['9', '가는선+굵은선'], ['10', '굵은선+가는선'],
-    ['11', '삼중선'], ['12', '물결'], ['13', '이중 물결'],
-    ['14', '두꺼운 3D'], ['15', '두꺼운 3D(반대)'],
-    ['16', '3D 단선'], ['17', '3D 단선(반대)'],
+    ['0', 'No Line'], ['1', 'Solid'], ['2', 'Dashed'], ['3', 'Dotted'],
+    ['4', 'Dash-Dot'], ['5', 'Dash-Dot-Dot'], ['6', 'Long Dash'], ['7', 'Circle'],
+    ['8', 'Double Line'], ['9', 'Thin+Thick'], ['10', 'Thick+Thin'],
+    ['11', 'Triple Line'], ['12', 'Wave'], ['13', 'Double Wave'],
+    ['14', 'Thick 3D'], ['15', 'Thick 3D (Inverse)'],
+    ['16', '3D Single Line'], ['17', '3D Single Line (Inverse)'],
   ] as const) {
     const o = document.createElement('option');
     o.value = val; o.textContent = lbl;
@@ -424,7 +424,7 @@ export function buildBorderTab(
 
   // 굵기(I)
   const widthRow = row();
-  widthRow.appendChild(label('굵기(I):'));
+  widthRow.appendChild(label('Weight(I):'));
   const bdWidthSelect = document.createElement('select');
   bdWidthSelect.className = 'dialog-select';
   bdWidthSelect.style.width = '100px';
@@ -442,7 +442,7 @@ export function buildBorderTab(
 
   // 색(C)
   const colorRow = row();
-  colorRow.appendChild(label('색(C):'));
+  colorRow.appendChild(label('Color(C):'));
   const bdColorInput = document.createElement('input');
   bdColorInput.type = 'color';
   bdColorInput.value = '#000000';
@@ -459,7 +459,7 @@ export function buildBorderTab(
   bdConnectCb.id = 'ps-bd-connect';
   const connectLabel = document.createElement('label');
   connectLabel.htmlFor = 'ps-bd-connect';
-  connectLabel.textContent = ' 문단 테두리 연결(M)';
+  connectLabel.textContent = ' Connect paragraph borders(M)';
   connectRow.appendChild(bdConnectCb);
   connectRow.appendChild(connectLabel);
   borderLeft.appendChild(connectRow);
@@ -472,7 +472,7 @@ export function buildBorderTab(
   bdApplyImmCb.checked = true;
   const applyLabel = document.createElement('label');
   applyLabel.htmlFor = 'ps-bd-apply-imm';
-  applyLabel.textContent = ' 선 모양 바로 적용(I)';
+  applyLabel.textContent = ' Apply line style immediately(I)';
   applyRow.appendChild(bdApplyImmCb);
   applyRow.appendChild(applyLabel);
   borderLeft.appendChild(applyRow);
@@ -494,11 +494,11 @@ export function buildBorderTab(
   const presetRow = document.createElement('div');
   presetRow.className = 'ps-border-presets';
   const presets: [string, string, () => void][] = [
-    ['┄', '테두리 없음', () => applyBorderPreset('none')],
-    ['□', '상자형', () => applyBorderPreset('box')],
-    ['╬', '격자형', () => applyBorderPreset('box')],
-    ['▣', '사용자 정의', () => {}],
-    ['全', '모두 적용/해제', () => applyBorderPreset('toggleAll')],
+    ['┄', 'No border', () => applyBorderPreset('none')],
+    ['□', 'Box', () => applyBorderPreset('box')],
+    ['╬', 'Grid', () => applyBorderPreset('box')],
+    ['▣', 'Custom', () => {}],
+    ['全', 'Apply/remove all', () => applyBorderPreset('toggleAll')],
   ];
   for (const [icon, title, handler] of presets) {
     const btn = document.createElement('button');
@@ -513,15 +513,15 @@ export function buildBorderTab(
   panel.appendChild(borderFs);
 
   // ── 배경 섹션
-  const bgFs = createFieldset('배경');
+  const bgFs = createFieldset('Shading');
 
   // 면 색(Q)
   const faceRow = row();
-  faceRow.appendChild(label('면 색(Q):'));
+  faceRow.appendChild(label('Fill color(Q):'));
   const bgFillSelect = document.createElement('select');
   bgFillSelect.className = 'dialog-select';
   bgFillSelect.style.width = '100px';
-  for (const [val, lbl] of [['none', '색 없음'], ['solid', '색 지정']] as const) {
+  for (const [val, lbl] of [['none', 'No Color'], ['solid', 'Specify Color']] as const) {
     const o = document.createElement('option');
     o.value = val; o.textContent = lbl;
     bgFillSelect.appendChild(o);
@@ -537,14 +537,14 @@ export function buildBorderTab(
 
   // 무늬 색(P) + 무늬 모양(L)
   const patRow = row();
-  patRow.appendChild(label('무늬 색(P):'));
+  patRow.appendChild(label('Pattern color(P):'));
   const bgPatColorInput = document.createElement('input');
   bgPatColorInput.type = 'color';
   bgPatColorInput.value = '#000000';
   bgPatColorInput.className = 'cs-color-btn';
   patRow.appendChild(bgPatColorInput);
 
-  const patLabel = label('무늬 모양(L):');
+  const patLabel = label('Pattern shape(L):');
   patLabel.style.marginLeft = '10px';
   patRow.appendChild(patLabel);
   const bgPatShapeSelect = document.createElement('select');
@@ -555,7 +555,7 @@ export function buildBorderTab(
   // 폴백되고, collectMods 가 0!=-1 을 변경으로 오인하여 fillType=solid 를 강제
   // 주입 → 여백만 바꾸거나 확인만 눌러도 의도치 않은 배경/테두리가 생성됐다.
   for (const [val, lbl] of [
-    ['-1', '없음'], ['1', '━'], ['2', '┃'],
+    ['-1', 'None'], ['1', '━'], ['2', '┃'],
     ['3', '╲'], ['4', '╱'], ['5', '┼'], ['6', '╳'],
   ] as const) {
     const o = document.createElement('option');
@@ -567,7 +567,7 @@ export function buildBorderTab(
   panel.appendChild(bgFs);
 
   // ── 간격 섹션
-  const spacingFs = createFieldset('간격');
+  const spacingFs = createFieldset('Spacing');
   const bdSpacingInputs: HTMLInputElement[] = [];
 
   const spacingGrid = document.createElement('div');
@@ -584,21 +584,21 @@ export function buildBorderTab(
   };
 
   // 1행: 왼쪽(E), 위쪽(U)
-  const [c0, si0] = makeCell('왼쪽(E):');
-  const [c1, si2] = makeCell('위쪽(U):');
+  const [c0, si0] = makeCell('Left(E):');
+  const [c1, si2] = makeCell('Top(U):');
   bdSpacingInputs.push(si0, si2); // [0]=left, [1]=top
   spacingGrid.appendChild(c0);
   spacingGrid.appendChild(c1);
 
   // 2행: 오른쪽(B), 아래쪽(V)
-  const [c2, si1] = makeCell('오른쪽(B):');
-  const [c3, si3] = makeCell('아래쪽(V):');
+  const [c2, si1] = makeCell('Right(B):');
+  const [c3, si3] = makeCell('Bottom(V):');
   bdSpacingInputs.push(si1, si3); // [2]=right, [3]=bottom
   spacingGrid.appendChild(c2);
   spacingGrid.appendChild(c3);
 
   // 3행: 모두(A), 문단 여백 무시(B)
-  const [c4, siAll] = makeCell('모두(A):');
+  const [c4, siAll] = makeCell('All(A):');
   const bdAllSpacingInput = siAll;
   bdAllSpacingInput.addEventListener('change', () => {
     const v = bdAllSpacingInput.value;
@@ -613,7 +613,7 @@ export function buildBorderTab(
   bdIgnoreMarginCb.id = 'ps-bd-ignore-margin';
   const ignoreLabel = document.createElement('label');
   ignoreLabel.htmlFor = 'ps-bd-ignore-margin';
-  ignoreLabel.textContent = ' 문단 여백 무시(B)';
+  ignoreLabel.textContent = ' Ignore paragraph margin(B)';
   ignoreCell.appendChild(bdIgnoreMarginCb);
   ignoreCell.appendChild(ignoreLabel);
   spacingGrid.appendChild(ignoreCell);

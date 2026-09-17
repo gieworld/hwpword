@@ -32,7 +32,7 @@ import { REGISTERED_FONTS } from '@/core/font-loader';
 import { getLocalFonts } from '@/core/local-fonts';
 import { enableDialogDrag } from './dialog-drag';
 
-const LANG_NAMES = ['대표', '한글', '영문', '한자', '일어', '외국어', '기호', '사용자'];
+const LANG_NAMES = ['All', 'Hangul', 'Latin', 'Hanja', 'Japanese', 'Other', 'Symbol', 'User'];
 
 /** 웹폰트 + 로컬 글꼴을 합친 목록 (정렬됨) */
 function buildFontList(): string[] {
@@ -42,19 +42,19 @@ function buildFontList(): string[] {
 
 /** 속성 아이콘 정의: HWP 원본의 가 문자 변형 */
 const ATTR_ICONS: { id: string; title: string }[] = [
-  { id: 'bold',          title: '굵게' },
-  { id: 'italic',        title: '기울임' },
-  { id: 'underline',     title: '밑줄' },
-  { id: 'strikethrough', title: '취소선' },
-  { id: 'outline',       title: '외곽선' },
-  { id: 'shadow',        title: '그림자' },
-  { id: 'superscript',   title: '위 첨자' },
-  { id: 'subscript',     title: '아래 첨자' },
+  { id: 'bold',          title: 'Bold' },
+  { id: 'italic',        title: 'Italic' },
+  { id: 'underline',     title: 'Underline' },
+  { id: 'strikethrough', title: 'Strikethrough' },
+  { id: 'outline',       title: 'Outline' },
+  { id: 'shadow',        title: 'Shadow' },
+  { id: 'superscript',   title: 'Superscript' },
+  { id: 'subscript',     title: 'Subscript' },
 ];
 
 function createAttrIconContent(id: string): HTMLSpanElement {
   const span = document.createElement('span');
-  span.textContent = '가';
+  span.textContent = 'A';
   switch (id) {
     case 'bold':
       span.style.fontWeight = 'bold';
@@ -78,7 +78,7 @@ function createAttrIconContent(id: string): HTMLSpanElement {
     case 'superscript': {
       span.textContent = '';
       span.style.fontSize = '12px';
-      span.appendChild(document.createTextNode('가'));
+      span.appendChild(document.createTextNode('A'));
       const sup = document.createElement('sup');
       sup.style.fontSize = '8px';
       sup.textContent = '1';
@@ -88,7 +88,7 @@ function createAttrIconContent(id: string): HTMLSpanElement {
     case 'subscript': {
       span.textContent = '';
       span.style.fontSize = '12px';
-      span.appendChild(document.createTextNode('가'));
+      span.appendChild(document.createTextNode('A'));
       const sub = document.createElement('sub');
       sub.style.fontSize = '8px';
       sub.textContent = '1';
@@ -193,7 +193,7 @@ export class CharShapeDialog {
     // 타이틀 바
     const titleBar = document.createElement('div');
     titleBar.className = 'dialog-title';
-    titleBar.textContent = '글자 모양';
+    titleBar.textContent = 'Character Format';
     const closeBtn = document.createElement('button');
     closeBtn.className = 'dialog-close';
     closeBtn.textContent = '\u00D7';
@@ -212,7 +212,7 @@ export class CharShapeDialog {
     // 탭 그룹
     const tabGroup = document.createElement('div');
     tabGroup.className = 'dialog-tabs';
-    const tabNames = ['기본', '확장', '테두리/배경'];
+    const tabNames = ['Basic', 'Extended', 'Borders'];
     tabNames.forEach((name, i) => {
       const btn = document.createElement('button');
       btn.className = 'dialog-tab';
@@ -237,11 +237,11 @@ export class CharShapeDialog {
     rightCol.className = 'cs-right-col';
     const okBtn = document.createElement('button');
     okBtn.className = 'dialog-btn dialog-btn-primary';
-    okBtn.textContent = '설정(D)';
+    okBtn.textContent = 'Settings(D)';
     okBtn.addEventListener('click', () => this.handleOk());
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'dialog-btn';
-    cancelBtn.textContent = '취소';
+    cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', () => this.hide());
     rightCol.appendChild(okBtn);
     rightCol.appendChild(cancelBtn);
@@ -275,7 +275,7 @@ export class CharShapeDialog {
 
     // ── 기준 크기
     const sizeRow = this.row();
-    sizeRow.appendChild(this.label('기준 크기(Z):'));
+    sizeRow.appendChild(this.label('Base size(Z):'));
     this.baseSizeInput = this.numberInput(1, 4096, 0.5);
     this.baseSizeInput.style.width = '60px';
     sizeRow.appendChild(this.baseSizeInput);
@@ -283,11 +283,11 @@ export class CharShapeDialog {
     panel.appendChild(sizeRow);
 
     // ── 언어별 설정
-    const langSection = this.createFieldset('언어별 설정');
+    const langSection = this.createFieldset('Script Settings');
 
     // 언어 + 글꼴 (한 줄)
     const langFontRow = this.row();
-    langFontRow.appendChild(this.label('언어(L):'));
+    langFontRow.appendChild(this.label('Script(L):'));
     this.langSelect = document.createElement('select');
     this.langSelect.className = 'dialog-select';
     this.langSelect.style.width = '72px';
@@ -304,7 +304,7 @@ export class CharShapeDialog {
     });
     langFontRow.appendChild(this.langSelect);
 
-    const fontLabel = this.label('글꼴(T):');
+    const fontLabel = this.label('Font(T):');
     fontLabel.style.marginLeft = '12px';
     langFontRow.appendChild(fontLabel);
     this.fontSelect = document.createElement('select');
@@ -313,7 +313,7 @@ export class CharShapeDialog {
 
     // 웹폰트 optgroup
     const webGroup = document.createElement('optgroup');
-    webGroup.label = '웹 글꼴';
+    webGroup.label = 'Web Fonts';
     buildFontList().forEach(f => {
       const opt = document.createElement('option');
       opt.value = f;
@@ -326,7 +326,7 @@ export class CharShapeDialog {
     const localFonts = getLocalFonts();
     if (localFonts.length > 0) {
       const localGroup = document.createElement('optgroup');
-      localGroup.label = '로컬 글꼴';
+      localGroup.label = 'Local Fonts';
       localFonts.forEach(f => {
         const opt = document.createElement('option');
         opt.value = f;
@@ -340,12 +340,12 @@ export class CharShapeDialog {
 
     // 상대 크기 + 장평 (2열)
     const row1 = this.row();
-    row1.appendChild(this.label('상대 크기(B):'));
+    row1.appendChild(this.label('Relative size(B):'));
     this.langInputs['cs-relative-size'] = this.numberInput(10, 250);
     this.langInputs['cs-relative-size'].style.width = '50px';
     row1.appendChild(this.langInputs['cs-relative-size']);
     row1.appendChild(this.unit('%'));
-    const ratioLabel = this.label('장평(W):');
+    const ratioLabel = this.label('Character width(W):');
     ratioLabel.style.marginLeft = '16px';
     row1.appendChild(ratioLabel);
     this.langInputs['cs-ratio'] = this.numberInput(50, 200);
@@ -356,12 +356,12 @@ export class CharShapeDialog {
 
     // 글자 위치 + 자간 (2열)
     const row2 = this.row();
-    row2.appendChild(this.label('글자 위치(E):'));
+    row2.appendChild(this.label('Character position(E):'));
     this.langInputs['cs-char-offset'] = this.numberInput(-100, 100);
     this.langInputs['cs-char-offset'].style.width = '50px';
     row2.appendChild(this.langInputs['cs-char-offset']);
     row2.appendChild(this.unit('%'));
-    const spacingLabel = this.label('자간(P):');
+    const spacingLabel = this.label('Character spacing(P):');
     spacingLabel.style.marginLeft = '16px';
     row2.appendChild(spacingLabel);
     this.langInputs['cs-spacing'] = this.numberInput(-50, 50);
@@ -372,7 +372,7 @@ export class CharShapeDialog {
     panel.appendChild(langSection);
 
     // ── 속성
-    const attrSection = this.createFieldset('속성');
+    const attrSection = this.createFieldset('Properties');
 
     // 가 아이콘 버튼 행
     const attrRow = this.row();
@@ -398,14 +398,14 @@ export class CharShapeDialog {
 
     // 글자 색 + 음영 색
     const colorRow = this.row();
-    colorRow.appendChild(this.label('글자 색(C):'));
+    colorRow.appendChild(this.label('Font color(C):'));
     this.textColorInput = document.createElement('input');
     this.textColorInput.type = 'color';
     this.textColorInput.className = 'cs-color-btn';
     this.textColorInput.addEventListener('input', () => this.updatePreview());
     colorRow.appendChild(this.textColorInput);
 
-    const shadeLabel = this.label('음영 색(G):');
+    const shadeLabel = this.label('Shading color(G):');
     shadeLabel.style.marginLeft = '16px';
     colorRow.appendChild(shadeLabel);
     this.shadeColorInput = document.createElement('input');
@@ -418,7 +418,7 @@ export class CharShapeDialog {
     // ── 미리보기
     this.previewEl = document.createElement('div');
     this.previewEl.className = 'cs-preview';
-    this.previewEl.textContent = '한글Eng123漢字あいう※○';
+    this.previewEl.textContent = 'AaBbCc 가나다 123'; // hwpword-keep-korean: font preview needs Hangul glyphs to judge Korean fonts
     panel.appendChild(this.previewEl);
 
     return panel;
@@ -433,13 +433,13 @@ export class CharShapeDialog {
     panel.className = 'dialog-tab-panel';
 
     // ── 그림자
-    const shadowFs = this.createFieldset('그림자');
+    const shadowFs = this.createFieldset('Shadow');
 
     // 라디오 버튼: 없음(N) / 비연속(U) / 연속(T)
     const radioRow = this.row();
     this.shadowRadios = [];
     const shadowOpts: [string, string, string][] = [
-      ['0', '없음(N)', 'N'], ['1', '비연속(U)', 'U'], ['2', '연속(T)', 'T'],
+      ['0', 'None(N)', 'N'], ['1', 'Discontinuous(U)', 'U'], ['2', 'Continuous(T)', 'T'],
     ];
     shadowOpts.forEach(([val, lbl, key]) => {
       const lb = document.createElement('label');
@@ -458,19 +458,19 @@ export class CharShapeDialog {
 
     // X 방향 / Y 방향 / 색
     const xyRow = this.row();
-    xyRow.appendChild(this.label('X 방향(X):'));
+    xyRow.appendChild(this.label('X offset(X):'));
     this.shadowXInput = this.numberInput(-100, 100);
     this.shadowXInput.style.width = '42px';
     xyRow.appendChild(this.shadowXInput);
     xyRow.appendChild(this.unit('%'));
-    const yLabel = this.label('Y 방향(Y):');
+    const yLabel = this.label('Y offset(Y):');
     yLabel.style.marginLeft = '10px';
     xyRow.appendChild(yLabel);
     this.shadowYInput = this.numberInput(-100, 100);
     this.shadowYInput.style.width = '42px';
     xyRow.appendChild(this.shadowYInput);
     xyRow.appendChild(this.unit('%'));
-    const scLabel = this.label('색(C):');
+    const scLabel = this.label('Color(C):');
     scLabel.style.marginLeft = '10px';
     xyRow.appendChild(scLabel);
     this.shadowColorInput = document.createElement('input');
@@ -481,31 +481,31 @@ export class CharShapeDialog {
     panel.appendChild(shadowFs);
 
     // ── 밑줄
-    const ulFs = this.createFieldset('밑줄');
+    const ulFs = this.createFieldset('Underline');
     const ulRow = this.row();
-    ulRow.appendChild(this.label('위치(L):'));
+    ulRow.appendChild(this.label('Position(L):'));
     this.ulPosSelect = document.createElement('select');
     this.ulPosSelect.className = 'dialog-select';
     this.ulPosSelect.style.width = '68px';
-    for (const [val, lbl] of [['None', '없음'], ['Bottom', '아래'], ['Top', '위']] as const) {
+    for (const [val, lbl] of [['None', 'None'], ['Bottom', 'Below'], ['Top', 'Above']] as const) {
       const o = document.createElement('option');
       o.value = val; o.textContent = lbl;
       this.ulPosSelect.appendChild(o);
     }
     ulRow.appendChild(this.ulPosSelect);
 
-    const ulmLabel = this.label('모양(M):');
+    const ulmLabel = this.label('Shape(M):');
     ulmLabel.style.marginLeft = '10px';
     ulRow.appendChild(ulmLabel);
     this.ulShapeSelect = document.createElement('select');
     this.ulShapeSelect.className = 'dialog-select';
     this.ulShapeSelect.style.width = '90px';
     for (const [val, lbl] of [
-      ['0', '━━━━ 실선'], ['1', '- - - 긴점선'], ['2', '········ 점선'],
-      ['3', '━·━· 일점쇄선'], ['4', '━··━ 이점쇄선'],
-      ['5', '━━━ 긴파선'], ['6', '●●●● 원형점'],
-      ['7', '══ 이중선'], ['8', '━═ 가는+굵은'],
-      ['9', '═━ 굵은+가는'], ['10', '≡≡ 삼중선'],
+      ['0', '━━━━ Solid'], ['1', '- - - Dashed'], ['2', '········ Dotted'],
+      ['3', '━·━· Dash-Dot'], ['4', '━··━ Dash-Dot-Dot'],
+      ['5', '━━━ Long Dash'], ['6', '●●●● Round Dot'],
+      ['7', '══ Double Line'], ['8', '━═ Thin+Thick'],
+      ['9', '═━ Thick+Thin'], ['10', '≡≡ Triple Line'],
     ] as const) {
       const o = document.createElement('option');
       o.value = val; o.textContent = lbl;
@@ -513,7 +513,7 @@ export class CharShapeDialog {
     }
     ulRow.appendChild(this.ulShapeSelect);
 
-    const ulcLabel = this.label('색(B):');
+    const ulcLabel = this.label('Color(B):');
     ulcLabel.style.marginLeft = '10px';
     ulRow.appendChild(ulcLabel);
     this.ulColorInput = document.createElement('input');
@@ -524,18 +524,18 @@ export class CharShapeDialog {
     panel.appendChild(ulFs);
 
     // ── 취소선
-    const stFs = this.createFieldset('취소선');
+    const stFs = this.createFieldset('Strikethrough');
     const stRow = this.row();
-    stRow.appendChild(this.label('모양(S):'));
+    stRow.appendChild(this.label('Shape(S):'));
     this.strikeShapeSelect = document.createElement('select');
     this.strikeShapeSelect.className = 'dialog-select';
     this.strikeShapeSelect.style.width = '90px';
     for (const [val, lbl] of [
-      ['0', '━━━━ 실선'], ['1', '- - - 긴점선'], ['2', '········ 점선'],
-      ['3', '━·━· 일점쇄선'], ['4', '━··━ 이점쇄선'],
-      ['5', '━━━ 긴파선'], ['6', '●●●● 원형점'],
-      ['7', '══ 이중선'], ['8', '━═ 가는+굵은'],
-      ['9', '═━ 굵은+가는'], ['10', '≡≡ 삼중선'],
+      ['0', '━━━━ Solid'], ['1', '- - - Dashed'], ['2', '········ Dotted'],
+      ['3', '━·━· Dash-Dot'], ['4', '━··━ Dash-Dot-Dot'],
+      ['5', '━━━ Long Dash'], ['6', '●●●● Round Dot'],
+      ['7', '══ Double Line'], ['8', '━═ Thin+Thick'],
+      ['9', '═━ Thick+Thin'], ['10', '≡≡ Triple Line'],
     ] as const) {
       const o = document.createElement('option');
       o.value = val; o.textContent = lbl;
@@ -543,7 +543,7 @@ export class CharShapeDialog {
     }
     stRow.appendChild(this.strikeShapeSelect);
 
-    const stcLabel = this.label('색(H):');
+    const stcLabel = this.label('Color(H):');
     stcLabel.style.marginLeft = '10px';
     stRow.appendChild(stcLabel);
     this.strikeColorInput = document.createElement('input');
@@ -554,27 +554,27 @@ export class CharShapeDialog {
     panel.appendChild(stFs);
 
     // ── 기타
-    const etcFs = this.createFieldset('기타');
+    const etcFs = this.createFieldset('Other');
     const etcRow1 = this.row();
-    etcRow1.appendChild(this.label('외곽선(O):'));
+    etcRow1.appendChild(this.label('Outline(O):'));
     this.outlineTypeSelect = document.createElement('select');
     this.outlineTypeSelect.className = 'dialog-select';
     this.outlineTypeSelect.style.width = '80px';
-    ['없음', '실선', '점선', '굵은 선', '파선', '일점쇄선', '이점쇄선'].forEach((lbl, i) => {
+    ['None', 'Solid', 'Dotted', 'Bold Line', 'Dashed', 'Dash-Dot', 'Dash-Dot-Dot'].forEach((lbl, i) => {
       const o = document.createElement('option');
       o.value = String(i); o.textContent = lbl;
       this.outlineTypeSelect.appendChild(o);
     });
     etcRow1.appendChild(this.outlineTypeSelect);
 
-    const emLabel = this.label('강조점(E):');
+    const emLabel = this.label('Emphasis mark(E):');
     emLabel.style.marginLeft = '10px';
     etcRow1.appendChild(emLabel);
     this.emphasisSelect = document.createElement('select');
     this.emphasisSelect.className = 'dialog-select';
     this.emphasisSelect.style.width = '80px';
     for (const [val, lbl] of [
-      ['0', '없음'], ['1', '● 검정 동그라미'], ['2', '○ 속빈 동그라미'],
+      ['0', 'None'], ['1', '● Black Circle'], ['2', '○ Hollow Circle'],
       ['3', 'ˇ'], ['4', '˜'], ['5', '･'], ['6', '˸'],
     ] as const) {
       const o = document.createElement('option');
@@ -586,8 +586,8 @@ export class CharShapeDialog {
 
     // 체크박스 행
     const etcRow2 = this.row();
-    const fitCb = this.checkbox('글꼴에 어울리는 빈칸(F)');
-    const kerningCb = this.checkbox('커닝(K)');
+    const fitCb = this.checkbox('Match space width to font(F)');
+    const kerningCb = this.checkbox('Kerning(K)');
     this.kerningCheckbox = kerningCb.querySelector('input')!;
     etcRow2.appendChild(fitCb);
     etcRow2.appendChild(kerningCb);
@@ -597,7 +597,7 @@ export class CharShapeDialog {
     // ── 미리보기
     this.extPreviewEl = document.createElement('div');
     this.extPreviewEl.className = 'cs-preview';
-    this.extPreviewEl.textContent = '한글Eng123漢字あいう※○';
+    this.extPreviewEl.textContent = 'AaBbCc 가나다 123'; // hwpword-keep-korean: font preview needs Hangul glyphs to judge Korean fonts
     panel.appendChild(this.extPreviewEl);
 
     return panel;
@@ -612,7 +612,7 @@ export class CharShapeDialog {
     panel.className = 'dialog-tab-panel';
 
     // ── 테두리 섹션
-    const borderFs = this.createFieldset('테두리');
+    const borderFs = this.createFieldset('Borders');
     const borderContent = document.createElement('div');
     borderContent.className = 'cs-border-layout';
 
@@ -622,13 +622,13 @@ export class CharShapeDialog {
 
     // 종류(Y) — HWP 스펙 선 종류 값에 매핑
     const typeRow = this.row();
-    typeRow.appendChild(this.label('종류(Y):'));
+    typeRow.appendChild(this.label('Type(Y):'));
     this.borderTypeSelect = document.createElement('select');
     this.borderTypeSelect.className = 'dialog-select';
     this.borderTypeSelect.style.width = '100px';
     for (const [val, lbl] of [
-      ['0', '선 없음'], ['1', '실선'], ['2', '파선'],
-      ['3', '점선'], ['4', '일점쇄선'], ['8', '이중선'],
+      ['0', 'No Line'], ['1', 'Solid'], ['2', 'Dashed'],
+      ['3', 'Dotted'], ['4', 'Dash-Dot'], ['8', 'Double Line'],
     ] as const) {
       const o = document.createElement('option');
       o.value = val; o.textContent = lbl;
@@ -640,7 +640,7 @@ export class CharShapeDialog {
 
     // 굵기(I) — HWP 스펙 width 인덱스에 매핑
     const widthRow = this.row();
-    widthRow.appendChild(this.label('굵기(I):'));
+    widthRow.appendChild(this.label('Weight(I):'));
     this.borderWidthSelect = document.createElement('select');
     this.borderWidthSelect.className = 'dialog-select';
     this.borderWidthSelect.style.width = '100px';
@@ -660,7 +660,7 @@ export class CharShapeDialog {
 
     // 색(C)
     const colorRow = this.row();
-    colorRow.appendChild(this.label('색(C):'));
+    colorRow.appendChild(this.label('Color(C):'));
     this.borderColorInput = document.createElement('input');
     this.borderColorInput.type = 'color';
     this.borderColorInput.value = '#000000';
@@ -688,22 +688,22 @@ export class CharShapeDialog {
     presetRow.className = 'cs-border-presets';
     // 테두리 없음
     const btnNone = document.createElement('button');
-    btnNone.className = 'cs-preset-btn'; btnNone.textContent = '┄'; btnNone.title = '테두리 없음';
+    btnNone.className = 'cs-preset-btn'; btnNone.textContent = '┄'; btnNone.title = 'No border';
     btnNone.addEventListener('click', () => { this.borderTypeSelect.value = '0'; this.updateBorderPreview(); });
     presetRow.appendChild(btnNone);
     // 상자형
     const btnBox = document.createElement('button');
-    btnBox.className = 'cs-preset-btn'; btnBox.textContent = '□'; btnBox.title = '상자형';
+    btnBox.className = 'cs-preset-btn'; btnBox.textContent = '□'; btnBox.title = 'Box';
     btnBox.addEventListener('click', () => { this.borderTypeSelect.value = '1'; this.updateBorderPreview(); });
     presetRow.appendChild(btnBox);
     // 격자형 (글자 테두리에는 같은 효과)
     const btnGrid = document.createElement('button');
-    btnGrid.className = 'cs-preset-btn'; btnGrid.textContent = '╬'; btnGrid.title = '격자형';
+    btnGrid.className = 'cs-preset-btn'; btnGrid.textContent = '╬'; btnGrid.title = 'Grid';
     btnGrid.addEventListener('click', () => { this.borderTypeSelect.value = '1'; this.updateBorderPreview(); });
     presetRow.appendChild(btnGrid);
     // 사용자 정의
     const btnCustom = document.createElement('button');
-    btnCustom.className = 'cs-preset-btn'; btnCustom.textContent = '▣'; btnCustom.title = '사용자 정의';
+    btnCustom.className = 'cs-preset-btn'; btnCustom.textContent = '▣'; btnCustom.title = 'Custom';
     presetRow.appendChild(btnCustom);
     borderRight.appendChild(presetRow);
 
@@ -712,15 +712,15 @@ export class CharShapeDialog {
     panel.appendChild(borderFs);
 
     // ── 배경 섹션
-    const bgFs = this.createFieldset('배경');
+    const bgFs = this.createFieldset('Shading');
 
     // 면 색(Q) — 색 없음 + 색 선택
     const faceRow = this.row();
-    faceRow.appendChild(this.label('면 색(Q):'));
+    faceRow.appendChild(this.label('Fill color(Q):'));
     this.faceColorSelect = document.createElement('select');
     this.faceColorSelect.className = 'dialog-select';
     this.faceColorSelect.style.width = '100px';
-    for (const [val, lbl] of [['none', '색 없음'], ['solid', '색 지정']] as const) {
+    for (const [val, lbl] of [['none', 'No Color'], ['solid', 'Specify Color']] as const) {
       const o = document.createElement('option');
       o.value = val; o.textContent = lbl;
       this.faceColorSelect.appendChild(o);
@@ -737,21 +737,21 @@ export class CharShapeDialog {
 
     // 무늬 색(P) + 무늬 모양(L)
     const patRow = this.row();
-    patRow.appendChild(this.label('무늬 색(P):'));
+    patRow.appendChild(this.label('Pattern color(P):'));
     this.patColorInput = document.createElement('input');
     this.patColorInput.type = 'color';
     this.patColorInput.value = '#000000';
     this.patColorInput.className = 'cs-color-btn';
     patRow.appendChild(this.patColorInput);
 
-    const patLabel = this.label('무늬 모양(L):');
+    const patLabel = this.label('Pattern shape(L):');
     patLabel.style.marginLeft = '10px';
     patRow.appendChild(patLabel);
     this.patShapeSelect = document.createElement('select');
     this.patShapeSelect.className = 'dialog-select';
     this.patShapeSelect.style.width = '90px';
     for (const [val, lbl] of [
-      ['0', '없음'], ['1', '━'], ['2', '┃'],
+      ['0', 'None'], ['1', '━'], ['2', '┃'],
       ['3', '╲'], ['4', '╱'], ['5', '╳'], ['6', '┼'],
     ] as const) {
       const o = document.createElement('option');

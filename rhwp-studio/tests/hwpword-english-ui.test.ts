@@ -22,6 +22,11 @@ const ENGLISH_UI_SOURCES = [
   'src/ui/about-dialog.ts',
   'src/view/page-indicator.ts',
   'src/view/zoom-status-controls.ts',
+  'src/ui/char-shape-dialog.ts',
+  'src/ui/para-shape-dialog.ts',
+  'src/ui/para-shape-tab-builders.ts',
+  'src/ui/style-dialog.ts',
+  'src/ui/style-edit-dialog.ts',
 ];
 
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힯]/;
