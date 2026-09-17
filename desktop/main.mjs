@@ -83,6 +83,33 @@ function createWindow(launchPaths = []) {
     });
     if (choice === 0) event.preventDefault();
   });
+  // A crashed/killed renderer leaves this window blank forever unless something reloads it.
+  // 'clean-exit' also fires for a normal quit/destroy, which needs no recovery dialog.
+  win.webContents.on('render-process-gone', (_event, details) => {
+    if (details.reason === 'clean-exit') return;
+    console.error(`[hwpword] renderer gone (reason=${details.reason}) for window ${win.id}`);
+    void dialog.showMessageBox(win, {
+      type: 'warning',
+      title: 'HWP Word',
+      message: 'This window stopped working.',
+      detail: `Reason: ${details.reason}. Changes since the last autosave may be lost.`,
+      buttons: ['Reload', 'Close'],
+      defaultId: 0,
+      cancelId: 1,
+      noLink: true,
+    }).then(({ response }) => {
+      if (response === 0) {
+        // Launch tokens are keyed by webContents id, which reload() keeps, so the re-delivered
+        // launch files still resolve.
+        win.webContents.reload();
+        return;
+      }
+      // The renderer process is already gone, so it can never run beforeunload; win.close()
+      // would wait on that handshake forever. destroy() skips it while still guaranteeing the
+      // 'closed' event, so the launchFiles/windowsByPath cleanup above still runs.
+      win.destroy();
+    });
+  });
   win.once('ready-to-show', () => win.show());
   if (DEV_URL) win.webContents.openDevTools({ mode: 'detach' });
   void win.loadURL(DEV_URL ?? `${APP_ORIGIN}/index.html`);
