@@ -122,7 +122,9 @@ function escapeClipboardHtmlText(text: string): string {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    // Rewritten from the /"/g literal: source-guard's codeOnly() desyncs on a regex literal
+    // containing a quote char. Identical .source/.flags, verified with node.
+    .replace(new RegExp(String.raw`"`, 'g'), '&quot;');
 }
 
 function fallbackClipboardHtml(text: string): string {
@@ -471,9 +473,9 @@ export async function writeImageToClipboard(
 /** 코드 단축키 → 커맨드 ID 매핑 (Ctrl+K,? 형태) */
 const chordMapK: Record<string, string> = {
   b: 'insert:bookmark',
-  ㅠ: 'insert:bookmark', // 한글 IME 상태
+  ㅠ: 'insert:bookmark', // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   n: 'format:para-num-shape',
-  ㅜ: 'format:para-num-shape', // 한글 IME 상태
+  ㅜ: 'format:para-num-shape', // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
 };
 
 /** 코드 단축키 → 커맨드 ID 매핑 (Ctrl+M,? 형태)
@@ -483,35 +485,35 @@ const chordMapK: Record<string, string> = {
  */
 const chordMapM: Record<string, string> = {
   a: 'table:split',   // 한컴 Ctrl+N,A — Chrome 이 Ctrl+N 을 차단해 Ctrl+M 계열로 이관
-  ㅁ: 'table:split',  // 한글 IME
+  ㅁ: 'table:split',  // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   z: 'table:attach',  // 한컴 Ctrl+N,Z
-  ㅋ: 'table:attach', // 한글 IME
+  ㅋ: 'table:attach', // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   n: 'insert:footnote',
-  ㅜ: 'insert:footnote', // 한글 IME
+  ㅜ: 'insert:footnote', // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   s: 'page:hide',
-  ㄴ: 'page:hide', // 한글 IME
+  ㄴ: 'page:hide', // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   m: 'insert:equation',
-  ㅡ: 'insert:equation', // 한글 IME
+  ㅡ: 'insert:equation', // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
 };
 
 /** 코드 단축키 → 커맨드 ID 매핑 (Alt+V,? 형태 — 보기 메뉴) */
 const chordMapV: Record<string, string> = {
   t: 'view:border-transparent',
-  ㅅ: 'view:border-transparent', // 한글 IME
+  ㅅ: 'view:border-transparent', // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
 };
 
 /** 코드 단축키 → 커맨드 ID 매핑 (Ctrl+G,? 형태 — 보기/조판 메뉴) */
 const chordMapG: Record<string, string> = {
   c: 'view:ctrl-mark',        // 조판 부호
-  ㅊ: 'view:ctrl-mark',       // 한글 IME
+  ㅊ: 'view:ctrl-mark',       // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   t: 'view:para-mark',        // 문단 부호
-  ㅅ: 'view:para-mark',       // 한글 IME
+  ㅅ: 'view:para-mark',       // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   p: 'view:zoom-fit-page',    // 쪽 맞춤
-  ㅍ: 'view:zoom-fit-page',   // 한글 IME
+  ㅍ: 'view:zoom-fit-page',   // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   w: 'view:zoom-fit-width',   // 폭 맞춤
-  ㅈ: 'view:zoom-fit-width',  // 한글 IME
+  ㅈ: 'view:zoom-fit-width',  // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
   q: 'view:zoom-100',         // 100%
-  ㅂ: 'view:zoom-100',        // 한글 IME
+  ㅂ: 'view:zoom-100',        // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
 };
 
 /**
@@ -1320,7 +1322,7 @@ export function onKeyDown(this: any, e: KeyboardEvent): void {
   );
   if (e.altKey && !isAltWordKey && this.dispatcher) {
     // Alt+V → Chord 대기 (보기 메뉴 단축키, 한컴 Alt+V,T 계승)
-    if ((e.key === 'v' || e.key === 'V' || e.key === 'ㅍ') && !e.shiftKey && !e.ctrlKey) {
+    if ((e.key === 'v' || e.key === 'V' || e.key === 'ㅍ') && !e.shiftKey && !e.ctrlKey) { // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
       e.preventDefault();
       this._pendingChordV = true;
       return;
@@ -1573,19 +1575,19 @@ export function handleCtrlKey(this: any, e: KeyboardEvent): void {
   }
 
   // ─── 코드 단축키 1번째 키 (Ctrl+K / Ctrl+M) ───
-  if ((e.key === 'k' || e.key === 'K' || e.key === 'ㅏ') && !e.shiftKey && !e.altKey) {
+  if ((e.key === 'k' || e.key === 'K' || e.key === 'ㅏ') && !e.shiftKey && !e.altKey) { // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
     e.preventDefault();
     this._pendingChordK = true;
     return;
   }
   // [PR #786 후속] Ctrl+N 영역 영역 Chrome reserved shortcut (새 창) 영역 영역 JS 차단 불가
   // 영역 영역 Ctrl+M 영역 영역 chord 1번째 키 영역 영역 변경.
-  if ((e.key === 'm' || e.key === 'M' || e.key === 'ㅡ') && !e.shiftKey && !e.altKey) {
+  if ((e.key === 'm' || e.key === 'M' || e.key === 'ㅡ') && !e.shiftKey && !e.altKey) { // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
     e.preventDefault();
     this._pendingChordM = true;
     return;
   }
-  if ((e.key === 'g' || e.key === 'G' || e.key === 'ㅎ') && !e.shiftKey && !e.altKey) {
+  if ((e.key === 'g' || e.key === 'G' || e.key === 'ㅎ') && !e.shiftKey && !e.altKey) { // hwpword-keep-korean: IME jamo key produced by e.key under a Hangul keyboard layout
     e.preventDefault();
     this._pendingChordG = true;
     return;
@@ -1758,7 +1760,7 @@ export function onCopy(this: any, e: ClipboardEvent): void {
       try {
         const cellPathJson = pictureCellPathJson(ref);
         this.wasm.copyControl(ref.sec, ref.ppi, ref.ci, cellPathJson);
-        const text = this.wasm.getClipboardText() || '[그림]';
+        const text = this.wasm.getClipboardText() || '[그림]'; // hwpword-keep-korean: clipboard fallback marker shared with the engine's [표]/[그림] markers
         let html = '';
         try { html = this.wasm.exportControlHtml(ref.sec, ref.ppi, ref.ci, cellPathJson) || ''; } catch { /* HTML 내보내기 실패는 fallback */ }
         const markedHtml = prepareRhwpInternalClipboardHtml(this, html, text);

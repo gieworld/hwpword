@@ -347,7 +347,7 @@ export class PageRenderer {
   ): HTMLCanvasElement {
     this.canvaskitDiagnosticsByPage.delete(pageIdx);
     if (!this.canvaskitRenderer) {
-      throw new Error('CanvasKit renderer가 초기화되지 않았습니다');
+      throw new Error('CanvasKit renderer has not been initialized');
     }
 
     const parent = canvas.parentElement;

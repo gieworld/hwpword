@@ -1104,7 +1104,7 @@ export function finishImagePlacement(this: any, e: MouseEvent): void {
     this.imagePlacementDrag = null;
     this.container.style.cursor = 'crosshair';
     showToast({
-      message: '그림을 넣을 문단을 찾지 못했습니다.\n문서 본문이나 표 셀 안쪽을 다시 클릭하세요.',
+      message: 'Could not find a paragraph to insert the picture into.\nClick inside the document body or a table cell and try again.',
       durationMs: 5000,
     });
     return;
@@ -1202,7 +1202,7 @@ export function finishImagePlacement(this: any, e: MouseEvent): void {
   } catch { /* 페이지 정보 없으면 그대로 */ }
 
   // 개체 설명문 생성 (한컴 기본 패턴)
-  const desc = `그림입니다.\r\n원본 그림의 이름: ${imgData.fileName}\r\n원본 그림의 크기: 가로 ${imgData.naturalWidth}pixel, 세로 ${imgData.naturalHeight}pixel`;
+  const desc = `Picture.\r\nOriginal picture name: ${imgData.fileName}\r\nOriginal picture size: ${imgData.naturalWidth} x ${imgData.naturalHeight} pixels`;
 
   // WASM 호출 — 스냅샷으로 기록 (Undo 지원, pasteImage 경로와 동일 패턴)
   try {
@@ -1215,14 +1215,14 @@ export function finishImagePlacement(this: any, e: MouseEvent): void {
         paperOffsetXHu, paperOffsetYHu,
       );
       if (!result.ok) {
-        insertFailedMsg = (result as any).error || '삽입 위치 또는 이미지 정보를 확인할 수 없습니다.';
+        insertFailedMsg = (result as any).error || 'Could not determine the insertion position or image data.';
         console.warn('[InputHandler] 그림 삽입 실패:', result);
       }
       return this.cursor.getPosition();
     }});
     if (insertFailedMsg) {
       showToast({
-        message: `그림 삽입에 실패했습니다.\n${insertFailedMsg}`,
+        message: `Could not insert the picture.\n${insertFailedMsg}`,
         durationMs: 6000,
       });
     }
@@ -1230,7 +1230,7 @@ export function finishImagePlacement(this: any, e: MouseEvent): void {
     console.warn('[InputHandler] 그림 삽입 실패:', err);
     const msg = err instanceof Error ? err.message : String(err);
     showToast({
-      message: `그림 삽입에 실패했습니다.\n${msg}`,
+      message: `Could not insert the picture.\n${msg}`,
       durationMs: 6000,
     });
   }

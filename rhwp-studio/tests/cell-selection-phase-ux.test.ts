@@ -33,7 +33,7 @@ test('F5 3단계는 마커 없이 표 전체 선택 상태를 전달한다', () 
   const phase = read('src/engine/cell-selection-phase.ts');
 
   assert.match(renderer, /phase === 1 \|\| phase === 2/);
-  assert.match(phase, /case 3:[\s\S]*return '표 전체 선택'/);
+  assert.match(phase, /case 3:[\s\S]*return 'Entire table selected'/);
 });
 
 test('F5 단계 이름은 기존 상태 메시지와 분리된 live status로 표시한다', () => {
@@ -49,8 +49,8 @@ test('F5 단계 이름은 기존 상태 메시지와 분리된 live status로 �
   assert.match(main, /eventBus\.on\('cell-selection-phase-changed'/);
   assert.match(main, /cellSelectionPhaseLabel/);
   assert.match(main, /selectionStatus\.hidden = phase === null/);
-  assert.match(phase, /case 1:[\s\S]*return '셀 선택 · 방향키로 이동'/);
-  assert.match(phase, /case 2:[\s\S]*return '셀 범위 선택 · 방향키로 확장'/);
+  assert.match(phase, /case 1:[\s\S]*return 'Cell selected · Use arrow keys to move'/);
+  assert.match(phase, /case 2:[\s\S]*return 'Cell range selected · Use arrow keys to extend'/);
   assert.match(statusStyles, /\.stb-cell-selection\s*\{/);
   assert.match(statusStyles, /\.stb-cell-selection\[hidden\]\s*\{/);
   assert.match(html, /id="sb-message" class="stb-message"/, '기존 일시 메시지 채널을 보존해야 한다');

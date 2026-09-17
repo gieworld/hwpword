@@ -16,7 +16,7 @@ export class CanvasPool {
   /** CanvasKit이 software fallback canvas로 교체한 경우 pool 소유권을 넘긴다. */
   replace(pageIdx: number, current: HTMLCanvasElement, replacement: HTMLCanvasElement): void {
     if (this.inUse.get(pageIdx) !== current) {
-      throw new Error(`페이지 ${pageIdx} Canvas 교체 대상이 현재 pool 항목과 다릅니다`);
+      throw new Error(`Page ${pageIdx}: the canvas being replaced does not match the current pool entry`);
     }
     this.inUse.set(pageIdx, replacement);
   }

@@ -48,29 +48,6 @@ function allStudioSources(): string[] {
   return out.sort();
 }
 
-/**
- * Studio sources outside NON_UI_SOURCES that still contain Korean UI text. To regenerate:
- * run this file — the second test below names entries to remove (already clean) and the first
- * names files to add (newly dirty). Later tasks translate files and shrink this list to empty.
- */
-const PENDING_TRANSLATION = [
-  'src/engine/cell-selection-phase.ts',
-  'src/engine/command.ts',
-  'src/engine/cursor.ts',
-  'src/engine/header-footer-mode.ts',
-  'src/engine/input-handler-keyboard.ts',
-  'src/engine/input-handler-mouse.ts',
-  'src/engine/input-handler-picture.ts',
-  'src/engine/input-handler-table.ts',
-  'src/engine/input-handler-text.ts',
-  'src/view/canvas-pool.ts',
-  'src/view/canvas-view.ts',
-  'src/view/canvaskit-renderer.ts',
-  'src/view/page-renderer.ts',
-  'src/view/renderer-session.ts',
-  'src/view/toolbox-visibility.ts',
-];
-
 const HANGUL = /[ᄀ-ᇿ㄰-㆏가-힯]/;
 
 /**
@@ -112,16 +89,11 @@ function koreanUiLines(relativePath: string): string[] {
   });
 }
 
-test('every studio UI source outside the pending list is English', () => {
-  const pending = new Set(PENDING_TRANSLATION);
+test('every studio UI source is English', () => {
   const files = allStudioSources().filter(
-    (file) => !NON_UI_SOURCES.some((prefix) => file.startsWith(prefix)) && !pending.has(file),
+    (file) => !NON_UI_SOURCES.some((prefix) => file.startsWith(prefix)),
   );
   assert.deepEqual(files.flatMap(koreanUiLines), []);
-});
-
-test('the pending translation list only names files that still contain Korean UI text', () => {
-  assert.deepEqual(PENDING_TRANSLATION.filter((file) => koreanUiLines(file).length === 0), []);
 });
 
 test('the visible style bar and status bar in index.html are English', () => {

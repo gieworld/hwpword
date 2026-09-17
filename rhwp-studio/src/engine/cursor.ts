@@ -1370,7 +1370,7 @@ export class CursorState {
       } else {
         // 인라인 컨트롤 위치 건너뛰기는 정상 동작 (조판부호 감추기 모드)
         const msg = String(e);
-        if (!msg.includes('인라인 컨트롤 위치')) {
+        if (!msg.includes('인라인 컨트롤 위치')) { // hwpword-keep-korean: substring match against a WASM engine error message, not displayed UI
           console.warn('[CursorState] updateRect 실패 → rect=null pos=(%d,%d,%d) cell=(%s,%s,%s,%s):',
             pos.sectionIndex, pos.paragraphIndex, pos.charOffset,
             pos.parentParaIndex, pos.controlIndex, pos.cellIndex, pos.cellParaIndex, e);

@@ -13,9 +13,9 @@ export interface HeaderFooterModeState {
 export type HeaderFooterModeChangedPayload = 'none' | HeaderFooterModeState;
 
 export function headerFooterApplyToLabel(applyTo: number): string {
-  if (applyTo === 1) return '짝수 쪽';
-  if (applyTo === 2) return '홀수 쪽';
-  return '양쪽';
+  if (applyTo === 1) return 'Even pages';
+  if (applyTo === 2) return 'Odd pages';
+  return 'Both pages';
 }
 
 export function headerFooterModeState(cursor: CursorState): HeaderFooterModeChangedPayload {

@@ -102,7 +102,7 @@ test('[#5769] after 저장이 실패해도 undo 는 수행되고 redo 만 포기
     assert.equal(cmd.snapshotResourceCount(), 1, 'after 는 없다');
 
     w.saveSnapshot = realSave;
-    assert.throws(() => cmd.execute(w), /redo 불가/,
+    assert.throws(() => cmd.execute(w), /cannot redo/,
       'redo 는 성공한 척하지 말고 던져야 한다 — 히스토리가 엔트리를 드롭한다');
   } finally { await vite.close(); }
 });

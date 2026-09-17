@@ -47,8 +47,8 @@ function charCount(s: string): number {
   return [...s].length;
 }
 
-const FOOTNOTE_DELETE_TITLE = '각주 삭제';
-const FOOTNOTE_DELETE_MESSAGE = '각주를 삭제하시겠습니까?';
+const FOOTNOTE_DELETE_TITLE = 'Delete Footnote';
+const FOOTNOTE_DELETE_MESSAGE = 'Delete this footnote?';
 
 function tryConfirmRemoveClickHereAtBoundary(
   this: any,

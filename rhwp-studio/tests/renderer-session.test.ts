@@ -135,7 +135,7 @@ test('auto rejects mismatched preflight mode and profile before CanvasKit initia
     });
     assert.equal(selected.backend, 'canvas2d');
     assert.equal(selected.diagnostics.selectionReason, 'autoPreflightIncomplete');
-    assert.match(selected.diagnostics.selectionError ?? '', /요청 불일치/);
+    assert.match(selected.diagnostics.selectionError ?? '', /request mismatch/);
   }
   assert.equal(createCalls, 0);
 });

@@ -21,7 +21,7 @@ export const TOOLBOX_TARGETS = [
   {
     key: 'basic',
     cmd: 'view:toolbox-basic',
-    name: '기본 도구 상자',
+    name: 'Basic Toolbar',
     shortcut: 'Ctrl+F1',
     datasetKey: 'toolboxBasic',
     attribute: 'data-toolbox-basic',
@@ -30,7 +30,7 @@ export const TOOLBOX_TARGETS = [
   {
     key: 'format',
     cmd: 'view:toolbox-format',
-    name: '서식 도구 상자',
+    name: 'Format Toolbar',
     shortcut: undefined,
     datasetKey: 'toolboxFormat',
     attribute: 'data-toolbox-format',
@@ -71,7 +71,7 @@ export function applyToolboxVisibility(dom: ToolboxDom, visibility: ToolboxVisib
     for (const item of dom.querySelectorAll(`[data-cmd="${target.cmd}"]`)) {
       item.classList.toggle('active', visible);
       if (item.getAttribute('aria-controls') === target.elementId) {
-        const action = visible ? '접기' : '펴기';
+        const action = visible ? 'Collapse' : 'Expand';
         const label = `${target.name} ${action}`;
         item.setAttribute('aria-expanded', String(visible));
         item.setAttribute('aria-label', label);

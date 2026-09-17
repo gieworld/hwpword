@@ -375,11 +375,11 @@ export class RendererSession {
       this.renderProfile,
     );
     if (preflight.schemaVersion !== 1) {
-      throw new Error(`지원하지 않는 CanvasKit document preflight schema: ${preflight.schemaVersion}`);
+      throw new Error(`Unsupported CanvasKit document preflight schema: ${preflight.schemaVersion}`);
     }
     if (preflight.mode !== this.canvaskitMode.mode || preflight.profile !== this.renderProfile) {
       throw new Error(
-        `CanvasKit document preflight 요청 불일치: requested=${this.canvaskitMode.mode}/${this.renderProfile};received=${preflight.mode}/${preflight.profile}`,
+        `CanvasKit document preflight request mismatch: requested=${this.canvaskitMode.mode}/${this.renderProfile};received=${preflight.mode}/${preflight.profile}`,
       );
     }
     return this.options.transformCanvasKitPreflight?.(preflight) ?? preflight;

@@ -153,7 +153,7 @@ test('변경이 없으면 no-op 으로 저널을 남기지 않는다', () => {
   const names = calls.map((c) => c.fn);
   assert.ok(names.includes('discardSectionRaw'), '캡처를 즉시 해제해야 한다');
   assert.ok(!names.includes('restoreSectionRaw'), 'no-op 에 undo 경로가 남으면 안 된다');
-  assert.throws(() => cmd.undo(wasm), /변경 기록이 없다/);
+  assert.throws(() => cmd.undo(wasm), /no live change record/);
 });
 
 test('zone(asOne) 적용도 같은 생명주기를 쓴다', () => {
@@ -209,5 +209,5 @@ test('execute 실패가 아무 뮤테이션 전이면 롤백 호출 없이 캡�
   assert.ok(names.includes('discardSectionRaw'), '캡처 해제는 해야 한다');
   assert.ok(!names.includes('applyCellBorderFillIds'), '뮤테이션 전 실패엔 빈 롤백 대입을 낭비하지 않는다');
   assert.ok(!names.includes('removeBorderFillTails'), '빈 절단은 table.dirty 만 세운다');
-  assert.throws(() => cmd.undo(wasm), /변경 기록이 없다/);
+  assert.throws(() => cmd.undo(wasm), /no live change record/);
 });

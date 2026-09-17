@@ -1480,8 +1480,8 @@ export function onContextMenu(this: any, e: MouseEvent): void {
       items = [
         ...items,
         { type: 'separator' },
-        { type: 'command', commandId: 'field:edit', label: '누름틀 고치기(E)...' },
-        { type: 'command', commandId: 'field:remove', label: '누름틀 지우기(J)' },
+        { type: 'command', commandId: 'field:edit', label: 'Edit Click-here Field…' },
+        { type: 'command', commandId: 'field:remove', label: 'Remove Click-here Field' },
       ];
     }
   } catch { /* 무시 */ }

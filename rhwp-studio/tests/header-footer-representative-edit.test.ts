@@ -89,9 +89,9 @@ test('HF 편집 상태는 종류·타겟·대표 페이지를 함께 전달한�
     applyTo: 1,
     previewPage: 7,
   });
-  assert.equal(headerFooterApplyToLabel(0), '양쪽');
-  assert.equal(headerFooterApplyToLabel(1), '짝수 쪽');
-  assert.equal(headerFooterApplyToLabel(2), '홀수 쪽');
+  assert.equal(headerFooterApplyToLabel(0), 'Both pages');
+  assert.equal(headerFooterApplyToLabel(1), 'Even pages');
+  assert.equal(headerFooterApplyToLabel(2), 'Odd pages');
 });
 
 test('CanvasView는 대표 preview와 실제 적용 쪽 overlay를 비인쇄 계층으로 관리한다', () => {

@@ -175,12 +175,12 @@ export function promptAssignPictureImage(this: any, ref: PictureObjectRef): void
       await new Promise<void>((resolve, reject) => {
         img.onload = () => {
           if (img.naturalWidth <= 0 || img.naturalHeight <= 0) {
-            reject(new Error('이미지 크기를 확인할 수 없습니다.'));
+            reject(new Error('Could not determine the image size.'));
             return;
           }
           resolve();
         };
-        img.onerror = () => reject(new Error('브라우저가 이 이미지 파일을 읽지 못했습니다.'));
+        img.onerror = () => reject(new Error('The browser could not read this image file.'));
         img.src = objectUrl;
       });
       const cellPathJson = hasCellPath(ref) ? JSON.stringify(ref.cellPath) : '';
@@ -202,7 +202,7 @@ export function promptAssignPictureImage(this: any, ref: PictureObjectRef): void
       const msg = err instanceof Error ? err.message : String(err);
       console.warn('[promptAssignPictureImage] 그림 지정 실패:', err);
       showToast({
-        message: `그림을 지정할 수 없습니다.\n${msg}`,
+        message: `Could not set the picture.\n${msg}`,
         durationMs: 6000,
       });
     } finally {

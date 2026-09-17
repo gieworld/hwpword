@@ -151,10 +151,13 @@ interface CanvasKitLocalTypeface {
 }
 
 function primaryFontFamily(value: string | null | undefined): string {
+  // Rewritten from the /^(["'])|(["'])$/g literal: source-guard's codeOnly() desyncs on a
+  // regex literal containing a quote char. Identical .source/.flags, verified with node.
+  const stripQuotes = new RegExp(String.raw`^(["'])|(["'])$`, 'g');
   return (value ?? '')
     .split(',')[0]
     .trim()
-    .replace(/^(["'])|(["'])$/g, '');
+    .replace(stripQuotes, '');
 }
 
 function normalizedFontFamily(value: string | null | undefined): string {
@@ -486,11 +489,11 @@ export class CanvasKitLayerRenderer {
           }
           : this.bundledTypefaces.get(source.url) ?? null;
       if (prepared && requiresShapingManager && !prepared.fontManager) {
-        throw new Error(`CanvasKit shaping font source 준비 실패: ${source.url}`);
+        throw new Error(`CanvasKit shaping font source preparation failed: ${source.url}`);
       }
       if (!prepared) {
         if (this.bundledTypefaceLoadFailures.has(source.url)) {
-          throw new Error(`CanvasKit font source 준비 실패: ${source.url}`);
+          throw new Error(`CanvasKit font source preparation failed: ${source.url}`);
         }
         let typeface: Typeface | null = null;
         let fontManager: FontMgr | null = null;
@@ -498,7 +501,7 @@ export class CanvasKitLayerRenderer {
         this.bundledFontRequests.add(request);
         try {
           if (this.disposed || generation !== this.documentGeneration) {
-            throw new Error('문서 교체로 CanvasKit font 준비가 취소되었습니다');
+            throw new Error('CanvasKit font preparation was cancelled by a document change');
           }
           const response = await fetch(source.url, { signal: request.signal });
           if (!response.ok) {
@@ -508,16 +511,16 @@ export class CanvasKitLayerRenderer {
             maxBytes: CanvasKitLayerRenderer.MAX_BUNDLED_FONT_BYTES,
             signal: request.signal,
             isCancelled: () => this.disposed || generation !== this.documentGeneration,
-            cancelledMessage: '문서 교체로 CanvasKit font 준비가 취소되었습니다',
+            cancelledMessage: 'CanvasKit font preparation was cancelled by a document change',
           });
           if (this.disposed || generation !== this.documentGeneration) {
-            throw new Error('문서 교체로 CanvasKit font 준비가 취소되었습니다');
+            throw new Error('CanvasKit font preparation was cancelled by a document change');
           }
           typeface = this.canvasKit.Typeface.MakeFreeTypeFaceFromData(bytes)
             ?? this.canvasKit.Typeface.MakeTypefaceFromData(bytes);
           fontManager = this.canvasKit.FontMgr.FromData(bytes.slice(0));
           if ((!typeface && !fontManager) || (requiresShapingManager && !fontManager)) {
-            throw new Error('CanvasKit이 font payload를 해석하지 못했습니다');
+            throw new Error('CanvasKit could not parse the font payload');
           }
           const fontFamily = fontManager && fontManager.countFamilies() > 0
             ? fontManager.getFamilyName(0)
@@ -534,7 +537,7 @@ export class CanvasKitLayerRenderer {
             && !this.disposed && generation === this.documentGeneration) {
             this.bundledTypefaceLoadFailures.add(source.url);
           }
-          throw new Error(`CanvasKit font source 준비 실패 (${source.url}): ${error}`);
+          throw new Error(`CanvasKit font source preparation failed (${source.url}): ${error}`);
         } finally {
           this.bundledFontRequests.delete(request);
         }
@@ -621,7 +624,7 @@ export class CanvasKitLayerRenderer {
     documentGeneration = 0,
   ): HTMLCanvasElement {
     if (this.disposed) {
-      throw new Error('CanvasKit renderer가 이미 dispose되었습니다');
+      throw new Error('CanvasKit renderer has already been disposed');
     }
     this.unsupportedOps.clear();
     this.currentImageFailures.clear();
@@ -748,7 +751,7 @@ export class CanvasKitLayerRenderer {
 
   cancelDocumentPreparation(): void {
     for (const request of this.bundledFontRequests) {
-      request.abort(new Error('문서 교체로 CanvasKit font 준비가 취소되었습니다'));
+      request.abort(new Error('CanvasKit font preparation was cancelled by a document change'));
     }
     this.bundledFontRequests.clear();
   }
@@ -1023,7 +1026,7 @@ export class CanvasKitLayerRenderer {
       }
       return { surface: softwareSurface, canvas: softwareCanvas };
     }
-    throw new Error('CanvasKit surface를 만들 수 없습니다');
+    throw new Error('Could not create a CanvasKit surface');
   }
 
   private selectTextVariants(node: LayerNode, canvas: SkCanvas): void {
@@ -2138,7 +2141,7 @@ export class CanvasKitLayerRenderer {
     const requestedFontFamily = primaryFontFamily(style.fontFamily);
     const preparedTypeface = this.findPreparedTypeface(requestedFontFamily);
     if (requestedFontFamily && !preparedTypeface && this.requirePreparedFontFamilies) {
-      throw new Error(`CanvasKit font family가 준비되지 않았습니다: ${requestedFontFamily}`);
+      throw new Error(`CanvasKit font family is not prepared: ${requestedFontFamily}`);
     }
     if (requestedFontFamily && !preparedTypeface) {
       this.recordFontSubstitution({
@@ -2541,7 +2544,7 @@ export class CanvasKitLayerRenderer {
     const requestedFontFamily = primaryFontFamily(style.fontFamily);
     const preparedTypeface = this.findPreparedTypeface(requestedFontFamily);
     if (requestedFontFamily && !preparedTypeface && this.requirePreparedFontFamilies) {
-      throw new Error(`CanvasKit font family가 준비되지 않았습니다: ${requestedFontFamily}`);
+      throw new Error(`CanvasKit font family is not prepared: ${requestedFontFamily}`);
     }
     const primaryTypeface = preparedTypeface?.typeface ?? this.defaultTypeface;
 
@@ -2694,7 +2697,7 @@ export class CanvasKitLayerRenderer {
           : codePoint >= 0xF02CE && codePoint <= 0xF02E1
             ? String(codePoint - 0xF02CD)
           : codePoint === 0xF012B
-            ? '(인)'
+            ? '(인)' // hwpword-keep-korean: document content glyph substitute for a Hancom compatibility PUA codepoint, not UI chrome
             : codePoint === 0xF031C
               ? '■'
               : codePoint === 0xF02FC

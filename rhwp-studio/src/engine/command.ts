@@ -918,7 +918,7 @@ export class FragmentDeleteCommand implements EditCommand {
   undo(wasm: WasmBridge): DocumentPosition {
     if (this.fragmentId === null) {
       // 실행 전·이미 복원된 뒤의 undo 는 배선 버그다 — 무음 통과 대신 드러낸다.
-      throw new Error(`${this.type} undo 불가 — 살아있는 삭제 조각이 없다`);
+      throw new Error(`${this.type} cannot undo — no live delete fragment`);
     }
     wasm.restoreDeleteFragment(this.fragmentId);
     this.fragmentId = null;
@@ -1172,7 +1172,7 @@ function getParaShapeId(wasm: WasmBridge, target: ParaFormatTarget): number {
       );
   const paraShapeId = props.paraShapeId;
   if (paraShapeId === undefined) {
-    throw new Error('문단 모양 ID를 조회할 수 없습니다');
+    throw new Error('Could not look up the paragraph shape ID');
   }
   return paraShapeId;
 }
@@ -2218,7 +2218,7 @@ export class SetSectionPropsCommand implements EditCommand {
 
   undo(wasm: WasmBridge): DocumentPosition {
     if (this.captureId === null) {
-      throw new Error(`${this.type} undo 불가 — 살아있는 raw 캡처가 없다`);
+      throw new Error(`${this.type} cannot undo — no live raw capture`);
     }
     const captureId = this.captureId;
     wasm.setSectionDef(this.sectionIdx, this.before); // old 재적용 — raw 재무효화를 동반한다
@@ -2317,7 +2317,7 @@ export class SetCellBorderFillCommand implements EditCommand {
 
   execute(wasm: WasmBridge): DocumentPosition {
     if (!wasm.hasCellBorderFillInverse()) {
-      throw new Error(`${this.type} 불가 — 구버전 wasm 에 역연산 경로가 없다`);
+      throw new Error(`${this.type} not possible — this wasm build predates the inverse-operation path`);
     }
 
     const cellBefores = new Map<number, number>();
@@ -2347,7 +2347,7 @@ export class SetCellBorderFillCommand implements EditCommand {
         if (changed) zoneBeforeId = beforeId;
       } else {
         const target = this.target;
-        if (target.kind !== 'cells') throw new Error(`${this.type} 잘못된 대상`);
+        if (target.kind !== 'cells') throw new Error(`${this.type} invalid target`);
         // 셀 수만큼 setCellProperties 를 호출하므로 재페이지네이션을 묶는다(#4118).
         wasm.runInBatch(() => {
           for (const cellIdx of target.cellIdxes) {
@@ -2414,7 +2414,7 @@ export class SetCellBorderFillCommand implements EditCommand {
 
   undo(wasm: WasmBridge): DocumentPosition {
     if (this.captureId === null || !this.state) {
-      throw new Error(`${this.type} undo 불가 — 살아있는 변경 기록이 없다`);
+      throw new Error(`${this.type} cannot undo — no live change record`);
     }
     wasm.applyCellBorderFillIds(this.sec, this.ppi, this.ci, {
       cells: this.state.cellBefores,
@@ -2527,7 +2527,7 @@ export class SetZOrderCommand implements EditCommand {
     // 스큐 선제 차단(gpt 3차 리뷰) — 구버전 wasm 은 moves 를 주지 않아 실제 변경의
     // 역연산 기록을 만들 수 없다. 적용 **전에** 거절해 무음 변이를 원천 차단한다.
     if (!wasm.hasShapeZOrderInverse()) {
-      throw new Error('changeZOrder 역연산 불가 — wasm 이 moves 응답 이전 버전이다');
+      throw new Error('changeZOrder cannot invert — this wasm build predates the moves response');
     }
     const captureId = wasm.captureSectionRaw(this.sectionIdx);
     this.captureId = captureId;
@@ -2537,7 +2537,7 @@ export class SetZOrderCommand implements EditCommand {
         const r = wasm.applyShapeZOrderPairs(this.sectionIdx, this.pairsJson('after'));
         // 거절 = 기록 이후 문서가 out-of-band 로 바졌다 — 성공으로 스택을 옮기지 않는다.
         if (!r.ok) {
-          throw new Error(`${this.type} redo 거부 — 기록 이후 문서가 바뀌었다`);
+          throw new Error(`${this.type} redo rejected — the document changed since this was recorded`);
         }
       } else {
         // 최초 실행 — 기존 상대 연산으로 적용하고 자기기술 레코드를 받는다.
@@ -2547,7 +2547,7 @@ export class SetZOrderCommand implements EditCommand {
           // 함께 제공한다). 도달했다면 빈 moves 흡수가 실제 변이의 기록 상실이 되므로
           // 소리 없이 넘기지 않고 실패시킨다 — 아래 catch 가 캡처를 폐기하고,
           // history 의 catch 가 엔트리 없이 전파한다.
-          throw new Error(`${this.type}: wasm ok 응답에 moves 가 없다 — 빌드 짝이 어긋났다`);
+          throw new Error(`${this.type}: wasm ok response has no moves — build mismatch`);
         }
         const moves = r.ok ? r.moves ?? [] : [];
         if (!r.ok || moves.length === 0) {
@@ -2569,7 +2569,7 @@ export class SetZOrderCommand implements EditCommand {
 
   undo(wasm: WasmBridge): DocumentPosition {
     if (!this.moves || this.captureId === null) {
-      throw new Error(`${this.type} undo 불가 — 살아있는 기록/캡처가 없다`);
+      throw new Error(`${this.type} cannot undo — no live record/capture`);
     }
     const captureId = this.captureId;
     wasm.applyShapeZOrderPairs(this.sectionIdx, this.pairsJson('before')); // old 재적용 — raw 재무효화 동반
@@ -2642,7 +2642,7 @@ export class SetSectionPropsAllCommand implements EditCommand {
 
   undo(wasm: WasmBridge): DocumentPosition {
     if (this.captureIds.length === 0) {
-      throw new Error(`${this.type} undo 불가 — 살아있는 raw 캡처가 없다`);
+      throw new Error(`${this.type} cannot undo — no live raw capture`);
     }
     const captureIds = this.captureIds;
     // old 재적용(raw 재무효화) → 캡처 복원. 순서는 캡처와 동일하게 유지한다.
@@ -2795,7 +2795,7 @@ export class SnapshotCommand implements EditCommand {
         // undo 시점 after 저장이 실패한 명령이다. 조용히 성공한 척하면 문서가 그대로인
         // 채 redo 스택만 움직여 이후 undo 가 어긋난다 — 히스토리의 실패시-드롭
         // 하이브리드(#2328)가 이 엔트리를 걷어내도록 던진다.
-        throw new Error(`${this.type} redo 불가 — undo 시점 after 스냅샷 저장 실패`);
+        throw new Error(`${this.type} cannot redo — failed to save the after-snapshot at undo time`);
       }
       wasm.restoreSnapshot(this.afterId);
       wasm.discardSnapshot(this.afterId);
@@ -2834,7 +2834,7 @@ export class SnapshotCommand implements EditCommand {
         this.discard(wasm);
         throw new AggregateError(
           [operationError, rollbackError],
-          `${this.type} 실행 실패 후 rollback도 실패했습니다`,
+          `${this.type} execute failed, and rollback also failed`,
         );
       }
       this.discard(wasm);

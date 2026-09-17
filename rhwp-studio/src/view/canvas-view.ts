@@ -321,7 +321,7 @@ export class CanvasView {
   async refreshDocumentAgentMutation(): Promise<void> {
     const selected = await this.selectMutationRevision();
     if (!selected || !this.rendererSession.isCurrent(selected.selection)) {
-      throw new Error('document-agent renderer revision을 선택하지 못했습니다.');
+      throw new Error('Could not select a document-agent renderer revision.');
     }
     this.refreshPages();
     const scrollY = this.viewportManager.getScrollY();
@@ -335,7 +335,7 @@ export class CanvasView {
     );
     const failed = visiblePages.filter(pageIndex => !this.canvasPool.has(pageIndex));
     if (visiblePages.length === 0 || failed.length > 0) {
-      throw new Error(`document-agent visible page render 실패: ${failed.join(',') || 'none'}`);
+      throw new Error(`document-agent visible page render failed: ${failed.join(',') || 'none'}`);
     }
   }
 
@@ -665,7 +665,7 @@ export class CanvasView {
       layer.appendChild(region);
 
       if (isPreview) {
-        const kind = state.mode === 'header' ? '머리말' : '꼬리말';
+        const kind = state.mode === 'header' ? 'Header' : 'Footer';
         const badgeMetrics = resolveHeaderFooterBadgeMetrics(zoom);
         const badge = document.createElement('span');
         badge.className = 'hf-edit-badge';

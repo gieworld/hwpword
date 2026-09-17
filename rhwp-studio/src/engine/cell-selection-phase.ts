@@ -9,10 +9,10 @@ export type CellSelectionPoint = {
 export function cellSelectionPhaseLabel(phase: CellSelectionPhase): string {
   switch (phase) {
     case 1:
-      return '셀 선택 · 방향키로 이동';
+      return 'Cell selected · Use arrow keys to move';
     case 2:
-      return '셀 범위 선택 · 방향키로 확장';
+      return 'Cell range selected · Use arrow keys to extend';
     case 3:
-      return '표 전체 선택';
+      return 'Entire table selected';
   }
 }
