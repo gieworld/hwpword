@@ -11,8 +11,9 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
 
 - `rhwp-studio/`: upstream web editor (TypeScript + Vite). The English UI reaches into it broadly —
   ~120 files under `src/` (most of them `src/ui/`, plus `src/command/`, `src/core/`, `src/engine/`,
-  `src/view/`) and ~70 test files. There is no list of touched files any more; `git diff v0.8.6..HEAD --
-  rhwp-studio/src` is the list. Nearly all of those edits are visible strings only. What is more than that:
+  `src/view/`) and ~70 test files, counted against the pinned upstream tag (`v0.8.6` today). There is no
+  list of touched files any more; `git diff <tag>..HEAD -- rhwp-studio/src` is the list. Nearly all of
+  those edits are visible strings only. What is more than that:
   - Ours outright: `src/ui/ribbon.ts` + `src/ui/ribbon-data.ts` (the ribbon, mounted from `index.html`),
     `src/ui/display-names.ts` (English/romanized names for Korean fonts and styles),
     `src/ui/command-palette-filter.ts` (hides desktop-irrelevant commands),
