@@ -14,6 +14,7 @@ import {
   toolbarSplitItems,
 } from '@/ui/toolbar-split-menu';
 import { MenuBar } from '@/ui/menu-bar';
+import { Ribbon } from '@/ui/ribbon';
 import { loadWebFonts, resolveCanvasKitFontPlan } from '@/core/font-loader';
 import { withCanvasKitSurfaceBlockers } from '@/core/canvaskit-document-preflight';
 import { loadExtensionViewerSettings, type ExtensionViewerSettings } from '@/core/extension-settings';
@@ -100,7 +101,7 @@ import { CENTER_ZOOM_ANCHOR } from '@/view/zoom-anchor';
 import { withBusyCursor } from '@/view/busy-cursor';
 import { formatPageIndicator } from '@/view/page-indicator';
 import { installEmbedRuntime } from '@/embed/runtime';
-import { installDesktopLaunchQueue, type DesktopWindowLike } from '@/desktop/desktop-launch-queue';
+import { installDesktopLaunchQueue, isHwpWordDesktop, type DesktopWindowLike } from '@/desktop/desktop-launch-queue';
 import type { EmbedRendererRuntimeRequestV1 } from '@/embed/rpc-router';
 import { enrichFontDecisionTrace } from '@/core/font-decision-trace';
 import { DocumentAgentController } from '@/document-agent/controller';
@@ -688,6 +689,7 @@ async function initialize(): Promise<void> {
         if (menuName === 'file') void renderRecentSubmenu();
       },
     });
+    new Ribbon(document.getElementById('ribbon')!, eventBus, dispatcher);
 
     // 툴바 내 data-cmd 버튼 클릭 → 커맨드 디스패치
     document.querySelectorAll('.tb-btn[data-cmd]').forEach(btn => {
@@ -1939,7 +1941,7 @@ const initPromise = initialize();
 // 소모되는 것을 막는다.
 void initPromise.then(() => {
   if (!rendererInitialized) return;
-  maybeShowSkinOnboarding();
+  if (!isHwpWordDesktop()) maybeShowSkinOnboarding();
 });
 
 installEmbedRuntime({

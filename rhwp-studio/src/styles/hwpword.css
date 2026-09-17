@@ -1,0 +1,299 @@
+/* HWP Word: Word-style chrome on top of rhwp-studio. Imported last from style.css. */
+
+#menu-bar,
+#icon-toolbar {
+  display: none !important;
+}
+
+:root {
+  --font-family-ui: 'Segoe UI', 'Malgun Gothic', sans-serif;
+  --hwpword-accent: #185abd;
+  --hwpword-accent-hover: #124b9e;
+  --hwpword-on-accent: #ffffff;
+}
+
+:root:not([data-theme-effective="dark"]) {
+  --ui-bg: #f3f2f1;
+  --ui-bg-light: #faf9f8;
+  --ui-surface-raised: #ffffff;
+  --ui-surface-muted: #edebe9;
+  --ui-border: #d2d0ce;
+  --ui-border-light: #e1dfdd;
+  --ui-border-subtle: #edebe9;
+  --ui-border-strong: #c8c6c4;
+  --ui-hover: #edebe9;
+  --ui-hover-strong: #e1dfdd;
+  --ui-active: #d2d0ce;
+  --ui-selected: #deecf9;
+  --ui-menu-open: #185abd;
+  --ui-menu-open-border: #185abd;
+  --ui-toolbar-bg-start: #ffffff;
+  --ui-toolbar-bg-end: #ffffff;
+  --accent-primary: #185abd;
+  --accent-strong: #124078;
+  --accent-light: #2b88d8;
+}
+
+:root[data-theme-effective="dark"] {
+  --hwpword-accent: #479ef5;
+  --hwpword-accent-hover: #2f7fd1;
+  --hwpword-on-accent: #0b1a2b;
+}
+
+.ribbon {
+  display: flex;
+  flex-direction: column;
+  background: var(--ui-surface-raised);
+  border-bottom: 1px solid var(--ui-border);
+  color: var(--ui-text);
+  font-family: var(--font-family-ui);
+}
+
+.ribbon-strip {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  min-height: 34px;
+  padding: 4px 8px 0;
+}
+
+.ribbon-quick {
+  display: flex;
+  align-self: center;
+  gap: 2px;
+  padding-right: 10px;
+  border-right: 1px solid var(--ui-border-light);
+}
+
+.ribbon-tabs {
+  display: flex;
+  gap: 2px;
+}
+
+.ribbon-tab {
+  padding: 6px 12px 5px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.ribbon-tab:hover {
+  background: var(--ui-hover);
+}
+
+.ribbon-tab.active {
+  border-bottom-color: var(--hwpword-accent);
+  color: var(--hwpword-accent);
+  font-weight: 600;
+}
+
+.ribbon-tab-file {
+  color: var(--hwpword-accent);
+  font-weight: 600;
+}
+
+.ribbon-panels {
+  border-top: 1px solid var(--ui-border-light);
+}
+
+.ribbon-collapsed .ribbon-panels {
+  display: none;
+}
+
+.ribbon-panel {
+  display: flex;
+  align-items: stretch;
+  min-height: 98px;
+  padding: 4px 6px 0;
+  overflow-x: auto;
+}
+
+.ribbon-panel[hidden] {
+  display: none;
+}
+
+.ribbon-group {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  padding: 0 8px;
+  border-right: 1px solid var(--ui-border-light);
+}
+
+.ribbon-group-body {
+  display: grid;
+  flex: 1;
+  grid-auto-flow: column;
+  grid-template-rows: repeat(3, 26px);
+  align-content: start;
+  gap: 1px 4px;
+}
+
+.ribbon-group-label {
+  padding: 2px 0 3px;
+  color: var(--ui-text-muted);
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.ribbon-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 1px 6px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.ribbon-btn:hover:not(:disabled) {
+  border-color: var(--ui-border-light);
+  background: var(--ui-hover);
+}
+
+.ribbon-btn:disabled {
+  color: var(--ui-text-disabled);
+  cursor: default;
+}
+
+.ribbon-btn:disabled .tb-sprite,
+.ribbon-btn:disabled .ribbon-glyph {
+  opacity: 0.4;
+}
+
+.ribbon-btn-large {
+  grid-row: span 3;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  min-width: 58px;
+  padding: 4px 6px;
+}
+
+.ribbon-btn-large .tb-sprite,
+.ribbon-btn-large .ribbon-glyph {
+  transform: scale(1.35);
+}
+
+.ribbon-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  font-size: 13px;
+  line-height: 1;
+}
+
+.ribbon-btn-quick {
+  padding: 3px;
+}
+
+.ribbon-btn-quick .ribbon-btn-label {
+  display: none;
+}
+
+/* The existing formatting bar lives inside the Home tab. */
+.ribbon-group-body > #style-bar {
+  grid-row: span 3;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+/* File page (Word's "backstage") */
+.ribbon-file-page {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  background: var(--ui-surface-raised);
+}
+
+.ribbon-file-page[hidden] {
+  display: none;
+}
+
+.ribbon-file-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 8px;
+  background: var(--hwpword-accent);
+}
+
+.ribbon-file-back,
+.ribbon-file-nav .ribbon-btn {
+  padding: 8px 12px;
+  border: 0;
+  background: transparent;
+  color: var(--hwpword-on-accent);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ribbon-file-back {
+  margin-bottom: 12px;
+}
+
+.ribbon-file-back:hover,
+.ribbon-file-nav .ribbon-btn:hover:not(:disabled) {
+  background: var(--hwpword-accent-hover);
+}
+
+.ribbon-file-nav .ribbon-btn:disabled {
+  color: var(--hwpword-on-accent);
+  opacity: 0.5;
+}
+
+.ribbon-file-nav .tb-sprite {
+  filter: brightness(0) invert(1);
+}
+
+.ribbon-file-recent {
+  padding: 24px 32px;
+  overflow-y: auto;
+  color: var(--ui-text);
+}
+
+.ribbon-file-recent h2 {
+  margin: 0 0 16px;
+  font-size: 24px;
+  font-weight: 400;
+}
+
+.ribbon-file-recent-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 720px;
+}
+
+.ribbon-file-recent-item {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ui-text);
+  font: inherit;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ribbon-file-recent-item:hover {
+  background: var(--ui-hover);
+}
