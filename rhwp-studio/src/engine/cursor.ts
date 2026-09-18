@@ -1226,6 +1226,80 @@ export class CursorState {
     }
   }
 
+  /**
+   * Selects the word around the caret (double-click). Both ends are clamped to the caret's own
+   * paragraph: moveToWordBoundary walks into the neighbouring paragraph when there is no word left
+   * in this direction, and a double-click must never select across paragraphs.
+   *
+   * Returns false when there is no word at the caret (empty paragraph, caret on its own).
+   */
+  selectWordAtCursor(): boolean {
+    const origin = { ...this.position };
+    const inOriginParagraph = (p: DocumentPosition): boolean =>
+      p.paragraphIndex === origin.paragraphIndex && p.cellParaIndex === origin.cellParaIndex;
+    this.anchor = null;
+    this.moveToWordBoundary(-1);
+    const start = inOriginParagraph(this.position) ? { ...this.position } : { ...origin };
+    this.position = { ...origin };
+    this.moveToWordBoundary(1);
+    const end = inOriginParagraph(this.position) ? { ...this.position } : { ...origin };
+    if (start.charOffset === end.charOffset) {
+      this.position = origin;
+      this.updateRect();
+      return false;
+    }
+    this.anchor = start;
+    this.position = end;
+    this.updateRect();
+    return true;
+  }
+
+  /** Selects the line the caret is on (triple-click). False when the line is empty. */
+  selectLineAtCursor(): boolean {
+    this.anchor = null;
+    this.moveToLineStart();
+    const start = { ...this.position };
+    this.moveToLineEnd();
+    if (start.charOffset === this.position.charOffset && start.paragraphIndex === this.position.paragraphIndex) {
+      this.updateRect();
+      return false;
+    }
+    this.anchor = start;
+    this.updateRect();
+    return true;
+  }
+
+  /**
+   * Selects everything in the cell the caret is in, the way Word and HWP select the cell you Tab
+   * into: typing then replaces the value instead of being glued onto the label already printed
+   * there. Returns false when there is nothing to select (not in a cell, or the cell is empty) —
+   * then a plain caret is the right answer and any previous selection is dropped.
+   */
+  selectCellContents(): boolean {
+    if (!this.isInCell() || this.isInTextBox()) return false;
+    const pos = this.position;
+    const { sectionIndex: sec, parentParaIndex: ppi, controlIndex: ci, cellPath } = pos;
+    const useCellPath = (cellPath?.length ?? 0) > 1 || ((cellPath?.length ?? 0) > 0 && !this.isInTextBox());
+    const cei = (useCellPath && cellPath) ? cellPath[cellPath.length - 1].cellIndex : pos.cellIndex;
+    if (ppi === undefined || cei === undefined) return false;
+    try {
+      this.moveToCellByIndex(sec, ppi, ci, cellPath, cei, 'start');
+      const start = { ...this.position };
+      this.moveToCellByIndex(sec, ppi, ci, cellPath, cei, 'end');
+      if (start.paragraphIndex === this.position.paragraphIndex && start.charOffset === this.position.charOffset) {
+        this.anchor = null;
+        this.updateRect();
+        return false;
+      }
+      this.anchor = start;
+      this.updateRect();
+      return true;
+    } catch (e) {
+      console.warn('[CursorState] selectCellContents 실패:', e);
+      return false;
+    }
+  }
+
   /** cellIndex 기준으로 셀 위치를 설정한다 (start=셀 첫 위치, end=셀 마지막 위치) */
   private moveToCellByIndex(
     sec: number, ppi: number, ci: number | undefined,

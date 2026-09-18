@@ -1426,6 +1426,30 @@ export function onDblClick(this: any, e: MouseEvent): void {
       return;
     }
   }
+
+  // Plain text under the pointer: select the word, as every other editor does. The two clicks have
+  // already put the caret there, so this only has to grow the selection around it.
+  if (this.cursor.isInPictureObjectSelection() || this.cursor.isInTableObjectSelection()) return;
+  if (this.cursor.selectWordAtCursor()) {
+    this.updateCaret();
+    this.updateSelection();
+  }
+}
+
+/**
+ * Third click of a triple-click selects the line. `dblclick` only ever fires for the second click,
+ * so the third arrives here as a plain click with detail 3.
+ */
+export function onTripleClick(this: any, e: MouseEvent): void {
+  if (!this.active || e.detail < 3) return;
+  if (this.imagePlacementMode || this.textboxPlacementMode || this.polygonDrawingMode) return;
+  const target = e.target as HTMLElement;
+  if (target.closest('#menu-bar') || target.closest('#icon-toolbar') || target.closest('#style-bar')) return;
+  if (this.cursor.isInPictureObjectSelection() || this.cursor.isInTableObjectSelection()) return;
+  if (this.cursor.selectLineAtCursor()) {
+    this.updateCaret();
+    this.updateSelection();
+  }
 }
 
 export function onContextMenu(this: any, e: MouseEvent): void {

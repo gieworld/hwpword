@@ -1519,7 +1519,12 @@ export function onKeyDown(this: any, e: KeyboardEvent): void {
         } else {
           this.cursor.moveToCellNext();
         }
+        // Word and HWP select the cell they land in, so typing replaces the value. Without this,
+        // tabbing through a form and typing joins the entry onto the label already in the cell.
+        this.cursor.clearSelection();
+        this.cursor.selectCellContents();
         this.updateCaret();
+        this.updateSelection();
         break;
       }
       if (e.shiftKey) {

@@ -547,6 +547,7 @@ export class InputHandler {
 
   private onClickBound: (e: MouseEvent) => void;
   private onDblClickBound: (e: MouseEvent) => void;
+  private onTripleClickBound: (e: MouseEvent) => void;
   private onKeyDownBound: (e: KeyboardEvent) => void;
   private onInputBound: (e?: Event) => void;
   private onCompositionStartBound: () => void;
@@ -620,6 +621,7 @@ export class InputHandler {
 
     this.onClickBound = this.onClick.bind(this);
     this.onDblClickBound = this.onDblClick.bind(this);
+    this.onTripleClickBound = this.onTripleClick.bind(this);
     this.onKeyDownBound = this.onKeyDown.bind(this);
     this.onInputBound = this.onInput.bind(this);
     this.onCompositionStartBound = this.onCompositionStart.bind(this);
@@ -650,6 +652,7 @@ export class InputHandler {
 
     container.addEventListener('mousedown', this.onClickBound);
     container.addEventListener('dblclick', this.onDblClickBound);
+    container.addEventListener('click', this.onTripleClickBound);
     container.addEventListener('contextmenu', this.onContextMenuBound);
     container.addEventListener('mousemove', this.onMouseMoveBound);
     this.textarea.addEventListener('keydown', this.onKeyDownBound);
@@ -765,9 +768,14 @@ export class InputHandler {
     _mouse.onContextMenu.call(this, e);
   }
 
-  /** 더블클릭: 글상자 객체 선택 → 텍스트 편집 진입 */
+  /** 더블클릭: 글상자 객체 선택 → 텍스트 편집 진입, 그 외에는 단어 선택 */
   private onDblClick(e: MouseEvent): void {
     _mouse.onDblClick.call(this, e);
+  }
+
+  /** Third click of a triple-click: select the line (dblclick never fires for it). */
+  private onTripleClick(e: MouseEvent): void {
+    _mouse.onTripleClick.call(this, e);
   }
 
   /** 마우스 이동: 드래그 선택 또는 표 객체 선택 중 핸들 위 커서 변경 */
@@ -4266,6 +4274,7 @@ export class InputHandler {
     document.removeEventListener('keydown', this.onF11InterceptBound, true);
     this.container.removeEventListener('mousedown', this.onClickBound);
     this.container.removeEventListener('dblclick', this.onDblClickBound);
+    this.container.removeEventListener('click', this.onTripleClickBound);
     this.container.removeEventListener('contextmenu', this.onContextMenuBound);
     this.container.removeEventListener('mousemove', this.onMouseMoveBound);
     document.removeEventListener('mousemove', this.onMouseMoveBound);
