@@ -18,6 +18,8 @@ export interface RibbonGroup {
   readonly buttons?: readonly RibbonButton[];
   /** Moves an existing element (by id) into this group, e.g. the formatting bar. */
   readonly mountId?: string;
+  /** Icon-only buttons (the label stays as the tooltip), for groups Word also renders compactly. */
+  readonly compact?: boolean;
 }
 
 export interface RibbonTab {
@@ -62,15 +64,15 @@ export const RIBBON_TABS: readonly RibbonTab[] = [
         ],
       },
       { label: 'Font & Paragraph', mountId: 'style-bar' },
+      // Bold/italic/underline/strikethrough, the character effects, both colours, the size and
+      // line-spacing steppers and the alignment buttons all live in the mounted formatting bar
+      // above; repeating them here is what made Home twice as wide as the window.
       {
         label: 'Font',
         buttons: [
           { cmd: 'format:char-shape', label: 'Character…', icon: 'icon-char-shape', large: true },
           { cmd: 'format:font-size-increase', label: 'Grow Font', glyph: 'A+' },
           { cmd: 'format:font-size-decrease', label: 'Shrink Font', glyph: 'A−' },
-          { cmd: 'format:superscript', label: 'Superscript', glyph: 'x²' },
-          { cmd: 'format:subscript', label: 'Subscript', glyph: 'x₂' },
-          { cmd: 'format:strikethrough', label: 'Strikethrough', glyph: 'S̶' },
         ],
       },
       {
@@ -81,8 +83,6 @@ export const RIBBON_TABS: readonly RibbonTab[] = [
           { cmd: 'format:toggle-numbering', label: 'Numbering', glyph: '1.' },
           { cmd: 'format:level-increase', label: 'Increase Level', glyph: '⇤' },
           { cmd: 'format:level-decrease', label: 'Decrease Level', glyph: '⇥' },
-          { cmd: 'format:line-spacing-increase', label: 'More Line Spacing', glyph: '↕+' },
-          { cmd: 'format:line-spacing-decrease', label: 'Less Line Spacing', glyph: '↕−' },
           { cmd: 'view:para-mark', label: 'Paragraph Marks', icon: 'icon-para-mark' },
         ],
       },
@@ -92,6 +92,7 @@ export const RIBBON_TABS: readonly RibbonTab[] = [
       },
       {
         label: 'Editing',
+        compact: true,
         buttons: [
           { cmd: 'edit:find', label: 'Find', icon: 'icon-find' },
           { cmd: 'edit:find-replace', label: 'Replace', icon: 'icon-find-replace' },

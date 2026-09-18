@@ -107,8 +107,8 @@
 .ribbon-panel {
   display: flex;
   align-items: stretch;
-  min-height: 98px;
-  padding: 4px 6px 0;
+  min-height: 92px;
+  padding: 3px 4px 0;
   overflow-x: auto;
 }
 
@@ -120,17 +120,17 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  padding: 0 8px;
-  border-right: 1px solid var(--ui-border-light);
+  padding: 0 6px;
+  border-right: 1px solid var(--ui-border);
 }
 
 .ribbon-group-body {
   display: grid;
   flex: 1;
   grid-auto-flow: column;
-  grid-template-rows: repeat(3, 26px);
+  grid-template-rows: repeat(3, 25px);
   align-content: start;
-  gap: 1px 4px;
+  gap: 1px 2px;
 }
 
 .ribbon-group-label {
@@ -144,8 +144,8 @@
 .ribbon-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 1px 6px;
+  gap: 5px;
+  padding: 1px 4px;
   border: 1px solid transparent;
   border-radius: 4px;
   background: transparent;
@@ -206,16 +206,68 @@
   padding: 3px;
 }
 
+/* Word keeps its Editing commands icon-only; the label stays as the tooltip. */
+.ribbon-group-compact .ribbon-btn:not(.ribbon-btn-large) .ribbon-btn-label {
+  display: none;
+}
+
+.ribbon-group-compact .ribbon-btn:not(.ribbon-btn-large) {
+  justify-content: center;
+  padding: 1px 5px;
+}
+
 .ribbon-btn-quick .ribbon-btn-label {
   display: none;
 }
 
-/* The existing formatting bar lives inside the Home tab. */
+/* The existing formatting bar lives inside the Home tab. Upstream lays it out as one long row,
+   which inside the ribbon left a 940px strip with a single 29px band in it — mostly empty, and
+   wide enough to push the Font/Paragraph/Styles/Editing groups off screen. Here it wraps into two
+   bands and shows the sub-group labels upstream already ships ("Font and Spacing", "Character",
+   "Color", "Paragraph"), so it reads as labelled groups like the rest of the ribbon. */
 .ribbon-group-body > #style-bar {
   grid-row: span 3;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  align-items: flex-start;
+  width: 500px;
+  height: 100%;
+  row-gap: 2px;
   padding: 0;
   border: 0;
   background: transparent;
+}
+
+/* The sub-group labels stand in for this group's own label. */
+.ribbon-group:has(> .ribbon-group-body > #style-bar) > .ribbon-group-label {
+  display: none;
+}
+
+#style-bar .sb-ribbon-group {
+  height: auto;
+  justify-content: flex-start;
+  padding: 0 6px;
+  border-right: 1px solid var(--ui-border);
+}
+
+#style-bar .sb-command-track,
+#style-bar .sb-command-band,
+#style-bar .sb-overflow-host {
+  align-items: flex-start;
+}
+
+#style-bar .sb-command-band > .sb-ribbon-group:last-child,
+#style-bar > .sb-command-track > .sb-command-band:last-child .sb-ribbon-group {
+  border-right: 0;
+}
+
+#style-bar .sb-ribbon-label {
+  display: block;
+  padding: 2px 0 3px;
+  color: var(--ui-text-muted);
+  font-size: 11px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 /* File page (Word's "backstage") */

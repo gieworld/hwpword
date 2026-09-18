@@ -111,7 +111,7 @@ export class Ribbon {
 
   private renderGroup(group: RibbonGroup): HTMLElement {
     const section = document.createElement('section');
-    section.className = 'ribbon-group';
+    section.className = group.compact ? 'ribbon-group ribbon-group-compact' : 'ribbon-group';
     section.setAttribute('aria-label', group.label);
     const body = document.createElement('div');
     body.className = 'ribbon-group-body';
