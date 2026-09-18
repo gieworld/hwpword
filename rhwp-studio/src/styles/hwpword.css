@@ -356,3 +356,11 @@
 .ribbon-file-recent-item:hover {
   background: var(--ui-hover);
 }
+
+/* The document surface is a canvas, and upstream never gives it a text cursor, so hovering the
+   text you can edit shows the plain arrow. The input handler writes an inline cursor on this same
+   element for move/grab/resize/not-allowed, and an inline style still wins over this rule — which
+   is why it belongs on #scroll-container and not on the page canvases inside it. */
+#scroll-container {
+  cursor: text;
+}
