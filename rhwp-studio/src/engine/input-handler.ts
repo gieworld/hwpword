@@ -527,7 +527,9 @@ export class InputHandler {
   // IME 조합 상태
   private isComposing = false;
   private compositionAnchor: DocumentPosition | null = null;
-  private compositionLength = 0; // 문서에 삽입된 조합 텍스트 길이
+  private compositionLength = 0;
+  /** This composition began by deleting a selection, so its commit completes that replacement. */
+  private compositionReplacedSelection = false; // 문서에 삽입된 조합 텍스트 길이
   private _lastCompositionText = '';
   private _lastComposedText = '';
   /** HF 선택 위 IME는 선택 삭제와 최종 조합 문자열을 하나의 snapshot으로 기록한다. */

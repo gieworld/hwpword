@@ -387,6 +387,7 @@ export function onCompositionStart(this: any): void {
 
   this.resetRawTextMutationEffects();
   this.headerFooterSelectionComposition = false;
+  this.compositionReplacedSelection = false;
   // 선택 영역이 있으면 삭제 후 조합 시작
   if (
     this.cursor.isInHeaderFooter()
@@ -402,6 +403,8 @@ export function onCompositionStart(this: any): void {
       return;
     }
     this.deleteSelection();
+    // The commit at compositionend is the other half of this deletion — one undo step, not two.
+    this.compositionReplacedSelection = true;
   }
   let basePos = this.cursor.isInHeaderFooter()
     ? { ...this.cursor.getPosition(), charOffset: this.cursor.hfCharOffset }
@@ -485,10 +488,13 @@ export function onCompositionEnd(this: any): void {
       const insertedText = this.getTextAt(anchor, finalLength);
       if (insertedText) {
         // execute() 없이 히스토리에만 기록 (텍스트는 이미 문서에 있음)
-        this.executeOperation({ kind: 'record', command: new InsertTextCommand(anchor, insertedText) });
+        const command = new InsertTextCommand(anchor, insertedText);
+        if (this.compositionReplacedSelection) command.markCompositionCommit();
+        this.executeOperation({ kind: 'record', command });
       }
     }
   }
+  this.compositionReplacedSelection = false;
   if (headerFooterSelectionComposition) {
     this.finishHeaderFooterSelectionComposition();
   }

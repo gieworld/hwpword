@@ -612,6 +612,7 @@ export class InsertTextCommand implements EditCommand {
   readonly type = 'insertText';
   readonly timestamp: number;
   private lastMutationEffects: TextMutationEffects = NO_TEXT_MUTATION_EFFECTS;
+  private compositionCommit = false;
 
   constructor(
     private position: DocumentPosition,
@@ -634,6 +635,19 @@ export class InsertTextCommand implements EditCommand {
 
   getText(): string {
     return this.text;
+  }
+
+  /**
+   * Set when this insert commits an IME composition that began by deleting a selection. Composing
+   * Hangul takes as long as the user takes, so the typing-merge window cannot tell that pair apart
+   * — this says so outright instead.
+   */
+  markCompositionCommit(): void {
+    this.compositionCommit = true;
+  }
+
+  isCompositionCommit(): boolean {
+    return this.compositionCommit;
   }
 
   execute(wasm: WasmBridge): DocumentPosition {
@@ -1037,7 +1051,9 @@ export class DeleteSelectionCommand implements EditCommand {
    */
   mergeWith(other: EditCommand): EditCommand | null {
     if (!(other instanceof InsertTextCommand)) return null;
-    if (other.timestamp - this.timestamp > TYPING_MERGE_WINDOW_MS) return null;
+    // An IME commit is the tail of this very deletion (it began the composition), however long the
+    // user spent composing; plain typing has to arrive within the usual burst window.
+    if (!other.isCompositionCommit() && other.timestamp - this.timestamp > TYPING_MERGE_WINDOW_MS) return null;
     const text = other.getText();
     if (text.includes('\n') || text.includes('\t')) return null;
     if (!isSameTextPosition(other.getPosition(), this.selection.start)) return null;

@@ -103,6 +103,47 @@ test('the rest of the typing burst joins the same entry', async () => {
   }
 });
 
+test('an IME commit folds in however long the composition took', async () => {
+  const m = await load();
+  try {
+    // Composing Hangul takes as long as the user takes: onCompositionStart deletes the selection,
+    // and the commit is only recorded at compositionend. Measured in the app before this: Tab into
+    // "성  명", compose "성", one Ctrl+Z — and the cell was left empty, the label gone with it.
+    const doc = fakeDocument('성  명'); // hwpword-keep-korean: fixture, a label from a real form
+    const history = new m.CommandHistory();
+    history.execute(new m.DeleteSelectionCommand(at(0), at(4)), doc);
+    const commit = new m.InsertTextCommand(at(0), '성', Date.now() + 9000); // hwpword-keep-korean: fixture
+    commit.markCompositionCommit();
+    // compositionend records without executing — the text is already in the document.
+    doc.text = '성'; // hwpword-keep-korean: fixture
+    history.recordWithoutExecute(commit, doc);
+
+    history.undo(doc);
+    assert.equal(doc.text, '성  명', 'one undo brings the replaced label back'); // hwpword-keep-korean: fixture
+    assert.equal(history.canUndo(), false);
+    history.redo(doc);
+    assert.equal(doc.text, '성', 'redo re-applies the composed text'); // hwpword-keep-korean: fixture
+  } finally {
+    await m.vite.close();
+  }
+});
+
+test('a composition that did not replace a selection is not marked, so it stays separate', async () => {
+  const m = await load();
+  try {
+    const doc = fakeDocument('성  명'); // hwpword-keep-korean: fixture
+    const history = new m.CommandHistory();
+    history.execute(new m.DeleteSelectionCommand(at(0), at(4)), doc);
+    const late = new m.InsertTextCommand(at(0), '성', Date.now() + 9000); // hwpword-keep-korean: fixture
+    doc.text = '성'; // hwpword-keep-korean: fixture
+    history.recordWithoutExecute(late, doc);
+    history.undo(doc);
+    assert.notEqual(doc.text, '성  명', 'an unmarked late insert must not fold into the deletion'); // hwpword-keep-korean: fixture
+  } finally {
+    await m.vite.close();
+  }
+});
+
 test('an insert that is not the one this delete made room for stays separate', async () => {
   const m = await load();
   try {
