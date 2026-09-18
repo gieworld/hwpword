@@ -627,6 +627,15 @@ export class InsertTextCommand implements EditCommand {
     return this.charFormat;
   }
 
+  /** For DeleteSelectionCommand.mergeWith, which has to check where and what this insert is. */
+  getPosition(): DocumentPosition {
+    return this.position;
+  }
+
+  getText(): string {
+    return this.text;
+  }
+
   execute(wasm: WasmBridge): DocumentPosition {
     this.lastMutationEffects = NO_TEXT_MUTATION_EFFECTS;
     this.lastMutationEffects = insertTextWithMutationEffects(wasm, this.position, this.text);
@@ -1016,7 +1025,24 @@ export class DeleteSelectionCommand implements EditCommand {
       : this.snapshot!.undo(wasm);
   }
 
-  mergeWith(): null { return null; }
+  /**
+   * Typing over a selection arrives here as two commands — this delete, then the insert — and used
+   * to leave two undo entries. The first Ctrl+Z then showed a document that never existed: the old
+   * text already gone, the new text not yet there. Fold the pair into one entry.
+   *
+   * The insert has to be the one this delete made room for: same spot as the deletion start, within
+   * the same typing burst. Paste also deletes then inserts, but it records its delete with
+   * `deferRecord` (so it never reaches the undo stack) or wraps both in a snapshot — either way
+   * there is no delete entry here for it to merge into.
+   */
+  mergeWith(other: EditCommand): EditCommand | null {
+    if (!(other instanceof InsertTextCommand)) return null;
+    if (other.timestamp - this.timestamp > TYPING_MERGE_WINDOW_MS) return null;
+    const text = other.getText();
+    if (text.includes('\n') || text.includes('\t')) return null;
+    if (!isSameTextPosition(other.getPosition(), this.selection.start)) return null;
+    return new ReplaceSelectionCommand(this, other);
+  }
 
   selectionBefore(): { start: DocumentPosition; end: DocumentPosition; blockPhase: number | null } {
     return this.selection;
@@ -1037,6 +1063,80 @@ export class DeleteSelectionCommand implements EditCommand {
   discard(wasm: WasmBridge): void {
     this.fragment?.discard(wasm);
     this.snapshot?.discard(wasm);
+  }
+}
+
+/** Consecutive typing folds into one undo entry within this window (InsertTextCommand's own rule). */
+const TYPING_MERGE_WINDOW_MS = 300;
+
+/** Same paragraph (or same cell paragraph) and same offset — the spot a deletion left behind. */
+function isSameTextPosition(a: DocumentPosition, b: DocumentPosition): boolean {
+  if (a.sectionIndex !== b.sectionIndex) return false;
+  if (a.paragraphIndex !== b.paragraphIndex) return false;
+  if (a.charOffset !== b.charOffset) return false;
+  if (isCell(a) !== isCell(b)) return false;
+  if (!isCell(a)) return true;
+  return a.parentParaIndex === b.parentParaIndex
+    && a.controlIndex === b.controlIndex
+    && a.cellIndex === b.cellIndex
+    && a.cellParaIndex === b.cellParaIndex
+    && cellPathJson(a) === cellPathJson(b);
+}
+
+/**
+ * "Replace the selection by typing" as a single undo entry: the delete and the insert it made room
+ * for, in that order. Both halves are already-executed commands handed over by
+ * `DeleteSelectionCommand.mergeWith`, so nothing here has to guess a position.
+ *
+ * No `selectionBefore()` on purpose. Hancom restores the range when you undo a plain deletion, but
+ * not when you undo a replacement (measured in #3416) — implementing it would re-select text the
+ * user replaced.
+ */
+export class ReplaceSelectionCommand implements EditCommand {
+  readonly type = 'replaceSelection';
+  readonly timestamp: number;
+
+  constructor(
+    private readonly deletion: DeleteSelectionCommand,
+    private insertion: InsertTextCommand,
+  ) {
+    // The insert's timestamp, so the next keystroke still merges within the typing window.
+    this.timestamp = insertion.timestamp;
+  }
+
+  execute(wasm: WasmBridge): DocumentPosition {
+    this.deletion.execute(wasm);
+    return this.insertion.execute(wasm);
+  }
+
+  undo(wasm: WasmBridge): DocumentPosition {
+    this.insertion.undo(wasm);
+    return this.deletion.undo(wasm);
+  }
+
+  /** Keeps the rest of the typing burst in this same entry. */
+  mergeWith(other: EditCommand): EditCommand | null {
+    const merged = this.insertion.mergeWith(other);
+    if (!merged) return null;
+    this.insertion = merged as InsertTextCommand;
+    return this;
+  }
+
+  consumeTextMutationEffects(): TextMutationEffects {
+    return this.insertion.consumeTextMutationEffects();
+  }
+
+  snapshotResourceCount(): number {
+    return this.deletion.snapshotResourceCount();
+  }
+
+  isNoOp(): boolean {
+    // It got here by merging a real insert into a real delete; both changed the document.
+    return false;
+  }
+
+  discard(wasm: WasmBridge): void {
+    this.deletion.discard(wasm);
   }
 }
 // ─── 글자 서식 적용 명령 ─────────────────────────────
