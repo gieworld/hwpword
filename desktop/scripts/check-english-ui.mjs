@@ -243,6 +243,26 @@ async function checkDialogCommand(page, tabId, cmd) {
   return { skipped: false, texts };
 }
 
+/** Clicks the caret into the freshly inserted table. The table lands wherever the caret was, and
+ * its position on screen moves with the height of our own chrome, so one fixed click point silently
+ * degrades the two table dialogs into "disabled" skips the next time the ribbon changes height.
+ * Probe down the column until table:cell-props actually reports enabled — that is the precondition
+ * those checks need — and return the point that worked so the context menu uses it too.
+ * (Ribbon.refreshStates only updates the visible panel, hence selecting the Layout tab first.) */
+async function placeCaretInTable(page, point) {
+  await selectRibbonTab(page, 'layout');
+  for (const dy of [0, 12, 24, 36, 48, 60]) {
+    const at = { x: point.x, y: point.y + dy };
+    await page.mouse.click(at.x, at.y);
+    await sleep(150);
+    const enabled = await page
+      .$eval('[data-ribbon-cmd="table:cell-props"]', (el) => !el.disabled)
+      .catch(() => false);
+    if (enabled) return at;
+  }
+  return null;
+}
+
 /** file:print-to-pdf shows a DOM guidance dialog first — but only when the "show guidance" user
  * preference is still true. If a prior session unchecked it, the command skips straight into
  * preparing a real print job (whose ModalDialog.hide() is a no-op mid-flight, so nothing here could
@@ -545,16 +565,24 @@ async function main() {
           await sleep(300);
 
           // createTable doesn't guarantee the caret lands in the new table; click it explicitly.
-          await page.mouse.click(bodyPoint.x, bodyPoint.y);
-          await sleep(150);
-          await page.mouse.click(bodyPoint.x, bodyPoint.y, { button: 'right' });
-          await sleep(200);
-          check('context menu: inside table', await getVisibleText(page));
-          await page.keyboard.press('Escape');
-          await sleep(100);
+          const tablePoint = await placeCaretInTable(page, bodyPoint);
+          if (!tablePoint) {
+            // The grid picker above already reported; only the states that need the caret fail here.
+            const reason = 'could not get the caret inside the new table; table:cell-props stayed disabled';
+            record('context menu: inside table', { failed: true, reason });
+            record('dialog: table:cell-props', { failed: true, reason });
+            record('dialog: table:cell-split', { failed: true, reason });
+            await page.keyboard.press('Escape').catch(() => {});
+          } else {
+            await page.mouse.click(tablePoint.x, tablePoint.y, { button: 'right' });
+            await sleep(200);
+            check('context menu: inside table', await getVisibleText(page));
+            await page.keyboard.press('Escape');
+            await sleep(100);
 
-          record('dialog: table:cell-props', await checkDialogCommand(page, 'layout', 'table:cell-props'));
-          record('dialog: table:cell-split', await checkDialogCommand(page, 'layout', 'table:cell-split'));
+            record('dialog: table:cell-props', await checkDialogCommand(page, 'layout', 'table:cell-props'));
+            record('dialog: table:cell-split', await checkDialogCommand(page, 'layout', 'table:cell-split'));
+          }
         }
       }
     }
