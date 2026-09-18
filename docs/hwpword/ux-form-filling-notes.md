@@ -22,7 +22,7 @@ button state), not eyeballed.
 
 ## Findings
 
-All five were fixed on 2026-09-18 (commits `9c4e29c5`, `33d8ca35`); each entry keeps the original
+All five, plus a sixth found while verifying them, were fixed on 2026-09-18 (commits `9c4e29c5`, `33d8ca35`, `a7817395`); each entry keeps the original
 symptom so the next merge from upstream can be checked against it. `tests/hwpword-form-filling.test.ts`
 and `tests/hwpword-window-title.test.ts` pin the fixes.
 
@@ -63,6 +63,15 @@ no confirmation their work reached disk.
 It reads `<file> — 1 pages (129.0ms)`: the render time in milliseconds, in the user's status bar,
 and it stays there until the next save. Word uses that space for page and word counts.
 
+### 6. Undo after replacing a selection took two presses — FIXED
+
+Found while verifying the fixes above, and made much more reachable by them: typing over a
+selection recorded two undo entries, so one Ctrl+Z left the document in a state that never
+existed — the replaced text already gone, the typed text not yet there. Measured: `국  적` →
+select `국` → type `Q` → `Q  적` → undo → `적` → undo again → `국  적`. Pre-existing (drag-select
+and type had it too), but Tab-selects-the-cell and double-click-selects-a-word put it in the way
+of ordinary form filling.
+
 ## Not findings (checked and dismissed)
 
 - **"The app opens on the Layout tab."** The ribbon persists the last tab in `localStorage`; the
@@ -83,6 +92,10 @@ and it stays there until the next save. Word uses that space for page and word c
 - **3, 4** One `document-dirty-changed` handler in `main.ts`: a bullet in the window title while the
   document is modified, and a "Saved" toast when a clean transition carries a save reason.
 - **5** The load time goes to `console.info` instead of the status bar.
+- **6** `DeleteSelectionCommand.mergeWith()` folds the insert it made room for into a single
+  `ReplaceSelectionCommand`, guarded by the typing-merge window and an exact position match so
+  paste and unrelated edits cannot be swallowed. `tests/hwpword-replace-selection-undo.test.ts`
+  runs the real commands through the real history against a fake one-paragraph document.
 
 ## A measurement trap, for next time
 
