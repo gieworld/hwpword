@@ -13,7 +13,8 @@ extraResources:
     to: studio
 win:
   target: nsis
-  icon: ../rhwp-studio/public/icons/icon-512.png
+  # Ours, not upstream's rhwp mark.
+  icon: build/icon.png
 nsis:
   oneClick: false
   perMachine: false
