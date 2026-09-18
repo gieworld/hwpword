@@ -72,6 +72,18 @@ select `국` → type `Q` → `Q  적` → undo → `적` → undo again → `�
 and type had it too), but Tab-selects-the-cell and double-click-selects-a-word put it in the way
 of ordinary form filling.
 
+### 7. Korean IME over a selection undid in two steps — FIXED
+
+The same defect as 6 on the IME path, and not covered by its fix. `onCompositionStart` deletes the
+selection; the composed text is only recorded at `compositionend`, so the two commands are as far
+apart as the user is slow — always outside the 300 ms typing-merge window. Measured in the
+installed build: Tab into `성  명`, compose `성`, one Ctrl+Z, and the cell was left empty with the
+label gone. The composition now marks its commit, so the merge does not have to guess from
+timestamps.
+
+Everything else about IME composition checked out: composing into an empty cell, composing over a
+Tab selection, and cancelling a composition mid-way (no stray jamo left behind).
+
 ## Not findings (checked and dismissed)
 
 - **"The app opens on the Layout tab."** The ribbon persists the last tab in `localStorage`; the
@@ -108,3 +120,23 @@ any double/triple-click test built on it silently measures nothing. Drive those 
       await cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: c });
       await cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: c });
     }
+
+## What still cannot be tested from here
+
+**Native Windows dialogs — Open, Save As, print.** Not automatable from this setup, for two
+reasons found while trying:
+
+1. The pickers are the File System Access API (`showSaveFilePicker` / `showOpenFilePicker`), which
+   Chromium only opens on a real user gesture. A synthetic `mousedown` on the ribbon button — what
+   `check:english` and every script here dispatch — carries no user activation, so the picker
+   never opens and nothing reports an error.
+2. Driving the OS dialog means stealing the foreground and sending keystrokes. `AppActivate` does
+   not reliably win the foreground on Windows 11, and keystrokes sent to the wrong window land in
+   whatever the user has open. Not worth the risk for a test.
+
+A full-desktop screenshot does show whether a dialog is up, but it captures whatever else the user
+has on screen, so it is not a tool to reach for routinely.
+
+The one safe signal, if it ever matters again: when a native modal is up the renderer stops
+answering CDP, so a `page.evaluate` that times out means a dialog is open and one that answers
+means it is not.
