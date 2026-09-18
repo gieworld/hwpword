@@ -3079,6 +3079,14 @@ export class InputHandler {
           beforePageIndex,
           afterPageIndex: this.cursor.getRect()?.pageIndex,
         }, boundaryHandled);
+        // Format commands skip the moveTo above to keep the selection, and moveTo is what refreshes
+        // the cached caret rect. Centering a line or changing the font size keeps the document
+        // position but moves where it sits on the page, so without this the caret stays at its old
+        // x until the next click. Runs after refreshAfterOperation, which re-lays out the page.
+        if (desc.command.type === 'applyCharFormat' || desc.command.type === 'applyParaFormat') {
+          this.cursor.updateRect();
+          this.updateCaret();
+        }
         break;
       }
       case 'snapshot': {
