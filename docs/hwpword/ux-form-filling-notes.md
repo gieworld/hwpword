@@ -22,7 +22,11 @@ button state), not eyeballed.
 
 ## Findings
 
-### 1. Tab into a cell does not select what is in it (biggest one for forms)
+All five were fixed on 2026-09-18 (commits `9c4e29c5`, `33d8ca35`); each entry keeps the original
+symptom so the next merge from upstream can be checked against it. `tests/hwpword-form-filling.test.ts`
+and `tests/hwpword-window-title.test.ts` pin the fixes.
+
+### 1. Tab into a cell does not select what is in it (biggest one for forms) — FIXED
 
 Tabbing into a cell that already has text leaves a caret at the **start** of that text and selects
 nothing (measured: 0 `.selection-highlight` elements). Word and HWP both select the cell's contents,
@@ -33,7 +37,7 @@ is glued to the label instead of replacing it. Walking the form by Tab, I typed 
 into the "3. 초청사유" heading cell and got `친구 초청으로 …사이입니다.3. 초청사유` in one cell — no
 warning, and it looks plausible until read closely.
 
-### 2. Double-click does not select a word; triple-click does not select a line
+### 2. Double-click does not select a word; triple-click does not select a line — FIXED
 
 Both leave the selection empty; only click-drag selects. `selectWord` (or any equivalent) does not
 exist anywhere in the sources, so this is a missing upstream feature, not a regression.
@@ -41,20 +45,20 @@ exist anywhere in the sources, so this is a missing upstream feature, not a regr
 Why it matters: correcting a value someone already typed is the most common form edit there is, and
 double-click is how everyone does it. Today it takes a careful drag across small cell text.
 
-### 3. Nothing shows the document has unsaved changes
+### 3. Nothing shows the document has unsaved changes — FIXED
 
 The title stays `<file> - HWP Word` after any amount of editing, and the Save button is enabled even
 in a freshly opened, untouched document, so neither tells you whether your work is saved. The only
 safety net is the Electron dialog on close ("This document has unsaved changes."), which is real but
 arrives at the last moment.
 
-### 4. Saving says nothing
+### 4. Saving says nothing — FIXED
 
 Ctrl+S writes the file with no toast, no status-bar message and no title change; the only visible
 difference is that the load-time text in the status bar disappears. After a long form, the user has
 no confirmation their work reached disk.
 
-### 5. The status bar shows developer telemetry
+### 5. The status bar shows developer telemetry — FIXED
 
 It reads `<file> — 1 pages (129.0ms)`: the render time in milliseconds, in the user's status bar,
 and it stays there until the next save. Word uses that space for page and word counts.
@@ -67,3 +71,27 @@ and it stays there until the next save. Word uses that space for page and word c
   coordinates after a row had grown. Clicking is accurate in a stable layout.
 - **The `영문 (    )` cell wrapping the `(` onto its own line.** Narrow-cell wrapping of the form's
   own text, which HWP does too.
+
+## How each was fixed
+
+- **1** `CursorState.selectCellContents()`, called from the Tab branch in `input-handler-keyboard.ts`.
+  It selects from the first paragraph of the cell to the end of its last one, and returns false for
+  an empty cell so the caret alone remains.
+- **2** `CursorState.selectWordAtCursor()` / `selectLineAtCursor()`, called from `onDblClick` and from
+  a new `click` listener that only acts on `detail >= 3` (a `dblclick` event never fires for the third
+  click). Both ends are clamped to the caret's own paragraph.
+- **3, 4** One `document-dirty-changed` handler in `main.ts`: a bullet in the window title while the
+  document is modified, and a "Saved" toast when a clean transition carries a save reason.
+- **5** The load time goes to `console.info` instead of the status bar.
+
+## A measurement trap, for next time
+
+`page.mouse.click(x, y, { clickCount: 2 })` in puppeteer-core does **not** produce a real double
+click here — the resulting `click` event still arrives with `detail: 1` and no `dblclick` fires, so
+any double/triple-click test built on it silently measures nothing. Drive those through CDP instead:
+
+    const cdp = await page.target().createCDPSession();
+    for (let c = 1; c <= count; c++) {
+      await cdp.send('Input.dispatchMouseEvent', { type: 'mousePressed', x, y, button: 'left', clickCount: c });
+      await cdp.send('Input.dispatchMouseEvent', { type: 'mouseReleased', x, y, button: 'left', clickCount: c });
+    }
