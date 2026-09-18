@@ -57,7 +57,8 @@ import {
   resolveChromeModeRequest,
 } from '@/ui/chrome-mode';
 import { initRhwpDev } from '@/core/rhwp-dev';
-import { DocumentDirtyState } from '@/core/document-dirty-state';
+import { DocumentDirtyState, type DirtyStateChange } from '@/core/document-dirty-state';
+import { documentWindowTitle } from '@/ui/window-title';
 import { initThemeSync, setThemeMode, getThemeMode, getEffectiveTheme } from '@/core/theme';
 import { maybeShowSkinOnboarding } from '@/ui/skin-onboarding-dialog';
 import { analyzeDocumentFonts } from '@/core/document-font-status';
@@ -399,10 +400,13 @@ const sbPage = () => document.getElementById('sb-page')!;
 const sbSection = () => document.getElementById('sb-section')!;
 const sbZoomVal = () => document.getElementById('sb-zoom-val')!;
 
+/** markClean reasons that mean the document reached storage — the ones worth telling the user about. */
+const SAVED_DIRTY_REASONS = new Set(['save', 'save-as', 'host-save']);
+
 // HWP Word desktop: main.mjs only lets a title ending in this suffix reach the OS window chrome
 // (page-title-updated ignores anything else, e.g. print's temporary basename-only title).
 function setWindowTitle(fileName: string): void {
-  document.title = `${fileName} - HWP Word`;
+  document.title = documentWindowTitle(fileName, documentState.isDirty());
 }
 
 let autosaveStatusRestoreTimer: ReturnType<typeof setTimeout> | null = null;
@@ -1188,8 +1192,15 @@ function setupEventListeners(): void {
     eventBus.emit('document-view-changed');
   });
 
-  eventBus.on('document-dirty-changed', () => {
+  eventBus.on('document-dirty-changed', (payload) => {
+    const change = payload as DirtyStateChange | undefined;
     eventBus.emit('command-state-changed');
+    // The title is the only thing that says "you have unsaved edits", and the toast the only thing
+    // that says the save actually happened — saving writes the file without a word otherwise.
+    setWindowTitle(wasm.fileName);
+    if (change && !change.dirty && SAVED_DIRTY_REASONS.has(change.reason ?? '')) {
+      showToast({ message: 'Saved', durationMs: 1600 });
+    }
   });
 
   eventBus.on('autosave-settings-changed', () => {
@@ -1598,8 +1609,9 @@ async function loadBytes(
       { discardPreviousDraft: true },
     );
     await updateLoadProgress(50, 'Initializing document...');
-    const elapsed = performance.now() - startTime;
-    await initializeDocument(docInfo, `${fileName} — ${docInfo.pageCount} pages (${elapsed.toFixed(1)}ms)`, {
+    // The load time is ours to watch, not something to leave sitting in the user's status bar.
+    console.info('[open] %s loaded in %sms', fileName, (performance.now() - startTime).toFixed(1));
+    await initializeDocument(docInfo, `${fileName} — ${docInfo.pageCount} pages`, {
       suppressDialogs: options.suppressDialogs,
     });
   });
