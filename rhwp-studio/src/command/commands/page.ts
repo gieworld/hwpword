@@ -6,6 +6,7 @@ import { SectionSettingsDialog } from '@/ui/section-settings-dialog';
 import { ColumnSettingsDialog } from '@/ui/column-settings-dialog';
 import { NewNumberDialog } from '@/ui/new-number-dialog';
 import { InsertFieldInHeaderFooterCommand } from '@/engine/command';
+import { showToast } from '@/ui/toast';
 import { emitHeaderFooterModeChanged } from '@/engine/header-footer-mode';
 
 function stub(id: string, label: string, icon?: string, shortcut?: string): CommandDef {
@@ -89,7 +90,18 @@ function insertHfField(
   const ih = services.getInputHandler();
   if (!ih) return;
   const cursor = (ih as any).cursor;
-  if (!cursor || !cursor.isInHeaderFooter()) return;
+  // These fields can only live in a header or footer. Outside one the engine has nowhere to put
+  // them, and returning in silence is what made Insert ▸ Page Number look broken: the button is
+  // enabled, the click does nothing, and nothing says why.
+  if (!cursor || !cursor.isInHeaderFooter()) {
+    showToast({
+      message: 'Page Number, Total Pages and File Name go inside a header or footer. '
+        + 'Open one first with Insert ▸ Header or Insert ▸ Footer, then insert the field.\n'
+        + 'To change which number the pages start from, use Layout ▸ Restart Page Numbers.',
+      durationMs: 7000,
+    });
+    return;
+  }
   const isHeader = cursor.headerFooterMode === 'header';
   const target = {
     sectionIdx: cursor.hfSectionIdx,
