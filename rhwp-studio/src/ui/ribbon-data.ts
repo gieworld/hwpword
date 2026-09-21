@@ -181,6 +181,7 @@ export const RIBBON_TABS: readonly RibbonTab[] = [
         label: 'Section',
         buttons: [
           { cmd: 'page:section-settings', label: 'Section…', glyph: '§', large: true },
+          { cmd: 'page:page-number-settings', label: 'Page Numbers…', glyph: '#' },
           { cmd: 'page:new-page-num', label: 'Restart Page Numbers…', glyph: '1' },
           { cmd: 'page:hide-current', label: 'Hide on This Page', glyph: '⊘' },
         ],

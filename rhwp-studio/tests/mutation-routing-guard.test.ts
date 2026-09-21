@@ -203,6 +203,7 @@ const BASELINE: Readonly<Record<string, number>> = {
   'src/ui/new-number-dialog.ts': 1,
   'src/ui/numbering-dialog.ts': 1,
   'src/ui/page-border-dialog.ts': 1,
+  'src/ui/page-number-dialog.ts': 1, // HWP Word: 쪽 번호 매기기 — applyThroughRouter 로 라우팅(폴백 포함 1 표면)
   'src/ui/page-setup-dialog.ts': 1,
   'src/ui/picture-props-dialog.ts': 5,
   'src/ui/section-settings-dialog.ts': 2,

@@ -8061,6 +8061,42 @@ impl HwpDocument {
             .map_err(|e| e.into())
     }
 
+    /// 쪽 번호 매기기 조회 — 한글 `쪽 > 쪽 번호 매기기` 의 현재 값.
+    #[wasm_bindgen(js_name = getPageNumberPos)]
+    pub fn get_page_number_pos(&self, sec: u32) -> Result<String, JsValue> {
+        self.get_page_number_pos_native(sec as usize)
+            .map_err(|e| e.into())
+    }
+
+    /// 쪽 번호 매기기 설정. `position` 0 은 "쪽 번호 없음"이라 컨트롤을 지운다.
+    ///
+    /// 장식 문자는 문자열로 받는다 — JS 쪽에서 `char` 를 만들 방법이 없고, 빈 문자열이
+    /// "없음"('\0')이라는 뜻이 그대로 드러난다. 두 글자 이상이면 첫 글자만 쓴다(HWP 저장
+    /// 형식이 WCHAR 한 칸이다).
+    #[wasm_bindgen(js_name = setPageNumberPos)]
+    pub fn set_page_number_pos(
+        &mut self,
+        sec: u32,
+        format: u8,
+        position: u8,
+        prefix: &str,
+        suffix: &str,
+        dash: &str,
+        user_symbol: &str,
+    ) -> Result<String, JsValue> {
+        let first = |s: &str| s.chars().next().unwrap_or('\0');
+        self.set_page_number_pos_native(
+            sec as usize,
+            format,
+            position,
+            first(prefix),
+            first(suffix),
+            first(dash),
+            first(user_symbol),
+        )
+        .map_err(|e| e.into())
+    }
+
     /// 문단 서식을 적용한다 (본문 문단).
     /// 문단 번호 시작 방식 설정
     #[wasm_bindgen(js_name = setNumberingRestart)]

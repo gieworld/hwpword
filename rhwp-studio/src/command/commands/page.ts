@@ -5,6 +5,7 @@ import { PageBorderDialog } from '@/ui/page-border-dialog';
 import { SectionSettingsDialog } from '@/ui/section-settings-dialog';
 import { ColumnSettingsDialog } from '@/ui/column-settings-dialog';
 import { NewNumberDialog } from '@/ui/new-number-dialog';
+import { PageNumberDialog } from '@/ui/page-number-dialog';
 import { InsertFieldInHeaderFooterCommand } from '@/engine/command';
 import { showToast } from '@/ui/toast';
 import { emitHeaderFooterModeChanged } from '@/engine/header-footer-mode';
@@ -332,6 +333,20 @@ export const pageCommands: CommandDef[] = [
       });
       // executeOperation 이 이미 afterEdit 로 리프레시하므로 별도 afterEdit 를 부르지 않는다.
       (ih as any).textarea?.focus();
+    },
+  },
+  // ─── 쪽 번호 매기기 (한글 `쪽 > 쪽 번호 매기기`) ───
+  {
+    id: 'page:page-number-settings',
+    opensDialog: true,
+    label: 'Page Numbers…',
+    canExecute: (ctx) => ctx.hasDocument && !ctx.inTable,
+    execute(services) {
+      const ih = services.getInputHandler();
+      const cursor = ih ? (ih as any).cursor : null;
+      const sectionIndex = cursor?.getPosition()?.sectionIndex ?? 0;
+      if (!services.wasm || !services.eventBus) return;
+      new PageNumberDialog(services.wasm, services.eventBus, sectionIndex, services).show();
     },
   },
   // ─── 머리말/꼬리말 이전/다음 이동 ─────────────────

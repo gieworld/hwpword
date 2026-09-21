@@ -2293,6 +2293,146 @@ impl DocumentCore {
         }
         Ok("{\"ok\":true,\"exists\":false}".to_string())
     }
+
+    /// 구역의 쪽 번호 매기기(pgnp) 설정을 읽는다.
+    ///
+    /// 컨트롤은 구역 안 어느 문단에나 있을 수 있어 구역 전체를 훑는다(렌더러도 구역 단위로
+    /// 집어 쓴다 — `queries/rendering.rs` 의 `carry_page_number_pos`).
+    pub fn get_page_number_pos_native(
+        &self,
+        section_idx: usize,
+    ) -> Result<String, crate::error::HwpError> {
+        use crate::model::control::Control;
+
+        let section = self
+            .document
+            .sections
+            .get(section_idx)
+            .ok_or_else(|| crate::error::HwpError::RenderError("구역 범위 초과".to_string()))?;
+
+        for (para_idx, para) in section.paragraphs.iter().enumerate() {
+            for ctrl in &para.controls {
+                if let Control::PageNumberPos(pnp) = ctrl {
+                    return Ok(format!(
+                        "{{\"ok\":true,\"exists\":true,\"paraIdx\":{},\"format\":{},\"position\":{},\"prefixChar\":{},\"suffixChar\":{},\"dashChar\":{},\"userSymbol\":{}}}",
+                        para_idx,
+                        pnp.format,
+                        pnp.position,
+                        json_wchar(pnp.prefix_char),
+                        json_wchar(pnp.suffix_char),
+                        json_wchar(pnp.dash_char),
+                        json_wchar(pnp.user_symbol),
+                    ));
+                }
+            }
+        }
+        Ok("{\"ok\":true,\"exists\":false}".to_string())
+    }
+
+    /// 구역의 쪽 번호 매기기(pgnp)를 설정한다 — 한글 `쪽 > 쪽 번호 매기기`.
+    ///
+    /// `position == 0` 은 "쪽 번호 없음"이라 기존 컨트롤을 지운다(렌더러도 0 이면 그리지
+    /// 않는다). 컨트롤이 이미 있으면 자리를 그대로 두고 값만 바꾼다 — PARA_TEXT 의 컨트롤
+    /// 문자가 이미 제자리라 글자 수 장부를 건드릴 일이 없다. 없을 때만 새로 끼우고, 그
+    /// 절차는 같은 부류(0x0015)인 `insert_new_number_native` 와 같은 순서를 따른다.
+    #[allow(clippy::too_many_arguments)]
+    pub fn set_page_number_pos_native(
+        &mut self,
+        section_idx: usize,
+        format: u8,
+        position: u8,
+        prefix_char: char,
+        suffix_char: char,
+        dash_char: char,
+        user_symbol: char,
+    ) -> Result<String, crate::error::HwpError> {
+        use crate::model::control::{Control, PageNumberPos};
+
+        let section = self
+            .document
+            .sections
+            .get_mut(section_idx)
+            .ok_or_else(|| crate::error::HwpError::RenderError("구역 범위 초과".to_string()))?;
+        if section.paragraphs.is_empty() {
+            return Err(crate::error::HwpError::RenderError(
+                "구역에 문단이 없다".to_string(),
+            ));
+        }
+
+        let found = section.paragraphs.iter().enumerate().find_map(|(pi, para)| {
+            para.controls
+                .iter()
+                .position(|c| matches!(c, Control::PageNumberPos(_)))
+                .map(|ci| (pi, ci))
+        });
+
+        let removed = position == 0;
+        match (found, removed) {
+            (Some((para_idx, ctrl_idx)), true) => {
+                let para = &mut section.paragraphs[para_idx];
+                para.align_ctrl_data_records();
+                para.controls.remove(ctrl_idx);
+                if ctrl_idx < para.ctrl_data_records.len() {
+                    para.ctrl_data_records.remove(ctrl_idx);
+                }
+            }
+            (Some((para_idx, ctrl_idx)), false) => {
+                section.paragraphs[para_idx].controls[ctrl_idx] =
+                    Control::PageNumberPos(PageNumberPos {
+                        format,
+                        position,
+                        user_symbol,
+                        prefix_char,
+                        suffix_char,
+                        dash_char,
+                    });
+            }
+            (None, true) => {
+                // 이미 없으니 지울 것도 없다 — 문서를 건드리지 않고 끝낸다.
+                return Ok(crate::document_core::helpers::json_ok_with(
+                    "\"changed\":false",
+                ));
+            }
+            (None, false) => {
+                let para = &mut section.paragraphs[0];
+                para.align_ctrl_data_records();
+                para.controls.insert(
+                    0,
+                    Control::PageNumberPos(PageNumberPos {
+                        format,
+                        position,
+                        user_symbol,
+                        prefix_char,
+                        suffix_char,
+                        dash_char,
+                    }),
+                );
+                para.ctrl_data_records.insert(0, None);
+                para.shift_for_inline_control_insert(0);
+                para.char_count += 8;
+                para.control_mask |= 1u32 << 0x0015;
+                para.has_para_text = true;
+            }
+        }
+
+        section.raw_stream = None;
+        self.recompose_section(section_idx);
+        self.paginate_if_needed();
+        self.invalidate_page_tree_cache();
+
+        Ok(crate::document_core::helpers::json_ok_with(
+            "\"changed\":true",
+        ))
+    }
+}
+
+/// WCHAR 하나를 JSON 값으로 — 없음('\0')은 null, 있으면 한 글자 문자열.
+fn json_wchar(c: char) -> String {
+    if c == '\0' {
+        "null".to_string()
+    } else {
+        format!("\"{}\"", c.escape_default())
+    }
 }
 
 #[cfg(test)]

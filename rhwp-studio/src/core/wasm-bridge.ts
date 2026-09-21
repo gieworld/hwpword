@@ -1300,6 +1300,26 @@ export class WasmBridge {
     return (this.doc as any).insertNewNumber(sec, para, charOffset, startNum);
   }
 
+  /** 쪽 번호 매기기 — 구역의 pgnp 컨트롤 설정을 읽는다. */
+  getPageNumberPos(sec: number): string {
+    if (!this.doc) throw new Error('The document has not loaded yet.');
+    return (this.doc as any).getPageNumberPos(sec);
+  }
+
+  /** 쪽 번호 매기기 — position 0 이면 쪽 번호를 없앤다. 장식 문자는 한 글자(빈 문자열 = 없음). */
+  setPageNumberPos(
+    sec: number,
+    format: number,
+    position: number,
+    prefix: string,
+    suffix: string,
+    dash: string,
+    userSymbol: string,
+  ): string {
+    if (!this.doc) throw new Error('The document has not loaded yet.');
+    return (this.doc as any).setPageNumberPos(sec, format, position, prefix, suffix, dash, userSymbol);
+  }
+
   setColumnDef(sec: number, columnCount: number, columnType: number, sameWidth: number, spacingHu: number): string {
     if (!this.doc) throw new Error('The document has not loaded yet.');
     return (this.doc as any).setColumnDef(sec, columnCount, columnType, sameWidth, spacingHu);

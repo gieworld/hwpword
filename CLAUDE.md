@@ -31,7 +31,14 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
     files that contain them.
 - `desktop/`: our Electron app (main process, preload, installer, corpus check). It owns the
   `@rhwp/core` and Electron versions.
-- `pkg/`: generated copy of `@rhwp/core` (gitignored). Refresh with `npm --prefix desktop run sync-core`.
+- `pkg/`: the WASM engine (gitignored). **Built from this repo's Rust sources**, not the npm
+  package: page numbering needed engine APIs upstream does not export. Build it with
+  `npm --prefix desktop run build:engine`; `docs/hwpword/engine-build.md` has the toolchain, the
+  two traps that cost an afternoon, and what our patch changes. `sync-core` refuses to overwrite a
+  local build (`pkg/.built-locally`) unless you pass `--force`.
+- `src/`, `crates/`: upstream Rust. We touch two files —
+  `src/document_core/commands/formatting.rs` (`get_page_number_pos_native` /
+  `set_page_number_pos_native`) and `src/wasm_api.rs` (their `#[wasm_bindgen]` exports).
 - Everything else is upstream and is not edited (Rust sources, docs, other apps). The checkout is sparse
   (`git sparse-checkout list`); `mydocs/`, most of `tools/` and other rhwp apps are not on disk.
   `build-studio.mjs` copies the bundled fonts from `assets/fonts`, so that folder must stay in the sparse checkout.
@@ -39,6 +46,7 @@ It is a local fork of [rhwp](https://github.com/edwardkim/rhwp) (MIT), pinned to
 ## Commands (Node 22 LTS ≥ 22.18, Git Bash)
 
 - Studio tests: `npm --prefix rhwp-studio test` (failures must be listed in `docs/hwpword/windows-test-baseline.md`)
+- Build the engine: `npm --prefix desktop run build:engine` (~15 min; needed after a fresh clone or an upstream merge)
 - Desktop tests: `npm --prefix desktop test`
 - Build studio for desktop: `npm --prefix desktop run build:studio`
 - Run built app: `npm --prefix desktop start`
